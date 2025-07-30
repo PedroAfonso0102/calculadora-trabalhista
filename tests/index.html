@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testes - Calculadora Trabalhista</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #fff;
+            padding: 20px;
+            margin: 0;
+        }
+        .console {
+            background: #000;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            min-height: 400px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.4;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+        h1 {
+            text-align: center;
+            color: #4a9eff;
+            margin-bottom: 30px;
+        }
+        .loading {
+            text-align: center;
+            color: #ffa500;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .test-summary {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #4a9eff;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Testes da Calculadora Trabalhista</h1>
+    
+    <div class="loading">
+        Carregando e executando testes...
+    </div>
+    
+    <div id="console" class="console">
+        Aguardando execução dos testes...
+    </div>
+    
+    <div class="test-summary">
+        <h3>📋 Sobre os Testes</h3>
+        <p>Este arquivo executa uma suíte completa de testes para validar:</p>
+        <ul>
+            <li>Cálculos de INSS e IRRF conforme tabelas de 2025</li>
+            <li>Módulos de salário líquido, férias e 13º salário</li>
+            <li>Cálculos de rescisão para diferentes cenários</li>
+            <li>Integração entre os módulos</li>
+        </ul>
+        <p><strong>Como interpretar:</strong></p>
+        <ul>
+            <li>✅ Teste passou - funcionamento correto</li>
+            <li>❌ Teste falhou - requer correção</li>
+        </ul>
+    </div>
+
+    <script>
+        // Redirecionar console.log para o elemento HTML
+        const consoleElement = document.getElementById('console');
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        function appendToConsole(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : '📝';
+            consoleElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            appendToConsole(args.join(' '), 'log');
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            appendToConsole(args.join(' '), 'error');
+            originalError.apply(console, args);
+        };
+        
+        // Aguardar um pouco para carregar a página
+        setTimeout(() => {
+            document.querySelector('.loading').style.display = 'none';
+            console.log('🚀 Iniciando execução dos testes...\n');
+        }, 500);
+    </script>
+    
+    <script type="module" src="../tests/core/regrasGerais.test.js"></script>
+</body>
+</html>

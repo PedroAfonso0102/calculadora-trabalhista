@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Trabalhista - Seus Direitos em suas Mãos</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <h1><i class="fas fa-calculator"></i> Calculadora Trabalhista</h1>
+            <p class="subtitle">Conheça seus direitos trabalhistas com precisão e clareza</p>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <nav class="calculator-tabs">
+            <button class="tab-button active" data-tab="rescisao">
+                <i class="fas fa-handshake"></i>
+                Rescisão
+            </button>
+            <button class="tab-button" data-tab="ferias">
+                <i class="fas fa-umbrella-beach"></i>
+                Férias
+            </button>
+            <button class="tab-button" data-tab="salario">
+                <i class="fas fa-money-bill-wave"></i>
+                Salário Líquido
+            </button>
+            <button class="tab-button" data-tab="decimo">
+                <i class="fas fa-gift"></i>
+                13º Salário
+            </button>
+        </nav>
+
+        <div class="calculator-content">
+            <!-- Módulo de Rescisão -->
+            <section id="rescisao" class="tab-content active">
+                <h2>Cálculo de Rescisão</h2>
+                <div class="calculation-area">
+                    <form id="rescisao-form" class="calculation-form">
+                        <div class="form-group">
+                            <label for="salario-bruto">
+                                Salário Bruto
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="salario_bruto"></i>
+                            </label>
+                            <input type="number" id="salario-bruto" name="salarioBruto" step="0.01" min="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="data-admissao">
+                                Data de Admissão
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="data_admissao"></i>
+                            </label>
+                            <input type="date" id="data-admissao" name="dataAdmissao" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="data-saida">
+                                Data de Saída
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="data_saida"></i>
+                            </label>
+                            <input type="date" id="data-saida" name="dataSaida" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="motivo-rescisao">
+                                Motivo da Rescisão
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="motivo_rescisao"></i>
+                            </label>
+                            <select id="motivo-rescisao" name="motivoRescisao" required>
+                                <option value="">Selecione o motivo</option>
+                                <option value="sem_justa_causa">Dispensa sem Justa Causa</option>
+                                <option value="pedido_demissao">Pedido de Demissão</option>
+                                <option value="acordo">Acordo (Demissão Consensual)</option>
+                                <option value="justa_causa">Dispensa por Justa Causa</option>
+                                <option value="termino_contrato">Término de Contrato</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="aviso-previo">
+                                Aviso Prévio
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="aviso_previo"></i>
+                            </label>
+                            <select id="aviso-previo" name="avisoPrevio">
+                                <option value="trabalhado">Trabalhado</option>
+                                <option value="indenizado">Indenizado</option>
+                                <option value="nao_aplicavel">Não Aplicável</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ferias-vencidas">
+                                Férias Vencidas (em dias)
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="ferias_vencidas"></i>
+                            </label>
+                            <input type="number" id="ferias-vencidas" name="feriasVencidas" min="0" max="30" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dependentes">
+                                Número de Dependentes
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="dependentes"></i>
+                            </label>
+                            <input type="number" id="dependentes" name="dependentes" min="0" value="0">
+                        </div>
+
+                        <button type="submit" class="btn-calculate">
+                            <i class="fas fa-calculator"></i>
+                            Calcular Rescisão
+                        </button>
+                    </form>
+
+                    <div id="rescisao-resultado" class="calculation-result"></div>
+                </div>
+            </section>
+
+            <!-- Módulo de Férias -->
+            <section id="ferias" class="tab-content">
+                <h2>Cálculo de Férias</h2>
+                <div class="calculation-area">
+                    <form id="ferias-form" class="calculation-form">
+                        <div class="form-group">
+                            <label for="ferias-salario-bruto">
+                                Salário Bruto
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="salario_bruto"></i>
+                            </label>
+                            <input type="number" id="ferias-salario-bruto" name="salarioBruto" step="0.01" min="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dias-ferias">
+                                Dias de Férias
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="dias_ferias"></i>
+                            </label>
+                            <input type="number" id="dias-ferias" name="diasFerias" min="1" max="30" value="30" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="faltas-injustificadas">
+                                Faltas Injustificadas no Período Aquisitivo
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="faltas_injustificadas"></i>
+                            </label>
+                            <input type="number" id="faltas-injustificadas" name="faltasInjustificadas" min="0" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="abono-pecuniario">
+                                <input type="checkbox" id="abono-pecuniario" name="abonoPecuniario">
+                                Vender 1/3 das Férias (Abono Pecuniário)
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="abono_pecuniario"></i>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ferias-dependentes">
+                                Número de Dependentes
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="dependentes"></i>
+                            </label>
+                            <input type="number" id="ferias-dependentes" name="dependentes" min="0" value="0">
+                        </div>
+
+                        <button type="submit" class="btn-calculate">
+                            <i class="fas fa-calculator"></i>
+                            Calcular Férias
+                        </button>
+                    </form>
+
+                    <div id="ferias-resultado" class="calculation-result"></div>
+                </div>
+            </section>
+
+            <!-- Módulo de Salário Líquido -->
+            <section id="salario" class="tab-content">
+                <h2>Cálculo de Salário Líquido</h2>
+                <div class="calculation-area">
+                    <form id="salario-form" class="calculation-form">
+                        <div class="form-group">
+                            <label for="salario-salario-bruto">
+                                Salário Bruto
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="salario_bruto"></i>
+                            </label>
+                            <input type="number" id="salario-salario-bruto" name="salarioBruto" step="0.01" min="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="salario-dependentes">
+                                Número de Dependentes
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="dependentes"></i>
+                            </label>
+                            <input type="number" id="salario-dependentes" name="dependentes" min="0" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="outros-descontos">
+                                Outros Descontos
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="outros_descontos"></i>
+                            </label>
+                            <input type="number" id="outros-descontos" name="outrosDescontos" step="0.01" min="0" value="0">
+                        </div>
+
+                        <button type="submit" class="btn-calculate">
+                            <i class="fas fa-calculator"></i>
+                            Calcular Salário Líquido
+                        </button>
+                    </form>
+
+                    <div id="salario-resultado" class="calculation-result"></div>
+                </div>
+            </section>
+
+            <!-- Módulo de 13º Salário -->
+            <section id="decimo" class="tab-content">
+                <h2>Cálculo de 13º Salário</h2>
+                <div class="calculation-area">
+                    <form id="decimo-form" class="calculation-form">
+                        <div class="form-group">
+                            <label for="decimo-salario-bruto">
+                                Salário Bruto
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="salario_bruto"></i>
+                            </label>
+                            <input type="number" id="decimo-salario-bruto" name="salarioBruto" step="0.01" min="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="meses-trabalhados">
+                                Meses Trabalhados no Ano
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="meses_trabalhados"></i>
+                            </label>
+                            <input type="number" id="meses-trabalhados" name="mesesTrabalhados" min="1" max="12" value="12" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="decimo-dependentes">
+                                Número de Dependentes
+                                <i class="fas fa-info-circle tooltip-trigger" data-tooltip="dependentes"></i>
+                            </label>
+                            <input type="number" id="decimo-dependentes" name="dependentes" min="0" value="0">
+                        </div>
+
+                        <button type="submit" class="btn-calculate">
+                            <i class="fas fa-calculator"></i>
+                            Calcular 13º Salário
+                        </button>
+                    </form>
+
+                    <div id="decimo-resultado" class="calculation-result"></div>
+                </div>
+            </section>
+        </div>
+
+        <div class="scenario-management">
+            <div class="scenario-buttons">
+                <button id="save-scenario" class="btn-secondary">
+                    <i class="fas fa-save"></i>
+                    Salvar Cenário
+                </button>
+                <button id="load-scenario" class="btn-secondary">
+                    <i class="fas fa-folder-open"></i>
+                    Carregar Cenário
+                </button>
+                <button id="export-pdf" class="btn-secondary">
+                    <i class="fas fa-file-pdf"></i>
+                    Exportar PDF
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 Calculadora Trabalhista - Ferramenta educativa baseada na legislação brasileira vigente</p>
+            <p class="disclaimer">Esta ferramenta é para fins educativos. Consulte sempre um profissional especializado.</p>
+        </div>
+    </footer>
+
+    <!-- Tooltip modal -->
+    <div id="tooltip-modal" class="tooltip-modal">
+        <div class="tooltip-content">
+            <span class="tooltip-close">&times;</span>
+            <h3 id="tooltip-title"></h3>
+            <p id="tooltip-text"></p>
+            <small id="tooltip-legal"></small>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
