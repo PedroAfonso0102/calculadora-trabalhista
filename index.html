@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Trabalhista - Fase 1</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .calculator-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f6f3;
+            border-radius: 4px;
+            border-left: 4px solid #27ae60;
+        }
+        .result-item {
+            margin-bottom: 8px;
+        }
+        .result-value {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .error {
+            color: #e74c3c;
+            background: #fdf2f2;
+            border-left: 4px solid #e74c3c;
+        }
+        .detalhamento {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .detalhamento table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .detalhamento th, .detalhamento td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: right;
+        }
+        .detalhamento th {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧮 Calculadora Trabalhista - Fase 1 (Fundação)</h1>
+        <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px;">
+            Sistema de cálculos trabalhistas baseado na legislação brasileira - 2025
+        </p>
+
+        <!-- Calculadora INSS -->
+        <div class="calculator-section">
+            <h2>📊 Cálculo de INSS</h2>
+            <div class="form-group">
+                <label for="inss-valor">Valor Base de Cálculo (R$):</label>
+                <input type="number" id="inss-valor" placeholder="Ex: 5000.00" step="0.01" min="0">
+            </div>
+            <button onclick="calcularINSSDemo()">Calcular INSS</button>
+            <div id="inss-resultado"></div>
+        </div>
+
+        <!-- Calculadora IRRF -->
+        <div class="calculator-section">
+            <h2>💰 Cálculo de IRRF</h2>
+            <div class="form-group">
+                <label for="irrf-valor">Valor Base de Cálculo (R$):</label>
+                <input type="number" id="irrf-valor" placeholder="Ex: 5000.00" step="0.01" min="0">
+            </div>
+            <div class="form-group">
+                <label for="irrf-dependentes">Número de Dependentes:</label>
+                <input type="number" id="irrf-dependentes" placeholder="0" min="0" max="20">
+            </div>
+            <div class="form-group">
+                <label for="irrf-simplificado">
+                    <input type="checkbox" id="irrf-simplificado"> Usar desconto simplificado (R$ 607,20)
+                </label>
+            </div>
+            <button onclick="calcularIRRFDemo()">Calcular IRRF</button>
+            <div id="irrf-resultado"></div>
+        </div>
+
+        <!-- Calculadora Salário Família -->
+        <div class="calculator-section">
+            <h2>👨‍👩‍👧‍👦 Cálculo de Salário Família</h2>
+            <div class="form-group">
+                <label for="sf-remuneracao">Remuneração (R$):</label>
+                <input type="number" id="sf-remuneracao" placeholder="Ex: 1500.00" step="0.01" min="0">
+            </div>
+            <div class="form-group">
+                <label for="sf-filhos">Número de Filhos (até 14 anos ou inválidos):</label>
+                <input type="number" id="sf-filhos" placeholder="0" min="0" max="20">
+            </div>
+            <button onclick="calcularSalarioFamiliaDemo()">Calcular Salário Família</button>
+            <div id="sf-resultado"></div>
+        </div>
+
+        <!-- Simulação Completa -->
+        <div class="calculator-section">
+            <h2>🎯 Simulação Completa de Folha</h2>
+            <div class="form-group">
+                <label for="sim-salario">Salário Bruto (R$):</label>
+                <input type="number" id="sim-salario" placeholder="Ex: 5000.00" step="0.01" min="0">
+            </div>
+            <div class="form-group">
+                <label for="sim-dependentes">Dependentes para IRRF:</label>
+                <input type="number" id="sim-dependentes" placeholder="0" min="0" max="20">
+            </div>
+            <div class="form-group">
+                <label for="sim-filhos">Filhos para Salário Família:</label>
+                <input type="number" id="sim-filhos" placeholder="0" min="0" max="20">
+            </div>
+            <button onclick="simularFolhaCompleta()">Simular Folha Completa</button>
+            <div id="sim-resultado"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { calcularINSS, calcularIRRF, calcularSalarioFamilia } from './regras/calculosBasicosBrowser.js';
+
+        // Torna as funções globais para os botões
+        window.calcularINSS = calcularINSS;
+        window.calcularIRRF = calcularIRRF;
+        window.calcularSalarioFamilia = calcularSalarioFamilia;
+
+        window.calcularINSSDemo = function() {
+            const valor = parseFloat(document.getElementById('inss-valor').value);
+            const resultado = calcularINSS(valor);
+            
+            let html = '';
+            if (resultado.valor > 0) {
+                html = `
+                    <div class="result">
+                        <div class="result-item">Valor do INSS: <span class="result-value">R$ ${resultado.valor.toFixed(2)}</span></div>
+                        <div class="result-item">Base de Cálculo: R$ ${resultado.baseCalculo.toFixed(2)}</div>
+                        <div class="result-item">Alíquota Efetiva: ${resultado.aliquotaEfetiva}%</div>
+                        
+                        <div class="detalhamento">
+                            <strong>Detalhamento por Faixa:</strong>
+                            <table>
+                                <tr>
+                                    <th>Faixa</th>
+                                    <th>Base</th>
+                                    <th>Alíquota</th>
+                                    <th>Desconto</th>
+                                </tr>
+                                ${resultado.detalhamento.map(d => `
+                                    <tr>
+                                        <td>${d.faixa}ª</td>
+                                        <td>R$ ${d.baseCalculo.toFixed(2)}</td>
+                                        <td>${(d.aliquota * 100).toFixed(1)}%</td>
+                                        <td>R$ ${d.desconto.toFixed(2)}</td>
+                                    </tr>
+                                `).join('')}
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html = '<div class="result error">Valor inválido ou zero</div>';
+            }
+            
+            document.getElementById('inss-resultado').innerHTML = html;
+        };
+
+        window.calcularIRRFDemo = function() {
+            const valor = parseFloat(document.getElementById('irrf-valor').value);
+            const dependentes = parseInt(document.getElementById('irrf-dependentes').value) || 0;
+            const simplificado = document.getElementById('irrf-simplificado').checked;
+            
+            const resultado = calcularIRRF(valor, dependentes, simplificado);
+            
+            let html = '';
+            if (valor > 0) {
+                html = `
+                    <div class="result">
+                        <div class="result-item">Valor do IRRF: <span class="result-value">R$ ${resultado.valor.toFixed(2)}</span></div>
+                        <div class="result-item">Base de Cálculo Original: R$ ${resultado.baseCalculo.toFixed(2)}</div>
+                        <div class="result-item">Dedução por Dependentes: R$ ${resultado.deducaoDependentes.toFixed(2)}</div>
+                        ${simplificado ? `<div class="result-item">Desconto Simplificado: R$ ${resultado.descontoSimplificado.toFixed(2)}</div>` : ''}
+                        <div class="result-item">Base Final: R$ ${resultado.baseCalculoFinal.toFixed(2)}</div>
+                        <div class="result-item">Alíquota: ${(resultado.aliquota * 100).toFixed(1)}%</div>
+                        ${resultado.faixaDescricao ? `<div class="result-item">Faixa: ${resultado.faixaDescricao}</div>` : ''}
+                    </div>
+                `;
+            } else {
+                html = '<div class="result error">Valor inválido ou zero</div>';
+            }
+            
+            document.getElementById('irrf-resultado').innerHTML = html;
+        };
+
+        window.calcularSalarioFamiliaDemo = function() {
+            const remuneracao = parseFloat(document.getElementById('sf-remuneracao').value);
+            const filhos = parseInt(document.getElementById('sf-filhos').value) || 0;
+            
+            const resultado = calcularSalarioFamilia(remuneracao, filhos);
+            
+            let html = '';
+            if (remuneracao > 0) {
+                if (resultado.temDireito) {
+                    html = `
+                        <div class="result">
+                            <div class="result-item">Valor do Salário Família: <span class="result-value">R$ ${resultado.valor.toFixed(2)}</span></div>
+                            <div class="result-item">Número de Filhos: ${resultado.numFilhos}</div>
+                            <div class="result-item">Valor por Filho: R$ ${resultado.valorPorFilho.toFixed(2)}</div>
+                            <div class="result-item">Limite de Remuneração: R$ ${resultado.limiteRemuneracao.toFixed(2)}</div>
+                        </div>
+                    `;
+                } else {
+                    html = `
+                        <div class="result">
+                            <div class="result-item">Sem direito ao Salário Família</div>
+                            <div class="result-item">Motivo: ${remuneracao > resultado.limiteRemuneracao ? 'Remuneração acima do limite' : 'Número de filhos inválido'}</div>
+                            <div class="result-item">Limite de Remuneração: R$ ${resultado.limiteRemuneracao.toFixed(2)}</div>
+                        </div>
+                    `;
+                }
+            } else {
+                html = '<div class="result error">Valor inválido ou zero</div>';
+            }
+            
+            document.getElementById('sf-resultado').innerHTML = html;
+        };
+
+        window.simularFolhaCompleta = function() {
+            const salarioBruto = parseFloat(document.getElementById('sim-salario').value);
+            const dependentes = parseInt(document.getElementById('sim-dependentes').value) || 0;
+            const filhos = parseInt(document.getElementById('sim-filhos').value) || 0;
+            
+            if (!salarioBruto || salarioBruto <= 0) {
+                document.getElementById('sim-resultado').innerHTML = '<div class="result error">Informe um salário válido</div>';
+                return;
+            }
+            
+            // Calcula INSS
+            const inss = calcularINSS(salarioBruto);
+            
+            // Base para IRRF (salário - INSS)
+            const baseIRRF = salarioBruto - inss.valor;
+            const irrf = calcularIRRF(baseIRRF, dependentes);
+            
+            // Salário Família
+            const salarioFamilia = calcularSalarioFamilia(salarioBruto, filhos);
+            
+            // Salário Líquido
+            const salarioLiquido = salarioBruto - inss.valor - irrf.valor + salarioFamilia.valor;
+            
+            const html = `
+                <div class="result">
+                    <h3 style="margin-top: 0;">💼 Resumo da Folha de Pagamento</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                        <div>
+                            <h4>📈 Proventos</h4>
+                            <div class="result-item">Salário Bruto: <span class="result-value">R$ ${salarioBruto.toFixed(2)}</span></div>
+                            ${salarioFamilia.valor > 0 ? `<div class="result-item">Salário Família: <span class="result-value">R$ ${salarioFamilia.valor.toFixed(2)}</span></div>` : ''}
+                            <div class="result-item"><strong>Total Proventos: R$ ${(salarioBruto + salarioFamilia.valor).toFixed(2)}</strong></div>
+                        </div>
+                        
+                        <div>
+                            <h4>📉 Descontos</h4>
+                            <div class="result-item">INSS: <span style="color: #e74c3c;">R$ ${inss.valor.toFixed(2)}</span></div>
+                            <div class="result-item">IRRF: <span style="color: #e74c3c;">R$ ${irrf.valor.toFixed(2)}</span></div>
+                            <div class="result-item"><strong>Total Descontos: R$ ${(inss.valor + irrf.valor).toFixed(2)}</strong></div>
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 2px solid #27ae60; margin-top: 20px; padding-top: 15px;">
+                        <div class="result-item" style="font-size: 18px;">
+                            <strong>💰 Salário Líquido: <span class="result-value" style="font-size: 20px;">R$ ${salarioLiquido.toFixed(2)}</span></strong>
+                        </div>
+                        <div class="result-item">Desconto Total: ${(((inss.valor + irrf.valor) / salarioBruto) * 100).toFixed(2)}% do salário bruto</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('sim-resultado').innerHTML = html;
+        };
+    </script>
+</body>
+</html>
