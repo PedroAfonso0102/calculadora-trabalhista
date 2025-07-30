@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Trabalhista - Ferramenta de Cálculo e Empoderamento</title>
+    <meta name="description" content="Calculadora trabalhista brasileira. Calcule rescisão, férias, 13º salário e salário líquido com precisão e clareza.">
+    <meta name="keywords" content="calculadora trabalhista, rescisão, férias, 13º salário, CLT, direitos trabalhistas">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Calculadora Trabalhista</h1>
+                    <p class="tagline">Empoderamento através do conhecimento</p>
+                </div>
+                <div class="header-info">
+                    <span class="version">v1.0</span>
+                    <span class="last-update">Atualizado para 2024</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tab-navigation">
+            <div class="tab-container">
+                <button class="tab-button active" data-tab="salario">
+                    <span class="tab-icon">💰</span>
+                    <span class="tab-text">Salário Líquido</span>
+                </button>
+                <button class="tab-button" data-tab="ferias">
+                    <span class="tab-icon">🏖️</span>
+                    <span class="tab-text">Férias</span>
+                </button>
+                <button class="tab-button" data-tab="decimo">
+                    <span class="tab-icon">🎄</span>
+                    <span class="tab-text">13º Salário</span>
+                </button>
+                <button class="tab-button" data-tab="rescisao">
+                    <span class="tab-icon">📋</span>
+                    <span class="tab-text">Rescisão</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Salário Tab -->
+            <div id="salario-tab" class="tab-content active">
+                <div class="content-wrapper">
+                    <div class="form-column">
+                        <div id="salario-form-container">
+                            <!-- Formulário será inserido aqui pelo JavaScript -->
+                        </div>
+                    </div>
+                    <div class="result-column">
+                        <div id="salario-result">
+                            <div class="result-placeholder">
+                                <div class="placeholder-icon">📊</div>
+                                <h3>Resultado do Cálculo</h3>
+                                <p>Preencha os dados ao lado e clique em "Calcular Salário" para ver o demonstrativo detalhado.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Férias Tab -->
+            <div id="ferias-tab" class="tab-content">
+                <div class="content-wrapper">
+                    <div class="form-column">
+                        <form id="ferias-form" class="calculation-form">
+                            <h3>Cálculo de Férias</h3>
+                            
+                            <div class="form-group">
+                                <label for="ferias-salario-bruto">
+                                    Salário Bruto (R$)
+                                    <div class="tooltip-container">
+                                        <button type="button" class="tooltip-trigger" data-verba="salario_bruto">?</button>
+                                    </div>
+                                </label>
+                                <input type="text" id="ferias-salario-bruto" name="salarioBruto" 
+                                       class="currency-input" required min="0" placeholder="0,00">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="faltas-injustificadas">
+                                    Faltas Injustificadas no Período
+                                    <div class="tooltip-container">
+                                        <button type="button" class="tooltip-trigger" data-verba="valor_ferias">?</button>
+                                    </div>
+                                </label>
+                                <input type="number" id="faltas-injustificadas" name="faltasInjustificadas" 
+                                       min="0" max="365" value="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dias-solicitados">
+                                    Dias de Férias Solicitados
+                                </label>
+                                <input type="number" id="dias-solicitados" name="diasSolicitados" 
+                                       min="1" max="30" value="30">
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <label for="vender-ferias">
+                                    <input type="checkbox" id="vender-ferias" name="venderFerias">
+                                    <span class="checkmark"></span>
+                                    Vender parte das férias (Abono Pecuniário)
+                                    <div class="tooltip-container">
+                                        <button type="button" class="tooltip-trigger" data-verba="abono_pecuniario">?</button>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="form-group" id="dias-vendidos-group" style="display: none;">
+                                <label for="dias-vendidos">
+                                    Dias a Vender (máx. 10 dias)
+                                </label>
+                                <input type="number" id="dias-vendidos" name="diasVendidos" 
+                                       min="1" max="10" value="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ferias-dependentes">
+                                    Número de Dependentes (IRRF)
+                                </label>
+                                <input type="number" id="ferias-dependentes" name="numDependentes" 
+                                       min="0" max="10" value="0">
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Calcular Férias</button>
+                                <button type="button" class="btn btn-secondary" id="limpar-ferias">Limpar</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="result-column">
+                        <div id="ferias-result">
+                            <div class="result-placeholder">
+                                <div class="placeholder-icon">🏖️</div>
+                                <h3>Demonstrativo de Férias</h3>
+                                <p>Preencha os dados ao lado para calcular suas férias incluindo o terço constitucional e abono pecuniário.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 13º Salário Tab -->
+            <div id="decimo-tab" class="tab-content">
+                <div class="content-wrapper">
+                    <div class="form-column">
+                        <form id="decimo-form" class="calculation-form">
+                            <h3>Cálculo do 13º Salário</h3>
+                            
+                            <div class="form-group">
+                                <label for="decimo-salario-bruto">
+                                    Salário Bruto (R$)
+                                    <div class="tooltip-container">
+                                        <button type="button" class="tooltip-trigger" data-verba="salario_bruto">?</button>
+                                    </div>
+                                </label>
+                                <input type="text" id="decimo-salario-bruto" name="salarioBruto" 
+                                       class="currency-input" required min="0" placeholder="0,00">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="meses-trabalhados">
+                                    Meses Trabalhados no Ano
+                                    <div class="tooltip-container">
+                                        <button type="button" class="tooltip-trigger" data-verba="decimo_terceiro_proporcional">?</button>
+                                    </div>
+                                </label>
+                                <input type="number" id="meses-trabalhados" name="mesesTrabalhados" 
+                                       min="1" max="12" value="12">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="decimo-dependentes">
+                                    Número de Dependentes (IRRF)
+                                </label>
+                                <input type="number" id="decimo-dependentes" name="numDependentes" 
+                                       min="0" max="10" value="0">
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <label for="calcular-separado">
+                                    <input type="checkbox" id="calcular-separado" name="calcularSeparado">
+                                    <span class="checkmark"></span>
+                                    Calcular 1ª e 2ª parcelas separadamente
+                                    <div class="tooltip-container">
+                                        <button type="button" class="tooltip-trigger" data-verba="primeira_parcela_13">?</button>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="form-group" id="primeira-parcela-group" style="display: none;">
+                                <label for="primeira-parcela">
+                                    Valor da 1ª Parcela já Paga (R$)
+                                </label>
+                                <input type="text" id="primeira-parcela" name="primeiraParcela" 
+                                       class="currency-input" min="0" value="0,00">
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Calcular 13º Salário</button>
+                                <button type="button" class="btn btn-secondary" id="limpar-decimo">Limpar</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="result-column">
+                        <div id="decimo-result">
+                            <div class="result-placeholder">
+                                <div class="placeholder-icon">🎄</div>
+                                <h3>Demonstrativo do 13º Salário</h3>
+                                <p>Calcule a gratificação natalina com as deduções corretas de INSS e IRRF.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rescisão Tab -->
+            <div id="rescisao-tab" class="tab-content">
+                <div class="content-wrapper">
+                    <div class="form-column">
+                        <form id="rescisao-form" class="calculation-form">
+                            <h3>Cálculo de Rescisão</h3>
+                            
+                            <div class="form-group">
+                                <label for="rescisao-salario-bruto">
+                                    Salário Bruto (R$)
+                                    <div class="tooltip-container">
+                                        <button type="button" class="tooltip-trigger" data-verba="salario_bruto">?</button>
+                                    </div>
+                                </label>
+                                <input type="text" id="rescisao-salario-bruto" name="salarioBruto" 
+                                       class="currency-input" required min="0" placeholder="0,00">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="data-admissao">
+                                    Data de Admissão
+                                </label>
+                                <input type="date" id="data-admissao" name="dataAdmissao" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="data-rescisao">
+                                    Data de Rescisão
+                                </label>
+                                <input type="date" id="data-rescisao" name="dataRescisao" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="motivo-rescisao">
+                                    Motivo da Rescisão
+                                    <div class="tooltip-container">
+                                        <button type="button" class="tooltip-trigger" data-verba="saldo_salario">?</button>
+                                    </div>
+                                </label>
+                                <select id="motivo-rescisao" name="motivoRescisao" required>
+                                    <option value="">Selecione o motivo</option>
+                                    <option value="sem_justa_causa">Dispensa sem Justa Causa</option>
+                                    <option value="pedido_demissao">Pedido de Demissão</option>
+                                    <option value="acordo_mutual">Acordo Mútuo</option>
+                                    <option value="justa_causa">Dispensa por Justa Causa</option>
+                                    <option value="termino_contrato">Término de Contrato</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="saldo-fgts">
+                                    Saldo do FGTS (R$)
+                                </label>
+                                <input type="text" id="saldo-fgts" name="saldoFGTS" 
+                                       class="currency-input" min="0" value="0,00">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="rescisao-dependentes">
+                                    Número de Dependentes (IRRF)
+                                </label>
+                                <input type="number" id="rescisao-dependentes" name="numDependentes" 
+                                       min="0" max="10" value="0">
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <label for="tem-ferias-vencidas">
+                                    <input type="checkbox" id="tem-ferias-vencidas" name="temFeriasVencidas">
+                                    <span class="checkmark"></span>
+                                    Possui férias vencidas
+                                    <div class="tooltip-container">
+                                        <button type="button" class="tooltip-trigger" data-verba="ferias_vencidas">?</button>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="form-group" id="dias-ferias-vencidas-group" style="display: none;">
+                                <label for="dias-ferias-vencidas">
+                                    Dias de Férias Vencidas
+                                </label>
+                                <input type="number" id="dias-ferias-vencidas" name="diasFeriasVencidas" 
+                                       min="1" max="30" value="30">
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Calcular Rescisão</button>
+                                <button type="button" class="btn btn-secondary" id="limpar-rescisao">Limpar</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="result-column">
+                        <div id="rescisao-result">
+                            <div class="result-placeholder">
+                                <div class="placeholder-icon">📋</div>
+                                <h3>Demonstrativo de Rescisão</h3>
+                                <p>Calcule todos os valores devidos na rescisão trabalhista conforme a CLT.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Calculadora Trabalhista</h4>
+                    <p>Ferramenta de empoderamento para trabalhadores brasileiros.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Informações Legais</h4>
+                    <p>Valores atualizados para 2024 conforme legislação vigente.</p>
+                    <p class="disclaimer">Esta ferramenta tem caráter meramente informativo.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Base Legal</h4>
+                    <ul>
+                        <li>Consolidação das Leis do Trabalho (CLT)</li>
+                        <li>Constituição Federal de 1988</li>
+                        <li>Lei 8.212/1991 (INSS)</li>
+                        <li>Lei 7.713/1988 (IRRF)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Calculadora Trabalhista. Desenvolvido com precisão e transparência.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/main.js"></script>
+    
+    <!-- Additional JavaScript for form interactions -->
+    <script>
+        // Toggle conditional form fields
+        document.addEventListener('DOMContentLoaded', function() {
+            // Férias - mostrar/ocultar dias vendidos
+            const venderFeriasCheckbox = document.getElementById('vender-ferias');
+            const diasVendidosGroup = document.getElementById('dias-vendidos-group');
+            
+            if (venderFeriasCheckbox) {
+                venderFeriasCheckbox.addEventListener('change', function() {
+                    diasVendidosGroup.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+
+            // 13º Salário - mostrar/ocultar primeira parcela
+            const calcularSeparadoCheckbox = document.getElementById('calcular-separado');
+            const primeiraParcelaGroup = document.getElementById('primeira-parcela-group');
+            
+            if (calcularSeparadoCheckbox) {
+                calcularSeparadoCheckbox.addEventListener('change', function() {
+                    primeiraParcelaGroup.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+
+            // Rescisão - mostrar/ocultar férias vencidas
+            const temFeriasVencidasCheckbox = document.getElementById('tem-ferias-vencidas');
+            const diasFeriasVencidasGroup = document.getElementById('dias-ferias-vencidas-group');
+            
+            if (temFeriasVencidasCheckbox) {
+                temFeriasVencidasCheckbox.addEventListener('change', function() {
+                    diasFeriasVencidasGroup.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
