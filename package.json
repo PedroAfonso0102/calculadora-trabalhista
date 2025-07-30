@@ -1,0 +1,36 @@
+{
+  "name": "calculadora-trabalhista",
+  "version": "1.0.0",
+  "description": "Calculadora Trabalhista - Brazilian Labor Calculator Platform",
+  "main": "js/main.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "serve": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "trabalhista",
+    "calculadora",
+    "brasil",
+    "CLT",
+    "rescisao",
+    "ferias",
+    "13-salario"
+  ],
+  "author": "Pedro Afonso",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "roots": ["<rootDir>/tests"],
+    "testMatch": ["**/*.test.js"],
+    "collectCoverageFrom": [
+      "js/core/**/*.js",
+      "config/**/*.js"
+    ]
+  }
+}
