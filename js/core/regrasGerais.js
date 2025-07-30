@@ -5,7 +5,7 @@
  * Estas funções não dependem do DOM e podem ser testadas unitariamente.
  */
 
-import { getParametrosLegais } from '../config/parametrosLegais.js';
+import { getParametrosLegais } from '../../config/parametrosLegais.js';
 
 const parametros = getParametrosLegais();
 
