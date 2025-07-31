@@ -8,6 +8,7 @@
 import UIManager from './ui/uiManager.js';
 import PDFGenerator from './ui/pdfGenerator.js';
 import { calcularSalarioLiquido } from './core/calculoSalario.js';
+import { calcularSalarioLiquidoPJ } from './core/calculoPJ.js';
 import { calcularFerias } from './core/calculoFerias.js';
 import { calcular13Salario } from './core/calculo13.js';
 import { calcularRescisao } from './core/calculoRescisao.js';
@@ -82,6 +83,14 @@ class CalculadoraTrabalhista {
                 this.handleRescisaoCalculation();
             }
         });
+
+        // Formulário de comparação CLT vs. PJ
+        document.addEventListener('submit', (e) => {
+            if (e.target.id === 'clt-vs-pj-form') {
+                e.preventDefault();
+                this.handleCLTvsPJCalculation();
+            }
+        });
     }
 
     /**
@@ -93,6 +102,10 @@ class CalculadoraTrabalhista {
             if (e.target.id === 'limpar-salario') {
                 this.clearForm('salario-form');
                 this.uiManager.clearContainer('salario-result');
+            }
+            if (e.target.id === 'limpar-comparativo') {
+                this.clearForm('clt-vs-pj-form');
+                this.uiManager.clearContainer('clt-vs-pj-result');
             }
 
             // Botões de gerar PDF
@@ -111,8 +124,19 @@ class CalculadoraTrabalhista {
      * Configura eventos de navegação
      */
     setupNavigationEvents() {
-        // Os eventos de navegação já são tratados pelo UIManager
-        // Aqui podemos adicionar lógica adicional se necessário
+        document.body.addEventListener('click', (e) => {
+            const button = e.target.closest('.tab-button');
+            if (button) {
+                const tabName = button.dataset.tab;
+                if (tabName === 'clt-vs-pj') {
+                    const container = document.getElementById('clt-vs-pj-form-container');
+                    if (container) {
+                        container.innerHTML = this.uiManager.renderCLTvsPJForm();
+                    }
+                }
+                 // Adicionar lógica para renderizar outros formulários se necessário
+            }
+        });
     }
 
     /**
@@ -123,6 +147,52 @@ class CalculadoraTrabalhista {
         const salarioContainer = document.getElementById('salario-form-container');
         if (salarioContainer) {
             salarioContainer.innerHTML = this.uiManager.renderSalarioForm();
+        }
+    }
+
+    /**
+     * Manipula o cálculo de comparação CLT vs. PJ
+     */
+    async handleCLTvsPJCalculation() {
+        const dadosForm = this.uiManager.collectFormData('clt-vs-pj-form');
+        if (!dadosForm) {
+            this.uiManager.showNotification('Erro ao coletar dados do formulário', 'error');
+            return;
+        }
+
+        const dadosCLT = {
+            salarioBruto: dadosForm.cltSalarioBruto,
+            numDependentes: dadosForm.cltNumDependentes,
+            outrosDescontos: dadosForm.cltOutrosDescontos,
+            numFilhos: 0 // Simplificação: não pedimos filhos para Salário Família no comparador
+        };
+
+        const dadosPJ = {
+            faturamentoMensal: dadosForm.pjFaturamentoMensal,
+            proLabore: dadosForm.pjProLabore,
+            despesasMensais: dadosForm.pjDespesasMensais,
+            numDependentes: dadosForm.cltNumDependentes // Usando o mesmo número de dependentes para o IRRF do pró-labore
+        };
+
+        try {
+            this.uiManager.showLoading('clt-vs-pj-result');
+            await this.delay(500);
+
+            const resultadoCLT = calcularSalarioLiquido(dadosCLT);
+            const resultadoPJ = calcularSalarioLiquidoPJ(dadosPJ);
+
+            const resultContainer = document.getElementById('clt-vs-pj-result');
+            if (resultContainer) {
+                resultContainer.innerHTML = this.uiManager.renderCLTvsPJResult(resultadoCLT, resultadoPJ);
+            }
+
+            if (!resultadoCLT.erro && !resultadoPJ.erro) {
+                this.uiManager.showNotification('Comparação realizada com sucesso!', 'success');
+            }
+
+        } catch (error) {
+            console.error('Erro na comparação CLT vs PJ:', error);
+            this.uiManager.showNotification('Erro no cálculo. Tente novamente.', 'error');
         }
     }
 

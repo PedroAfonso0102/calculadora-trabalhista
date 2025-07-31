@@ -33,6 +33,33 @@ export const TABELA_IRRF_2024 = [
     { faixaAte: Infinity, aliquota: 0.275, deducao: 896.00 }    // 27,5%
 ];
 
+// Tabela Simples Nacional 2024 - Anexo III
+// Aplicável quando o Fator R é igual ou superior a 28%
+export const TABELA_SIMPLES_NACIONAL_ANEXO_III = [
+    { faixaAte: 180000.00, aliquota: 0.06, deducao: 0 },
+    { faixaAte: 360000.00, aliquota: 0.112, deducao: 9360.00 },
+    { faixaAte: 720000.00, aliquota: 0.135, deducao: 17640.00 },
+    { faixaAte: 1800000.00, aliquota: 0.16, deducao: 35640.00 },
+    { faixaAte: 3600000.00, aliquota: 0.21, deducao: 125640.00 },
+    { faixaAte: 4800000.00, aliquota: 0.33, deducao: 648000.00 }
+];
+
+// Tabela Simples Nacional 2024 - Anexo V
+// Aplicável quando o Fator R é inferior a 28%
+export const TABELA_SIMPLES_NACIONAL_ANEXO_V = [
+    { faixaAte: 180000.00, aliquota: 0.155, deducao: 0 },
+    { faixaAte: 360000.00, aliquota: 0.18, deducao: 4500.00 },
+    { faixaAte: 720000.00, aliquota: 0.195, deducao: 9900.00 },
+    { faixaAte: 1800000.00, aliquota: 0.205, deducao: 17100.00 },
+    { faixaAte: 3600000.00, aliquota: 0.23, deducao: 62100.00 },
+    { faixaAte: 4800000.00, aliquota: 0.305, deducao: 540000.00 }
+];
+
+// Parâmetros para cálculo PJ
+export const PARAMETROS_PJ = {
+    FATOR_R_LIMITE: 0.28
+};
+
 // Tabela de Férias baseada em faltas injustificadas (CLT Art. 130)
 export const TABELA_DIREITO_FERIAS = [
     { faltasAte: 5, diasDireito: 30 },
@@ -101,6 +128,9 @@ export function getParametrosLegais(ano = 2024) {
         parametrosFGTS: PARAMETROS_FGTS,
         parametrosProporcionalidade: PARAMETROS_PROPORCIONALIDADE,
         adicionalAvisoPrevio: ADICIONAL_AVISO_PREVIO,
+        tabelaSimplesNacionalAnexoIII: TABELA_SIMPLES_NACIONAL_ANEXO_III,
+        tabelaSimplesNacionalAnexoV: TABELA_SIMPLES_NACIONAL_ANEXO_V,
+        parametrosPJ: PARAMETROS_PJ,
         funcoes: {
             calcularDiasAdicionaisAviso
         }

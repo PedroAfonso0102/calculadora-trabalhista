@@ -26,8 +26,12 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "roots": ["<rootDir>/tests"],
-    "testMatch": ["**/*.test.js"],
+    "roots": [
+      "<rootDir>/tests"
+    ],
+    "testMatch": [
+      "**/*.test.js"
+    ],
     "collectCoverageFrom": [
       "js/core/**/*.js",
       "config/**/*.js"
