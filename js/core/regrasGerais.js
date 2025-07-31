@@ -5,9 +5,7 @@
  * Estas funções não dependem do DOM e podem ser testadas unitariamente.
  */
 
-import { getParametrosLegais } from '../../config/parametrosLegais.js';
-
-const parametros = getParametrosLegais();
+import parametros from '../../config/parametrosLegais.js';
 
 /**
  * Calcula o desconto de INSS usando tabela progressiva
@@ -19,21 +17,22 @@ export function calcularINSS(salarioBase) {
         return 0;
     }
 
+    const baseDeCalculo = Math.min(salarioBase, parametros.valoresBase.TETO_INSS);
     const tabela = parametros.tabelaINSS;
-    let totalDesconto = 0;
-    let salarioRestante = Math.min(salarioBase, parametros.valoresBase.TETO_INSS);
-    
+    let inss = 0;
+    let faixaAnterior = 0;
+
     for (const faixa of tabela) {
-        if (salarioRestante <= 0) break;
-        
-        const valorFaixa = Math.min(salarioRestante, faixa.faixaAte - (totalDesconto / faixa.aliquota));
-        const descontoFaixa = valorFaixa * faixa.aliquota;
-        
-        totalDesconto += descontoFaixa;
-        salarioRestante -= valorFaixa;
+        if (baseDeCalculo <= faixaAnterior) {
+            break;
+        }
+
+        const valorNestaFaixa = Math.min(baseDeCalculo, faixa.faixaAte) - faixaAnterior;
+        inss += valorNestaFaixa * faixa.aliquota;
+        faixaAnterior = faixa.faixaAte;
     }
     
-    return Math.round(totalDesconto * 100) / 100; // Arredonda para 2 casas decimais
+    return arredondar(inss);
 }
 
 /**
@@ -172,11 +171,17 @@ export function calcularDireitoFerias(faltasInjustificadas = 0) {
 
 /**
  * Calcula dias de aviso prévio baseado no tempo de serviço
+ * Regra: 30 dias base + 3 dias por ano de serviço, com máximo de 90 dias.
  * @param {number} anosServico - Anos completos de serviço
  * @returns {number} Total de dias de aviso prévio
  */
 export function calcularDiasAvisoPrevio(anosServico) {
-    return parametros.funcoes.calcularDiasAdicionaisAviso(anosServico);
+    const { ADICIONAL_AVISO_PREVIO } = parametros.adicionalAvisoPrevio;
+    const diasAdicionais = Math.min(
+        anosServico * parametros.adicionalAvisoPrevio.DIAS_ADICIONAL_POR_ANO,
+        parametros.adicionalAvisoPrevio.MAXIMO_DIAS_ADICIONAL
+    );
+    return parametros.adicionalAvisoPrevio.DIAS_BASE + diasAdicionais;
 }
 
 /**

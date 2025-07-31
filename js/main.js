@@ -19,7 +19,6 @@ class CalculadoraTrabalhista {
     constructor() {
         this.uiManager = new UIManager();
         this.pdfGenerator = new PDFGenerator();
-        this.scenarioManager = new ScenarioManager();
         this.initializeApplication();
     }
 
@@ -51,35 +50,21 @@ class CalculadoraTrabalhista {
      * Configura submissão de formulários
      */
     setupFormSubmissions() {
-        // Formulário de salário
         document.addEventListener('submit', (e) => {
-            if (e.target.id === 'salario-form') {
-                e.preventDefault();
-                this.handleSalarioCalculation();
-            }
-        });
-
-        // Formulário de férias
-        document.addEventListener('submit', (e) => {
-            if (e.target.id === 'ferias-form') {
-                e.preventDefault();
-                this.handleFeriasCalculation();
-            }
-        });
-
-        // Formulário de 13º salário
-        document.addEventListener('submit', (e) => {
-            if (e.target.id === 'decimo-form') {
-                e.preventDefault();
-                this.handle13SalarioCalculation();
-            }
-        });
-
-        // Formulário de rescisão
-        document.addEventListener('submit', (e) => {
-            if (e.target.id === 'rescisao-form') {
-                e.preventDefault();
-                this.handleRescisaoCalculation();
+            e.preventDefault();
+            switch (e.target.id) {
+                case 'salario-form':
+                    this.handleSalarioCalculation();
+                    break;
+                case 'ferias-form':
+                    this.handleFeriasCalculation();
+                    break;
+                case 'decimo-form':
+                    this.handle13SalarioCalculation();
+                    break;
+                case 'rescisao-form':
+                    this.handleRescisaoCalculation();
+                    break;
             }
         });
     }
@@ -100,10 +85,6 @@ class CalculadoraTrabalhista {
                 this.generateSalarioPDF();
             }
 
-            // Botões de salvar cenário
-            if (e.target.id === 'salvar-cenario-salario') {
-                this.saveScenario('salario');
-            }
         });
     }
 
@@ -127,10 +108,17 @@ class CalculadoraTrabalhista {
     }
 
     /**
-     * Manipula o cálculo de salário
+     * Manipula um cálculo genérico
+     * @param {object} config - Configuração para o cálculo
+     * @param {string} config.formId - ID do formulário
+     * @param {string} config.resultContainerId - ID do container de resultado
+     * @param {function} config.calculationFn - Função de cálculo
+     * @param {function} config.renderFn - Função de renderização do resultado
+     * @param {string} config.lastCalcProp - Nome da propriedade para salvar o último cálculo
+     * @param {string} config.notificationSuccess - Mensagem de sucesso
      */
-    async handleSalarioCalculation() {
-        const dados = this.uiManager.collectFormData('salario-form');
+    async handleCalculation({ formId, resultContainerId, calculationFn, renderFn, lastCalcProp, notificationSuccess }) {
+        const dados = this.uiManager.collectFormData(formId);
         
         if (!dados) {
             this.uiManager.showNotification('Erro ao coletar dados do formulário', 'error');
@@ -138,33 +126,34 @@ class CalculadoraTrabalhista {
         }
 
         try {
-            // Exibe loading
-            this.uiManager.showLoading('salario-result');
+            this.uiManager.showLoading(resultContainerId);
+            const resultado = calculationFn(dados);
+            const resultContainer = document.getElementById(resultContainerId);
 
-            // Simula delay para melhor UX
-            await this.delay(500);
-
-            // Executa o cálculo
-            const resultado = calcularSalarioLiquido(dados);
-
-            // Exibe o resultado
-            const resultContainer = document.getElementById('salario-result');
             if (resultContainer) {
-                resultContainer.innerHTML = this.uiManager.renderSalarioResult(resultado);
+                if (resultado.erro) {
+                    resultContainer.innerHTML = `
+                        <div class="result-container error">
+                            <h3>Erro no Cálculo</h3>
+                            <p class="error-message">${resultado.mensagem}</p>
+                        </div>
+                    `;
+                } else {
+                    resultContainer.innerHTML = renderFn(resultado);
+                }
             }
 
-            // Salva para possível geração de PDF
-            this.lastSalarioCalculation = { resultado, dados };
+            this[lastCalcProp] = { resultado, dados };
 
             if (!resultado.erro) {
-                this.uiManager.showNotification('Cálculo realizado com sucesso!', 'success');
+                this.uiManager.showNotification(notificationSuccess, 'success');
             }
 
         } catch (error) {
-            console.error('Erro no cálculo de salário:', error);
+            console.error(`Erro no cálculo (${formId}):`, error);
             this.uiManager.showNotification('Erro no cálculo. Tente novamente.', 'error');
             
-            const resultContainer = document.getElementById('salario-result');
+            const resultContainer = document.getElementById(resultContainerId);
             if (resultContainer) {
                 resultContainer.innerHTML = `
                     <div class="result-container error">
@@ -177,133 +166,59 @@ class CalculadoraTrabalhista {
     }
 
     /**
+     * Manipula o cálculo de salário
+     */
+    handleSalarioCalculation() {
+        this.handleCalculation({
+            formId: 'salario-form',
+            resultContainerId: 'salario-result',
+            calculationFn: calcularSalarioLiquido,
+            renderFn: this.uiManager.renderSalarioResult.bind(this.uiManager),
+            lastCalcProp: 'lastSalarioCalculation',
+            notificationSuccess: 'Cálculo de salário realizado com sucesso!'
+        });
+    }
+
+    /**
      * Manipula o cálculo de férias
      */
-    async handleFeriasCalculation() {
-        const dados = this.uiManager.collectFormData('ferias-form');
-        
-        if (!dados) {
-            this.uiManager.showNotification('Erro ao coletar dados do formulário', 'error');
-            return;
-        }
-
-        try {
-            this.uiManager.showLoading('ferias-result');
-            await this.delay(500);
-
-            const resultado = calcularFerias(dados);
-
-            // Renderiza resultado (implementação simplificada)
-            const resultContainer = document.getElementById('ferias-result');
-            if (resultContainer) {
-                if (resultado.erro) {
-                    resultContainer.innerHTML = `
-                        <div class="result-container error">
-                            <h3>Erro no Cálculo</h3>
-                            <p class="error-message">${resultado.mensagem}</p>
-                        </div>
-                    `;
-                } else {
-                    resultContainer.innerHTML = this.renderFeriasResult(resultado);
-                }
-            }
-
-            this.lastFeriasCalculation = { resultado, dados };
-
-            if (!resultado.erro) {
-                this.uiManager.showNotification('Cálculo de férias realizado com sucesso!', 'success');
-            }
-
-        } catch (error) {
-            console.error('Erro no cálculo de férias:', error);
-            this.uiManager.showNotification('Erro no cálculo. Tente novamente.', 'error');
-        }
+    handleFeriasCalculation() {
+        this.handleCalculation({
+            formId: 'ferias-form',
+            resultContainerId: 'ferias-result',
+            calculationFn: calcularFerias,
+            renderFn: this.renderFeriasResult.bind(this),
+            lastCalcProp: 'lastFeriasCalculation',
+            notificationSuccess: 'Cálculo de férias realizado com sucesso!'
+        });
     }
 
     /**
      * Manipula o cálculo de 13º salário
      */
-    async handle13SalarioCalculation() {
-        const dados = this.uiManager.collectFormData('decimo-form');
-        
-        if (!dados) {
-            this.uiManager.showNotification('Erro ao coletar dados do formulário', 'error');
-            return;
-        }
-
-        try {
-            this.uiManager.showLoading('decimo-result');
-            await this.delay(500);
-
-            const resultado = calcular13Salario(dados);
-
-            const resultContainer = document.getElementById('decimo-result');
-            if (resultContainer) {
-                if (resultado.erro) {
-                    resultContainer.innerHTML = `
-                        <div class="result-container error">
-                            <h3>Erro no Cálculo</h3>
-                            <p class="error-message">${resultado.mensagem}</p>
-                        </div>
-                    `;
-                } else {
-                    resultContainer.innerHTML = this.render13SalarioResult(resultado);
-                }
-            }
-
-            this.last13SalarioCalculation = { resultado, dados };
-
-            if (!resultado.erro) {
-                this.uiManager.showNotification('Cálculo de 13º salário realizado com sucesso!', 'success');
-            }
-
-        } catch (error) {
-            console.error('Erro no cálculo de 13º salário:', error);
-            this.uiManager.showNotification('Erro no cálculo. Tente novamente.', 'error');
-        }
+    handle13SalarioCalculation() {
+        this.handleCalculation({
+            formId: 'decimo-form',
+            resultContainerId: 'decimo-result',
+            calculationFn: calcular13Salario,
+            renderFn: this.render13SalarioResult.bind(this),
+            lastCalcProp: 'last13SalarioCalculation',
+            notificationSuccess: 'Cálculo de 13º salário realizado com sucesso!'
+        });
     }
 
     /**
      * Manipula o cálculo de rescisão
      */
-    async handleRescisaoCalculation() {
-        const dados = this.uiManager.collectFormData('rescisao-form');
-        
-        if (!dados) {
-            this.uiManager.showNotification('Erro ao coletar dados do formulário', 'error');
-            return;
-        }
-
-        try {
-            this.uiManager.showLoading('rescisao-result');
-            await this.delay(1000); // Rescisão é mais complexa, delay maior
-
-            const resultado = calcularRescisao(dados);
-
-            const resultContainer = document.getElementById('rescisao-result');
-            if (resultContainer) {
-                if (resultado.erro) {
-                    resultContainer.innerHTML = `
-                        <div class="result-container error">
-                            <h3>Erro no Cálculo</h3>
-                            <p class="error-message">${resultado.mensagem}</p>
-                        </div>
-                    `;
-                } else {
-                    resultContainer.innerHTML = this.renderRescisaoResult(resultado);
-                }
-            }
-
-            this.lastRescisaoCalculation = { resultado, dados };
-
-            if (!resultado.erro) {
-                this.uiManager.showNotification('Cálculo de rescisão realizado com sucesso!', 'success');
-            }
-
-        } catch (error) {
-            console.error('Erro no cálculo de rescisão:', error);
-            this.uiManager.showNotification('Erro no cálculo. Tente novamente.', 'error');
-        }
+    handleRescisaoCalculation() {
+        this.handleCalculation({
+            formId: 'rescisao-form',
+            resultContainerId: 'rescisao-result',
+            calculationFn: calcularRescisao,
+            renderFn: this.renderRescisaoResult.bind(this),
+            lastCalcProp: 'lastRescisaoCalculation',
+            notificationSuccess: 'Cálculo de rescisão realizado com sucesso!'
+        });
     }
 
     /**
@@ -513,72 +428,6 @@ class CalculadoraTrabalhista {
         }
     }
 
-    /**
-     * Salva um cenário no localStorage
-     * @param {string} tipo - Tipo do cálculo
-     */
-    saveScenario(tipo) {
-        // Implementação simplificada
-        this.uiManager.showNotification('Funcionalidade em desenvolvimento', 'info');
-    }
-
-    /**
-     * Utilitário para delay
-     * @param {number} ms - Milissegundos
-     * @returns {Promise} Promise que resolve após o delay
-     */
-    delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-}
-
-/**
- * Gerenciador de cenários (localStorage)
- */
-class ScenarioManager {
-    constructor() {
-        this.storageKey = 'calculadora-trabalhista-scenarios';
-    }
-
-    /**
-     * Salva um cenário
-     * @param {string} name - Nome do cenário
-     * @param {string} type - Tipo do cálculo
-     * @param {Object} data - Dados do cenário
-     */
-    saveScenario(name, type, data) {
-        const scenarios = this.getScenarios();
-        const id = Date.now().toString();
-        
-        scenarios[id] = {
-            name,
-            type,
-            data,
-            createdAt: new Date().toISOString()
-        };
-        
-        localStorage.setItem(this.storageKey, JSON.stringify(scenarios));
-        return id;
-    }
-
-    /**
-     * Recupera todos os cenários
-     * @returns {Object} Cenários salvos
-     */
-    getScenarios() {
-        const stored = localStorage.getItem(this.storageKey);
-        return stored ? JSON.parse(stored) : {};
-    }
-
-    /**
-     * Remove um cenário
-     * @param {string} id - ID do cenário
-     */
-    removeScenario(id) {
-        const scenarios = this.getScenarios();
-        delete scenarios[id];
-        localStorage.setItem(this.storageKey, JSON.stringify(scenarios));
-    }
 }
 
 // Inicializa a aplicação quando o script é carregado

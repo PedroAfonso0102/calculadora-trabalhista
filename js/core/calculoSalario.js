@@ -13,6 +13,7 @@ import {
     validarValorPositivo,
     arredondar
 } from './regrasGerais.js';
+import parametros from '../../config/parametrosLegais.js';
 
 /**
  * Calcula o salário líquido mensal
@@ -77,8 +78,8 @@ export function calcularSalarioLiquido(dados) {
                 liquido: arredondar(salarioLiquido),
                 detalhamento: {
                     baseCalculoIRRF: arredondar(baseIRRF),
-                    deducaoDependentes: arredondar(numDependentes * 189.59),
-                    limiteParaSalarioFamilia: 1819.26
+                    deducaoDependentes: arredondar(numDependentes * parametros.valoresBase.DEDUCAO_POR_DEPENDENTE_IRRF),
+                    limiteParaSalarioFamilia: parametros.valoresBase.LIMITE_SALARIO_FAMILIA
                 }
             }
         };
@@ -156,30 +157,6 @@ function validarDadosSalario(dados) {
  * @param {Array} cenarios - Array de cenários com diferentes configurações
  * @returns {Array} Array com resultados dos cenários
  */
-export function simularCenariosSalario(salarioBase, cenarios) {
-    if (!validarValorPositivo(salarioBase) || !Array.isArray(cenarios)) {
-        return [];
-    }
-
-    return cenarios.map((cenario, index) => {
-        const dadosCalculo = {
-            salarioBruto: salarioBase,
-            numDependentes: cenario.dependentes || 0,
-            numFilhos: cenario.filhos || 0,
-            outrosDescontos: cenario.outrosDescontos || 0
-        };
-
-        const resultado = calcularSalarioLiquido(dadosCalculo);
-
-        return {
-            cenario: index + 1,
-            descricao: cenario.descricao || `Cenário ${index + 1}`,
-            parametros: cenario,
-            calculo: resultado
-        };
-    });
-}
-
 /**
  * Calcula a alíquota efetiva de INSS e IRRF
  * @param {number} salarioBruto - Salário bruto
@@ -202,75 +179,8 @@ export function calcularAliquotasEfetivas(salarioBruto, numDependentes = 0) {
     };
 }
 
-/**
- * Gera relatório detalhado do cálculo de salário
- * @param {Object} resultado - Resultado do cálculo de salário
- * @returns {Object} Relatório formatado
- */
-export function gerarRelatorioSalario(resultado) {
-    if (!resultado || resultado.erro) {
-        return null;
-    }
-
-    const { dados, resultado: calc } = resultado;
-
-    return {
-        titulo: 'Demonstrativo de Pagamento',
-        periodo: new Date().toLocaleDateString('pt-BR', { 
-            month: 'long', 
-            year: 'numeric' 
-        }),
-        dadosEntrada: {
-            'Salário Bruto': `R$ ${calc.proventos.salarioBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-            'Dependentes IRRF': dados.numDependentes.toString(),
-            'Filhos (Sal. Família)': dados.numFilhos.toString(),
-            'Outros Descontos': `R$ ${dados.outrosDescontos.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
-        },
-        discriminacao: {
-            proventos: [
-                {
-                    item: 'Salário Bruto',
-                    valor: calc.proventos.salarioBruto,
-                    observacao: 'Base salarial'
-                },
-                {
-                    item: 'Salário Família',
-                    valor: calc.proventos.salarioFamilia,
-                    observacao: calc.proventos.salarioFamilia > 0 
-                        ? `${dados.numFilhos} filho(s) até 14 anos` 
-                        : 'Não aplicável'
-                }
-            ],
-            descontos: [
-                {
-                    item: 'INSS',
-                    valor: calc.descontos.inss,
-                    observacao: 'Contribuição previdenciária'
-                },
-                {
-                    item: 'IRRF',
-                    valor: calc.descontos.irrf,
-                    observacao: 'Imposto de Renda Retido na Fonte'
-                },
-                {
-                    item: 'Outros Descontos',
-                    valor: calc.descontos.outros,
-                    observacao: 'Descontos diversos'
-                }
-            ]
-        },
-        resumo: {
-            totalProventos: calc.proventos.total,
-            totalDescontos: calc.descontos.total,
-            valorLiquido: calc.liquido
-        }
-    };
-}
-
 // Exportação default
 export default {
     calcularSalarioLiquido,
-    simularCenariosSalario,
     calcularAliquotasEfetivas,
-    gerarRelatorioSalario
 };
