@@ -473,6 +473,68 @@ body {
     border-top: 1px solid var(--gray-200);
 }
 
+/* Comparador styles */
+.form-section {
+    margin-bottom: var(--spacing-8);
+    padding: var(--spacing-6);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius-lg);
+}
+
+.form-section h3 {
+    margin-bottom: var(--spacing-4);
+    font-size: var(--font-size-xl);
+    border: none;
+}
+
+.comparador-result .comparador-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+}
+
+.comparador-result .result-column-item {
+    background-color: var(--gray-50);
+    padding: var(--spacing-6);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--gray-100);
+}
+
+.comparador-result .result-column-item h4 {
+    font-size: var(--font-size-xl);
+    text-align: center;
+    margin-bottom: var(--spacing-4);
+    color: var(--primary-dark);
+}
+
+.comparador-result .result-column-item .result-final {
+    margin-top: 0;
+}
+
+.comparador-result .result-summary {
+    margin-top: var(--spacing-8);
+    padding: var(--spacing-6);
+    background-color: var(--gray-100);
+    border-radius: var(--border-radius-lg);
+    text-align: center;
+}
+
+.comparador-result .result-summary h5 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-3);
+}
+
+.comparador-result .result-summary .positive {
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+.comparador-result .result-summary .negative {
+    color: var(--error-color);
+    font-weight: bold;
+}
+
 /* Resultados */
 .result-column {
     position: sticky;

@@ -1,161 +1,122 @@
 /**
- * Cálculo de Salário PJ - Calculadora Trabalhista
+ * Cálculo de Faturamento PJ - Calculadora Trabalhista
  *
- * Módulo responsável pelo cálculo de salário líquido para Pessoa Jurídica (PJ)
- * considerando o regime do Simples Nacional, Fator R, e impostos sobre o pró-labore.
+ * Módulo responsável pelo cálculo do rendimento líquido de uma Pessoa Jurídica (PJ)
+ * optante pelo Simples Nacional, considerando o Fator R.
  */
 
-import {
-    calcularINSS,
-    calcularIRRF,
-    calcularBaseIRRF,
-    arredondar,
-    validarValorPositivo
-} from './regrasGerais.js';
+import { arredondar } from './regrasGerais.js';
 
-import parametros from '../../config/parametrosLegais.js';
+// Tabelas do Simples Nacional 2024 (fornecidas pelo usuário)
+const ANEXO_III = [
+    { faixa: 1, receitaAte: 180000, aliquota: 0.06, deduzir: 0 },
+    { faixa: 2, receitaAte: 360000, aliquota: 0.112, deduzir: 9360 },
+    { faixa: 3, receitaAte: 720000, aliquota: 0.135, deduzir: 17640 },
+    { faixa: 4, receitaAte: 1800000, aliquota: 0.16, deduzir: 35640 },
+    { faixa: 5, receitaAte: 3600000, aliquota: 0.21, deduzir: 125640 },
+    { faixa: 6, receitaAte: 4800000, aliquota: 0.33, deduzir: 648000 },
+];
+
+const ANEXO_V = [
+    { faixa: 1, receitaAte: 180000, aliquota: 0.155, deduzir: 0 },
+    { faixa: 2, receitaAte: 360000, aliquota: 0.18, deduzir: 4500 },
+    { faixa: 3, receitaAte: 720000, aliquota: 0.195, deduzir: 9900 },
+    { faixa: 4, receitaAte: 1800000, aliquota: 0.205, deduzir: 17100 },
+    { faixa: 5, receitaAte: 3600000, aliquota: 0.23, deduzir: 62100 },
+    { faixa: 6, receitaAte: 4800000, aliquota: 0.305, deduzir: 540000 },
+];
+
+const INSS_PRO_LABORE_ALIQUOTA = 0.11;
 
 /**
- * Calcula a alíquota efetiva do Simples Nacional.
- * ((Receita Bruta Total 12 meses * Alíquota) - Parcela a Deduzir) / Receita Bruta Total 12 meses
- * @param {number} faturamentoAnual - O faturamento bruto dos últimos 12 meses.
- * @param {Array} anexo - A tabela do anexo do Simples Nacional a ser utilizada.
- * @returns {number} A alíquota efetiva.
+ * Calcula o imposto do Simples Nacional para um determinado faturamento.
+ * @param {number} receitaBrutaAnual - A receita bruta acumulada nos últimos 12 meses.
+ * @param {number} faturamentoMensal - O faturamento do mês atual.
+ * @param {Array} tabelaAnexo - A tabela do anexo a ser utilizada (Anexo III ou Anexo V).
+ * @returns {object} - Contém o valor do imposto e a alíquota efetiva.
  */
-function calcularAliquotaEfetivaSimples(faturamentoAnual, anexo) {
-    if (faturamentoAnual <= 0) return 0;
-
-    const faixa = anexo.find(f => faturamentoAnual <= f.faixaAte);
+function calcularImpostoSimples(receitaBrutaAnual, faturamentoMensal, tabelaAnexo) {
+    const faixa = tabelaAnexo.find(f => receitaBrutaAnual <= f.receitaAte);
 
     if (!faixa) {
-        // Se não encontrar a faixa, pode ser que o valor exceda o limite do Simples.
-        // Para esta calculadora, vamos usar a última faixa.
-        const ultimaFaixa = anexo[anexo.length - 1];
-        return ((faturamentoAnual * ultimaFaixa.aliquota) - ultimaFaixa.deducao) / faturamentoAnual;
+        // Para faturamentos acima do limite do Simples Nacional.
+        // A lógica de desenquadramento pode ser complexa. Por simplicidade, usamos a última faixa.
+        const ultimaFaixa = tabelaAnexo[tabelaAnexo.length - 1];
+        const aliquotaEfetivaMaxima = ((ultimaFaixa.receitaAte * ultimaFaixa.aliquota) - ultimaFaixa.deduzir) / ultimaFaixa.receitaAte;
+        return {
+            imposto: faturamentoMensal * aliquotaEfetivaMaxima,
+            aliquotaEfetiva: aliquotaEfetivaMaxima,
+        };
     }
 
-    const aliquotaEfetiva = ((faturamentoAnual * faixa.aliquota) - faixa.deducao) / faturamentoAnual;
-    return Math.max(0, aliquotaEfetiva);
-}
-
-
-/**
- * Valida os dados de entrada para o cálculo PJ.
- * @param {Object} dados - Dados a serem validados.
- * @returns {Object} Objeto com status de validação e dados validados.
- */
-function validarDadosPJ(dados) {
-    if (!dados || typeof dados !== 'object') {
-        return { valido: false, erro: 'Dados inválidos ou não informados' };
-    }
-
-    const { faturamentoMensal, proLabore = 0, despesasMensais = 0, numDependentes = 0 } = dados;
-
-    if (!validarValorPositivo(faturamentoMensal) || faturamentoMensal <= 0) {
-        return { valido: false, erro: 'Faturamento mensal deve ser um valor positivo.' };
-    }
-    if (!validarValorPositivo(proLabore)) {
-        return { valido: false, erro: 'Pró-labore deve ser um valor não negativo.' };
-    }
-    if (!validarValorPositivo(despesasMensais)) {
-        return { valido: false, erro: 'Despesas mensais devem ser um valor não negativo.' };
-    }
-    if (!Number.isInteger(numDependentes) || numDependentes < 0) {
-        return { valido: false, erro: 'Número de dependentes deve ser um inteiro não negativo.' };
-    }
+    const aliquotaEfetiva = ((receitaBrutaAnual * faixa.aliquota) - faixa.deduzir) / receitaBrutaAnual;
+    const impostoDevido = faturamentoMensal * aliquotaEfetiva;
 
     return {
-        valido: true,
-        dados: {
-            faturamentoMensal: parseFloat(faturamentoMensal),
-            proLabore: parseFloat(proLabore),
-            despesasMensais: parseFloat(despesasMensais),
-            numDependentes: parseInt(numDependentes)
-        }
+        imposto: arredondar(impostoDevido),
+        aliquotaEfetiva: arredondar(aliquotaEfetiva),
     };
 }
 
-
 /**
- * Calcula o salário líquido no modelo PJ
- * @param {Object} dados - Dados para cálculo do salário PJ
- * @param {number} dados.faturamentoMensal - Valor mensal do contrato PJ
- * @param {number} dados.proLabore - Valor do pró-labore mensal
- * @param {number} dados.despesasMensais - Outras despesas mensais da empresa (aluguel, software, etc.)
- * @param {number} dados.numDependentes - Número de dependentes para IRRF sobre o pró-labore.
- * @returns {Object} Resultado detalhado do cálculo
+ * Calcula o rendimento líquido de um PJ.
+ * @param {object} dados - Os dados para o cálculo.
+ * @param {number} dados.faturamentoMensal - O faturamento bruto mensal.
+ * @param {number} dados.proLabore - O valor do pró-labore mensal.
+ * @param {number} dados.custoContador - O custo mensal com contabilidade.
+ * @param {number} dados.outrosCustos - Outros custos mensais.
+ * @returns {object} - Um objeto com o resultado detalhado do cálculo.
  */
-export function calcularSalarioLiquidoPJ(dados) {
-    const dadosValidados = validarDadosPJ(dados);
-    if (!dadosValidados.valido) {
-        return { erro: true, mensagem: dadosValidados.erro, resultado: null };
+export function calcularPJ(dados) {
+    const { faturamentoMensal, proLabore, custoContador = 0, outrosCustos = 0 } = dados;
+
+    if (!faturamentoMensal || faturamentoMensal <= 0) {
+        return { erro: true, mensagem: "O faturamento mensal deve ser um valor positivo." };
+    }
+    if (proLabore === undefined || proLabore < 0) {
+        return { erro: true, mensagem: "O pró-labore deve ser um valor não negativo." };
+    }
+    if (proLabore > faturamentoMensal) {
+        return { erro: true, mensagem: "O pró-labore não pode ser maior que o faturamento." };
     }
 
-    const { faturamentoMensal, proLabore, despesasMensais, numDependentes } = dadosValidados.dados;
+    // Projeção anual para cálculo da alíquota efetiva
+    const receitaBrutaAnual = faturamentoMensal * 12;
 
-    try {
-        // 1. Calcular Fator R e determinar o anexo
-        const faturamentoAnual = faturamentoMensal * 12;
-        const fatorR = proLabore > 0 ? proLabore / faturamentoMensal : 0;
-        const anexoUtilizado = fatorR >= parametros.parametrosPJ.FATOR_R_LIMITE
-            ? parametros.tabelaSimplesNacionalAnexoIII
-            : parametros.tabelaSimplesNacionalAnexoV;
-        const nomeAnexo = fatorR >= parametros.parametrosPJ.FATOR_R_LIMITE ? 'Anexo III' : 'Anexo V';
+    // Cálculo do Fator R (simplificado para a calculadora)
+    // Considera-se que a folha de pagamento é apenas o pró-labore.
+    const fatorR = proLabore > 0 ? (proLabore / faturamentoMensal) : 0;
+    const anexo = fatorR >= 0.28 ? ANEXO_III : ANEXO_V;
+    const nomeAnexo = fatorR >= 0.28 ? "Anexo III" : "Anexo V";
 
-        // 2. Calcular imposto do Simples Nacional
-        const aliquotaEfetiva = calcularAliquotaEfetivaSimples(faturamentoAnual, anexoUtilizado);
-        const impostoSimples = faturamentoMensal * aliquotaEfetiva;
+    // 1. Cálculo do Imposto Simples Nacional
+    const calculoSimples = calcularImpostoSimples(receitaBrutaAnual, faturamentoMensal, anexo);
 
-        // 3. Calcular impostos sobre o Pró-labore
-        // Nota: A regra de INSS para pró-labore é 11% sobre o valor, respeitando o teto.
-        // A função `calcularINSS` é para CLT (progressiva), mas oferece uma boa aproximação.
-        // Para simplificar e reutilizar, usaremos a função existente.
-        const inssProLabore = proLabore > 0 ? calcularINSS(proLabore) : 0;
-        const baseIRRFProLabore = proLabore > 0 ? calcularBaseIRRF(proLabore, inssProLabore, numDependentes) : 0;
-        const irrfProLabore = proLabore > 0 ? calcularIRRF(baseIRRFProLabore) : 0;
-        const proLaboreLiquido = proLabore - inssProLabore - irrfProLabore;
+    // 2. Cálculo do INSS sobre o Pró-Labore
+    const inssProLabore = proLabore * INSS_PRO_LABORE_ALIQUOTA;
 
-        // 4. Calcular o resultado final
-        const totalDespesasEmpresa = impostoSimples + proLabore + despesasMensais;
-        const lucroLiquidoEmpresa = faturamentoMensal - totalDespesasEmpresa;
-        const rendimentoTotalLiquido = proLaboreLiquido + lucroLiquidoEmpresa;
+    // 3. Totalização de custos e rendimento líquido
+    const totalCustos = calculoSimples.imposto + inssProLabore + custoContador + outrosCustos;
+    const rendimentoLiquido = faturamentoMensal - totalCustos;
 
-        return {
-            erro: false,
-            dados: dadosValidados.dados,
-            resultado: {
-                rendimentoTotalLiquido: arredondar(rendimentoTotalLiquido),
-                detalhamento: {
-                    faturamentoBruto: arredondar(faturamentoMensal),
-                    impostoSimples: arredondar(impostoSimples),
-                    proLaboreBruto: arredondar(proLabore),
-                    outrasDespesas: arredondar(despesasMensais),
-                    lucroLiquidoEmpresa: arredondar(lucroLiquidoEmpresa),
-                    proLaboreLiquido: arredondar(proLaboreLiquido),
+    return {
+        erro: false,
+        dados,
+        resultado: {
+            rendimentoLiquido: arredondar(rendimentoLiquido),
+            faturamentoBruto: arredondar(faturamentoMensal),
+            totalCustos: arredondar(totalCustos),
+            detalhamento: {
+                fatorR: arredondar(fatorR * 100),
+                anexoUtilizado: nomeAnexo,
+                impostoSimples: {
+                    valor: calculoSimples.imposto,
+                    aliquotaEfetiva: arredondar(calculoSimples.aliquotaEfetiva * 100),
                 },
-                impostos: {
-                    total: arredondar(impostoSimples + inssProLabore + irrfProLabore),
-                    impostoSimples: arredondar(impostoSimples),
-                    inssProLabore: arredondar(inssProLabore),
-                    irrfProLabore: arredondar(irrfProLabore),
-                },
-                contexto: {
-                    fatorR: arredondar(fatorR * 100),
-                    anexo: nomeAnexo,
-                    aliquotaEfetiva: arredondar(aliquotaEfetiva * 100)
-                }
-            }
-        };
-
-    } catch (error) {
-        return {
-            erro: true,
-            mensagem: `Erro no cálculo PJ: ${error.message}`,
-            resultado: null
-        };
-    }
+                inssProLabore: arredondar(inssProLabore),
+                custoContador: arredondar(custoContador),
+                outrosCustos: arredondar(outrosCustos),
+            },
+        },
+    };
 }
-
-export default {
-    calcularSalarioLiquidoPJ
-};

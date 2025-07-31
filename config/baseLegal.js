@@ -154,6 +154,33 @@ export const EXPLICACOES_VERBAS = {
         explicacao: "Valor que o trabalhador efetivamente recebe após todos os descontos legais.",
         baseLegal: "CLT, Art. 462",
         formula: "Salário bruto + salário família - INSS - IRRF - outros descontos"
+    },
+
+    // Verbas PJ
+    faturamento_mensal_pj: {
+        titulo: "Faturamento Mensal (PJ)",
+        explicacao: "Valor total das notas fiscais emitidas no mês pela Pessoa Jurídica (PJ). É a receita bruta da empresa.",
+        observacao: "Este é o valor base para o cálculo do imposto do Simples Nacional."
+    },
+
+    pro_labore: {
+        titulo: "Pró-labore",
+        explicacao: "Remuneração (salário) que o sócio administrador recebe da sua própria empresa. É obrigatório e sobre ele incide 11% de INSS.",
+        baseLegal: "Decreto 3.048/1999",
+        observacao: "O valor do pró-labore é crucial para o cálculo do Fator R."
+    },
+
+    fator_r: {
+        titulo: "Fator R",
+        explicacao: "É um cálculo que define se sua empresa será tributada no Anexo III ou V do Simples Nacional. Se a folha de pagamento (incluindo pró-labore) for 28% ou mais do faturamento, a tributação é pelo Anexo III (menor).",
+        baseLegal: "Lei Complementar 123/2006",
+        formula: "(Folha de Salário 12 meses) / (Receita Bruta 12 meses)"
+    },
+
+    simples_nacional: {
+        titulo: "Simples Nacional",
+        explicacao: "Regime tributário simplificado para micro e pequenas empresas. Unifica o pagamento de vários impostos em uma única guia (DAS). A alíquota é progressiva, baseada no faturamento.",
+        baseLegal: "Lei Complementar 123/2006"
     }
 };
 

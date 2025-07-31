@@ -391,55 +391,69 @@ export class UIManager {
     }
 
     /**
-     * Renderiza formulário de comparação CLT vs. PJ
+     * Renderiza o formulário do comparador CLT vs. PJ
      * @returns {string} HTML do formulário
      */
-    renderCLTvsPJForm() {
+    renderComparadorForm() {
         return `
-            <form id="clt-vs-pj-form" class="calculation-form">
-                <h3>Comparador de Cenários: CLT vs. PJ</h3>
-
-                <fieldset>
-                    <legend>Cenário 1: Contratação CLT</legend>
+            <form id="comparador-form" class="calculation-form">
+                <div class="form-section">
+                    <h3>Cenário CLT</h3>
                     <div class="form-group">
                         <label for="clt-salario-bruto">Salário Bruto (R$)</label>
-                        <input type="text" id="clt-salario-bruto" name="cltSalarioBruto"
-                               class="currency-input" required placeholder="0,00">
+                        <input type="text" id="clt-salario-bruto" name="salarioBruto" class="currency-input" required placeholder="0,00">
                     </div>
                     <div class="form-group">
                         <label for="clt-num-dependentes">Dependentes (IRRF)</label>
-                        <input type="number" id="clt-num-dependentes" name="cltNumDependentes"
-                               min="0" value="0">
+                        <input type="number" id="clt-num-dependentes" name="numDependentes" min="0" value="0">
                     </div>
-                     <div class="form-group">
+                    <div class="form-group">
+                        <label for="clt-num-filhos">Filhos (Sal. Família)</label>
+                        <input type="number" id="clt-num-filhos" name="numFilhos" min="0" value="0">
+                    </div>
+                    <div class="form-group">
                         <label for="clt-outros-descontos">Outros Descontos (R$)</label>
-                        <input type="text" id="clt-outros-descontos" name="cltOutrosDescontos"
-                               class="currency-input" placeholder="0,00">
+                        <input type="text" id="clt-outros-descontos" name="outrosDescontos" class="currency-input" value="0,00">
                     </div>
-                </fieldset>
+                </div>
 
-                <fieldset>
-                    <legend>Cenário 2: Contratação PJ</legend>
+                <div class="form-section">
+                    <h3>Cenário PJ
+                        <div class="tooltip-container">
+                            <button type="button" class="tooltip-trigger" data-verba="simples_nacional">?</button>
+                        </div>
+                    </h3>
                     <div class="form-group">
-                        <label for="pj-faturamento">Faturamento Mensal (R$)</label>
-                        <input type="text" id="pj-faturamento" name="pjFaturamentoMensal"
-                               class="currency-input" required placeholder="0,00">
+                        <label for="pj-faturamento">
+                            Faturamento Mensal (R$)
+                            <div class="tooltip-container">
+                                <button type="button" class="tooltip-trigger" data-verba="faturamento_mensal_pj">?</button>
+                            </div>
+                        </label>
+                        <input type="text" id="pj-faturamento" name="faturamentoMensal" class="currency-input" required placeholder="0,00">
                     </div>
                     <div class="form-group">
-                        <label for="pj-pro-labore">Pró-labore (R$)</label>
-                        <input type="text" id="pj-pro-labore" name="pjProLabore"
-                               class="currency-input" required placeholder="0,00">
+                        <label for="pj-pro-labore">
+                            Pró-labore (R$)
+                            <div class="tooltip-container">
+                                <button type="button" class="tooltip-trigger" data-verba="pro_labore">?</button>
+                            </div>
+                        </label>
+                        <input type="text" id="pj-pro-labore" name="proLabore" class="currency-input" required placeholder="0,00">
                     </div>
                     <div class="form-group">
-                        <label for="pj-despesas">Despesas Mensais (R$)</label>
-                        <input type="text" id="pj-despesas" name="pjDespesasMensais"
-                               class="currency-input" placeholder="0,00">
+                        <label for="pj-custo-contador">Custo do Contador (R$)</label>
+                        <input type="text" id="pj-custo-contador" name="custoContador" class="currency-input" value="0,00">
                     </div>
-                </fieldset>
+                    <div class="form-group">
+                        <label for="pj-outros-custos">Outros Custos (R$)</label>
+                        <input type="text" id="pj-outros-custos" name="outrosCustos" class="currency-input" value="0,00">
+                    </div>
+                </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Comparar Cenários</button>
-                    <button type="button" class="btn btn-secondary" id="limpar-comparativo">Limpar</button>
+                    <button type="button" class="btn btn-secondary" id="limpar-comparador">Limpar</button>
                 </div>
             </form>
         `;
@@ -447,72 +461,88 @@ export class UIManager {
 
     /**
      * Renderiza o resultado da comparação CLT vs. PJ
-     * @param {Object} resultadoCLT - Resultado do cálculo CLT
-     * @param {Object} resultadoPJ - Resultado do cálculo PJ
+     * @param {object} resultado - Objeto contendo os resultados de ambos os cálculos
      * @returns {string} HTML do resultado
      */
-    renderCLTvsPJResult(resultadoCLT, resultadoPJ) {
-        // Lida com possíveis erros em cada cálculo
-        if (resultadoCLT.erro || resultadoPJ.erro) {
+    renderComparadorResult(resultado) {
+        const { clt, pj } = resultado;
+
+        if (clt.erro || pj.erro) {
             return `
                 <div class="result-container error">
-                    <h3>Erro no Cálculo</h3>
-                    <p class="error-message">
-                        ${resultadoCLT.erro ? `CLT: ${resultadoCLT.mensagem}<br>` : ''}
-                        ${resultadoPJ.erro ? `PJ: ${resultadoPJ.mensagem}` : ''}
-                    </p>
+                    <h3>Erro na Comparação</h3>
+                    ${clt.erro ? `<p><strong>Erro CLT:</strong> ${clt.mensagem}</p>` : ''}
+                    ${pj.erro ? `<p><strong>Erro PJ:</strong> ${pj.mensagem}</p>` : ''}
                 </div>
             `;
         }
 
-        const clt = resultadoCLT.resultado;
-        const pj = resultadoPJ.resultado;
+        const cltLiquido = clt.resultado.liquido;
+        const pjLiquido = pj.resultado.rendimentoLiquido;
+        const diferenca = pjLiquido - cltLiquido;
+        const maisVantajoso = diferenca > 0 ? 'PJ' : 'CLT';
+        const corDiferenca = diferenca > 0 ? 'positive' : 'negative';
 
-        // Para uma comparação justa, calculamos o valor "mensalizado" dos benefícios CLT
-        const cltBeneficiosMensal = (clt.proventos.salarioBruto / 12) + (clt.proventos.salarioBruto * 1.33 / 12); // 13º + Férias com 1/3
+        return \`
+            <div class="result-container comparador-result">
+                <h3>Resultado da Comparação</h3>
 
-        const cltTotalLiquidoAnualizado = (clt.liquido * 12) + clt.proventos.salarioBruto + (clt.proventos.salarioBruto / 3);
-        const cltMediaMensalLiquida = cltTotalLiquidoAnualizado / 12;
+                <div class="comparador-grid">
+                    <!-- Coluna CLT -->
+                    <div class="result-column-item">
+                        <h4>CLT</h4>
+                        <div class="result-final">
+                            <span class="label">Salário Líquido:</span>
+                            <span class="value highlight">R$ \${cltLiquido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                        </div>
+                        <div class="result-section">
+                            <div class="result-item">
+                                <span class="label">Salário Bruto:</span>
+                                <span class="value">R$ \${clt.resultado.proventos.salarioBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Descontos Totais:</span>
+                                <span class="value negative">R$ \${clt.resultado.descontos.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                        </div>
+                    </div>
 
-        return `
-            <div class="result-container comparison">
-                <h3>Resultado Comparativo: CLT vs. PJ</h3>
-
-                <div class="comparison-grid">
-                    <div class="comparison-header"></div>
-                    <div class="comparison-header">Cenário CLT</div>
-                    <div class="comparison-header">Cenário PJ</div>
-
-                    <div class="comparison-row-label">Receita Bruta Mensal</div>
-                    <div class="comparison-cell">R$ ${clt.proventos.salarioBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                    <div class="comparison-cell">R$ ${pj.detalhamento.faturamentoBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-
-                    <div class="comparison-row-label">Descontos (INSS + IRRF)</div>
-                    <div class="comparison-cell negative">R$ ${(clt.descontos.inss + clt.descontos.irrf).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                    <div class="comparison-cell negative">R$ ${(pj.impostos.inssProLabore + pj.impostos.irrfProLabore).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-
-                    <div class="comparison-row-label">Imposto da Empresa</div>
-                    <div class="comparison-cell negative">R$ 0,00</div>
-                    <div class="comparison-cell negative">R$ ${pj.impostos.impostoSimples.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-
-                    <div class="comparison-row-label">Outras Despesas</div>
-                    <div class="comparison-cell negative">R$ ${clt.descontos.outros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                    <div class="comparison-cell negative">R$ ${pj.detalhamento.outrasDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-
-                    <div class="comparison-row-label">Benefícios Anuais (13º, Férias)</div>
-                    <div class="comparison-cell positive">~ R$ ${cltBeneficiosMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / mês</div>
-                    <div class="comparison-cell">N/A</div>
-
-                    <div class="comparison-row-label final-label">Total Líquido Mensal (Média)</div>
-                    <div class="comparison-cell final-value">R$ ${cltMediaMensalLiquida.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                    <div class="comparison-cell final-value">R$ ${pj.rendimentoTotalLiquido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                    <!-- Coluna PJ -->
+                    <div class="result-column-item">
+                        <h4>PJ</h4>
+                        <div class="result-final">
+                            <span class="label">Rendimento Líquido:</span>
+                            <span class="value highlight">R$ \${pjLiquido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                        </div>
+                        <div class="result-section">
+                            <div class="result-item">
+                                <span class="label">Faturamento Bruto:</span>
+                                <span class="value">R$ \${pj.resultado.faturamentoBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Custos Totais:</span>
+                                <span class="value negative">R$ \${pj.resultado.totalCustos.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                             <div class="result-item">
+                                <span class="label">Anexo:</span>
+                                <span class="value">\${pj.resultado.detalhamento.anexoUtilizado} (\${pj.resultado.detalhamento.impostoSimples.aliquotaEfetiva}%)</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="result-actions">
-                    <button type="button" class="btn btn-secondary" id="gerar-pdf-comparativo">Gerar PDF</button>
+                <div class="result-summary">
+                    <h5>Conclusão</h5>
+                    <p>
+                        O cenário <strong>\${maisVantajoso}</strong> é mais vantajoso em
+                        <strong class="\${corDiferenca}">R$ \${Math.abs(diferenca).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong> por mês.
+                    </p>
+                    <p class="disclaimer">
+                        Atenção: Esta comparação não inclui benefícios CLT como 13º, férias e FGTS.
+                    </p>
                 </div>
             </div>
-        `;
+        \`;
     }
 
     /**
