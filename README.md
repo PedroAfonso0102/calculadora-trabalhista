@@ -1,9 +1,9 @@
-
 # Calculadora Trabalhista
 
 Uma ferramenta online, gratuita e de código aberto para simular e calcular verbas trabalhistas brasileiras (férias, salário líquido, rescisão, etc.). O objetivo é transformar cálculos complexos em uma experiência clara, intuitiva e educativa.
 
-> Nota: este repositório contém os arquivos estáticos da aplicação. Abra `index.html` no seu navegador para ver a calculadora.
+> Nota 1: este repositório contém os arquivos estáticos da aplicação. Abra `index.html` no seu navegador para ver a calculadora.
+> Nota 2: page preview no link _https://pedroafonso0102.github.io/calculadora-trabalhista/_
 
 ## Funcionalidades principais
 
@@ -49,7 +49,7 @@ Opções rápidas:
 
 - `index.html` — página principal
 - `assets/` — CSS e JS
-	- `assets/js/app/` — lógica da aplicação (ex.: `calculations.js`, `ui.js`, `main.js`)
+- `assets/js/app/` — lógica da aplicação (ex.: `calculations.js`, `ui.js`, `main.js`)
 - `data/` — textos legais e dados JSON
 
 ## Contribuições
@@ -61,5 +61,6 @@ Contribuições são bem-vindas. Para melhorias pequenas: abra uma issue descrev
 Consulte a licença do repositório (arquivo `LICENSE`) ou adicione uma licença apropriada se necessário.
 
 ---
+
 
 README formatado e organizado para facilitar leitura e uso da calculadora.
