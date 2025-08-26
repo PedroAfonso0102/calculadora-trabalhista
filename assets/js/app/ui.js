@@ -14,21 +14,42 @@ const resultContainers = {
     ferias: document.getElementById('ferias-results'),
     rescisao: document.getElementById('rescisao-results'),
     decimoTerceiro: document.getElementById('decimo-terceiro-results'),
-    salarioLiquido: document.getElementById('salario-liquido-results')
+    salarioLiquido: document.getElementById('salario-liquido-results'),
+    fgts: document.getElementById('fgts-results'),
+    pisPasep: document.getElementById('pis-pasep-results'),
+    seguroDesemprego: document.getElementById('seguro-desemprego-results'),
+    horasExtras: document.getElementById('horas-extras-results'),
+    inss: document.getElementById('inss-results'),
+    valeTransporte: document.getElementById('vale-transporte-results'),
+    irpf: document.getElementById('irpf-results')
 };
 
 const tabTriggers = {
     ferias: document.getElementById('tab-ferias'),
     rescisao: document.getElementById('tab-rescisao'),
     decimoTerceiro: document.getElementById('tab-decimo-terceiro'),
-    salarioLiquido: document.getElementById('tab-salario-liquido')
+    salarioLiquido: document.getElementById('tab-salario-liquido'),
+    fgts: document.getElementById('tab-fgts'),
+    pisPasep: document.getElementById('tab-pis-pasep'),
+    seguroDesemprego: document.getElementById('tab-seguro-desemprego'),
+    horasExtras: document.getElementById('tab-horas-extras'),
+    inss: document.getElementById('tab-inss'),
+    valeTransporte: document.getElementById('tab-vale-transporte'),
+    irpf: document.getElementById('tab-irpf')
 };
 
 const calculatorPanels = {
     ferias: document.getElementById('calculator-ferias'),
     rescisao: document.getElementById('calculator-rescisao'),
     decimoTerceiro: document.getElementById('calculator-decimo-terceiro'),
-    salarioLiquido: document.getElementById('calculator-salario-liquido')
+    salarioLiquido: document.getElementById('calculator-salario-liquido'),
+    fgts: document.getElementById('calculator-fgts'),
+    pisPasep: document.getElementById('calculator-pis-pasep'),
+    seguroDesemprego: document.getElementById('calculator-seguro-desemprego'),
+    horasExtras: document.getElementById('calculator-horas-extras'),
+    inss: document.getElementById('calculator-inss'),
+    valeTransporte: document.getElementById('calculator-vale-transporte'),
+    irpf: document.getElementById('calculator-irpf')
 };
 
 
@@ -104,12 +125,12 @@ export function hideTooltip() {
 export function toggleEducationalPanel(visible) {
     const panel = document.getElementById('educational-panel');
     const overlay = document.getElementById('educational-panel-overlay');
-    
+
     if (!panel || !overlay) {
         console.error('Educational panel elements not found');
         return;
     }
-    
+
     if (visible) {
         // Show panel
         overlay.classList.remove('hidden');
@@ -119,10 +140,10 @@ export function toggleEducationalPanel(visible) {
             panel.classList.add('visible');
             panel.setAttribute('aria-hidden', 'false');
         }, 10);
-        
+
         // Prevent body scroll
         document.body.style.overflow = 'hidden';
-        
+
         // Focus management for accessibility
         panel.focus();
     } else {
@@ -131,14 +152,14 @@ export function toggleEducationalPanel(visible) {
         panel.classList.remove('visible');
         panel.setAttribute('aria-hidden', 'true');
         overlay.setAttribute('aria-hidden', 'true');
-        
+
         setTimeout(() => {
             overlay.classList.add('hidden');
         }, 300); // Match transition duration
-        
+
         // Restore body scroll
         document.body.style.overflow = '';
-        
+
         // Return focus to menu button
         const menuBtn = document.getElementById('educational-panel-menu-btn');
         if (menuBtn) menuBtn.focus();
@@ -152,41 +173,41 @@ export function toggleEducationalPanel(visible) {
 export async function loadEducationalContent(topic) {
     const contentContainer = document.getElementById('educational-content');
     const welcomeDiv = document.getElementById('educational-welcome');
-    
+
     if (!contentContainer) {
         console.error('Educational content container not found');
         return;
     }
-    
+
     // Hide welcome message and show loading
     if (welcomeDiv) {
         welcomeDiv.style.display = 'none';
     }
-    
+
     // Show loading state
     contentContainer.innerHTML = '<div class="educational-loading"></div>';
-    
+
     try {
         // Load content from JSON file
         const response = await fetch('data/legal_texts.json');
         if (!response.ok) {
             throw new Error(`Failed to load content: ${response.status}`);
         }
-        
+
         const data = await response.json();
         const categoryData = data[topic];
-        
+
         if (!categoryData) {
             throw new Error(`Topic '${topic}' not found`);
         }
-        
+
         // Generate content HTML
         const contentHTML = generateEducationalContentHTML(categoryData);
         contentContainer.innerHTML = contentHTML;
-        
+
         // Update active topic button
         updateActiveTopicButton(topic);
-        
+
     } catch (error) {
         console.error('Error loading educational content:', error);
         contentContainer.innerHTML = `
@@ -209,14 +230,14 @@ export async function loadEducationalContent(topic) {
  */
 function generateEducationalContentHTML(categoryData) {
     const { title, description, topics } = categoryData;
-    
+
     let html = `
         <div class="mb-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-2">${title}</h3>
             <p class="text-gray-600 text-sm">${description}</p>
         </div>
     `;
-    
+
     if (topics) {
         Object.entries(topics).forEach(([topicKey, topicData]) => {
             html += `
@@ -229,7 +250,7 @@ function generateEducationalContentHTML(categoryData) {
             `;
         });
     }
-    
+
     return html;
 }
 
@@ -239,7 +260,7 @@ function generateEducationalContentHTML(categoryData) {
  */
 function updateActiveTopicButton(activeTopic) {
     const topicButtons = document.querySelectorAll('.educational-topic-btn');
-    
+
     topicButtons.forEach(button => {
         const buttonTopic = button.dataset.topic;
         if (buttonTopic === activeTopic) {
@@ -256,13 +277,13 @@ function updateActiveTopicButton(activeTopic) {
 export function showEducationalWelcome() {
     const contentContainer = document.getElementById('educational-content');
     const welcomeDiv = document.getElementById('educational-welcome');
-    
+
     if (contentContainer && welcomeDiv) {
         contentContainer.innerHTML = '';
         welcomeDiv.style.display = 'block';
         contentContainer.appendChild(welcomeDiv);
     }
-    
+
     // Clear active topic button
     updateActiveTopicButton('');
 }
@@ -274,7 +295,7 @@ export function showEducationalWelcome() {
 export function updateSalaryResult(result) {
     const resultElement = document.getElementById('simular-salario-liquido-resultado');
     if (!resultElement) return;
-    
+
     resultElement.textContent = formatCurrency(result.salarioLiquido);
 }
 
@@ -319,10 +340,10 @@ export function updateAndShowModal(data) {
  */
 function generateModalContent(data) {
     const { type, results, state: inputState } = data;
-    
+
     let contentHTML = '<div class="space-y-4">';
     let calculatorTitle = '';
-    
+
     switch (type) {
         case 'ferias':
             calculatorTitle = 'Cálculo de Férias';
@@ -345,14 +366,14 @@ function generateModalContent(data) {
     }
 
     contentHTML += '</div>';
-    
+
     // Add modal header
     const modalHTML = `
         <h3 class="text-lg font-semibold leading-none tracking-tight text-gray-800">${calculatorTitle}</h3>
         <p class="text-sm text-gray-600">Resumo detalhado do seu cálculo.</p>
         ${contentHTML}
     `;
-    
+
     return modalHTML;
 }
 
@@ -361,7 +382,7 @@ function generateModalContent(data) {
  */
 function generateFeriasModalContent(results, inputState) {
     const { baseDeCalculo, valorFerias, tercoConstitucional, valorAbono, tercoAbono, adiantamento13, descontoINSS, descontoIRRF, valorLiquido, venderFerias, adiantarDecimo, diasFerias } = results;
-    
+
     let html = `
         <div class="mt-4">
             <div class="space-y-1 text-sm">
@@ -375,7 +396,7 @@ function generateFeriasModalContent(results, inputState) {
                 </div>
             </div>
         </div>
-        
+
         <div class="mt-4">
             <h4 class="font-semibold text-gray-800">Proventos (Ganhos)</h4>
             <div class="mt-2 space-y-1 text-sm">
@@ -387,7 +408,7 @@ function generateFeriasModalContent(results, inputState) {
                     <span>1/3 Constitucional sobre Férias:</span>
                     <span class="font-medium text-green-600">${formatCurrency(tercoConstitucional)}</span>
                 </div>`;
-    
+
     if (venderFerias && valorAbono > 0) {
         html += `
                 <div class="flex justify-between">
@@ -399,7 +420,7 @@ function generateFeriasModalContent(results, inputState) {
                     <span class="font-medium text-green-600">${formatCurrency(tercoAbono)}</span>
                 </div>`;
     }
-    
+
     if (adiantarDecimo && adiantamento13 > 0) {
         html += `
                 <div class="flex justify-between">
@@ -407,7 +428,7 @@ function generateFeriasModalContent(results, inputState) {
                     <span class="font-medium text-green-600">${formatCurrency(adiantamento13)}</span>
                 </div>`;
     }
-    
+
     html += `
             </div>
         </div>
@@ -435,7 +456,7 @@ function generateFeriasModalContent(results, inputState) {
                 </div>
             </div>
         </div>`;
-        
+
     return html;
 }
 
@@ -444,7 +465,7 @@ function generateFeriasModalContent(results, inputState) {
  */
 function generateDecimoTerceiroModalContent(results, inputState) {
     const { baseDeCalculo, mesesTrabalhados, valorBrutoDecimo, descontoINSS, descontoIRRF, valorLiquidoDecimo, adiantamentoRecebido, valorAReceber } = results;
-    
+
     let html = `
         <div class="mt-4">
             <div class="space-y-1 text-sm">
@@ -462,7 +483,7 @@ function generateDecimoTerceiroModalContent(results, inputState) {
                 </div>
             </div>
         </div>
-        
+
         <div class="mt-4">
             <h4 class="font-semibold text-gray-800">Descontos</h4>
             <div class="mt-2 space-y-1 text-sm">
@@ -476,7 +497,7 @@ function generateDecimoTerceiroModalContent(results, inputState) {
                 </div>
             </div>
         </div>
-        
+
         <div class="mt-4">
             <h4 class="font-semibold text-gray-800">Valores Finais</h4>
             <div class="mt-2 space-y-1 text-sm">
@@ -484,7 +505,7 @@ function generateDecimoTerceiroModalContent(results, inputState) {
                     <span>13º Salário Líquido:</span>
                     <span class="font-medium text-green-600">${formatCurrency(valorLiquidoDecimo)}</span>
                 </div>`;
-    
+
     if (adiantamentoRecebido > 0) {
         html += `
                 <div class="flex justify-between">
@@ -492,18 +513,18 @@ function generateDecimoTerceiroModalContent(results, inputState) {
                     <span class="font-medium text-red-600">-${formatCurrency(adiantamentoRecebido)}</span>
                 </div>`;
     }
-    
+
     html += `
             </div>
         </div>
-        
+
         <div class="mt-4 pt-4 border-t border-gray-200">
             <div class="flex justify-between items-center text-lg">
                 <span class="font-bold text-gray-900">Valor a Receber:</span>
                 <span class="font-bold text-blue-600">${formatCurrency(valorAReceber)}</span>
             </div>
         </div>`;
-    
+
     return html;
 }
 
@@ -512,7 +533,7 @@ function generateDecimoTerceiroModalContent(results, inputState) {
  */
 function generateSalarioLiquidoModalContent(results, inputState) {
     const { salarioBruto, horasExtras, adicionalPericulosidade, adicionalInsalubridade, adicionalNoturno, salarioFamilia, descontoINSS, descontoIRRF, descontoVT, descontoVR, descontoSaude, descontoAdiantamentos, totalProventos, totalDescontos, salarioLiquido } = results;
-    
+
     let html = `
         <div class="mt-4">
             <h4 class="font-semibold text-gray-800">Proventos (Ganhos)</h4>
@@ -521,7 +542,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                     <span>Salário Base:</span>
                     <span class="font-medium text-green-600">${formatCurrency(salarioBruto)}</span>
                 </div>`;
-    
+
     if (horasExtras > 0) {
         html += `
                 <div class="flex justify-between">
@@ -529,7 +550,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                     <span class="font-medium text-green-600">${formatCurrency(horasExtras)}</span>
                 </div>`;
     }
-    
+
     if (adicionalPericulosidade > 0) {
         html += `
                 <div class="flex justify-between">
@@ -537,7 +558,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                     <span class="font-medium text-green-600">${formatCurrency(adicionalPericulosidade)}</span>
                 </div>`;
     }
-    
+
     if (adicionalInsalubridade > 0) {
         html += `
                 <div class="flex justify-between">
@@ -545,7 +566,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                     <span class="font-medium text-green-600">${formatCurrency(adicionalInsalubridade)}</span>
                 </div>`;
     }
-    
+
     if (adicionalNoturno > 0) {
         html += `
                 <div class="flex justify-between">
@@ -553,7 +574,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                     <span class="font-medium text-green-600">${formatCurrency(adicionalNoturno)}</span>
                 </div>`;
     }
-    
+
     if (salarioFamilia > 0) {
         html += `
                 <div class="flex justify-between">
@@ -561,7 +582,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                     <span class="font-medium text-green-600">${formatCurrency(salarioFamilia)}</span>
                 </div>`;
     }
-    
+
     html += `
                 <div class="flex justify-between font-semibold border-t pt-2 mt-2">
                     <span>Total Bruto:</span>
@@ -569,7 +590,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                 </div>
             </div>
         </div>
-        
+
         <div class="mt-4">
             <h4 class="font-semibold text-gray-800">Descontos</h4>
             <div class="mt-2 space-y-1 text-sm">
@@ -581,7 +602,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                     <span>IRRF:</span>
                     <span class="font-medium text-red-600">-${formatCurrency(descontoIRRF.value)}</span>
                 </div>`;
-    
+
     if (descontoVT > 0) {
         html += `
                 <div class="flex justify-between">
@@ -589,7 +610,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                     <span class="font-medium text-red-600">-${formatCurrency(descontoVT)}</span>
                 </div>`;
     }
-    
+
     if (descontoVR > 0) {
         html += `
                 <div class="flex justify-between">
@@ -597,7 +618,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                     <span class="font-medium text-red-600">-${formatCurrency(descontoVR)}</span>
                 </div>`;
     }
-    
+
     if (descontoSaude > 0) {
         html += `
                 <div class="flex justify-between">
@@ -605,7 +626,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                     <span class="font-medium text-red-600">-${formatCurrency(descontoSaude)}</span>
                 </div>`;
     }
-    
+
     if (descontoAdiantamentos > 0) {
         html += `
                 <div class="flex justify-between">
@@ -613,7 +634,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                     <span class="font-medium text-red-600">-${formatCurrency(descontoAdiantamentos)}</span>
                 </div>`;
     }
-    
+
     html += `
                 <div class="flex justify-between font-semibold border-t pt-2 mt-2">
                     <span>Total de Descontos:</span>
@@ -621,14 +642,14 @@ function generateSalarioLiquidoModalContent(results, inputState) {
                 </div>
             </div>
         </div>
-        
+
         <div class="mt-4 pt-4 border-t border-gray-200">
             <div class="flex justify-between items-center text-lg">
                 <span class="font-bold text-gray-900">Salário Líquido a Receber:</span>
                 <span class="font-bold text-blue-600">${formatCurrency(salarioLiquido)}</span>
             </div>
         </div>`;
-    
+
     return html;
 }
 
@@ -637,12 +658,12 @@ function generateSalarioLiquidoModalContent(results, inputState) {
  */
 function generateRescisaoModalContent(results, inputState) {
     const { proventos, descontos, totalProventos, totalDescontos, valorLiquido } = results;
-    
+
     let html = `
         <div class="mt-4">
             <h4 class="font-semibold text-gray-800">Verbas Rescisórias (Ganhos)</h4>
             <div class="mt-2 space-y-1 text-sm">`;
-    
+
     // Add provento items
     Object.entries(proventos).forEach(([key, value]) => {
         if (value > 0) {
@@ -653,7 +674,7 @@ function generateRescisaoModalContent(results, inputState) {
                 </div>`;
         }
     });
-    
+
     html += `
                 <div class="flex justify-between font-semibold border-t pt-2 mt-2">
                     <span>Total de Proventos:</span>
@@ -661,11 +682,11 @@ function generateRescisaoModalContent(results, inputState) {
                 </div>
             </div>
         </div>
-        
+
         <div class="mt-4">
             <h4 class="font-semibold text-gray-800">Descontos</h4>
             <div class="mt-2 space-y-1 text-sm">`;
-    
+
     // Add desconto items
     Object.entries(descontos).forEach(([key, result]) => {
         if (result && (result.hasOwnProperty('value') ? result.value > 0 : result > 0)) {
@@ -677,7 +698,7 @@ function generateRescisaoModalContent(results, inputState) {
                 </div>`;
         }
     });
-    
+
     html += `
                 <div class="flex justify-between font-semibold border-t pt-2 mt-2">
                     <span>Total de Descontos:</span>
@@ -685,14 +706,14 @@ function generateRescisaoModalContent(results, inputState) {
                 </div>
             </div>
         </div>
-        
+
         <div class="mt-4 pt-4 border-t border-gray-200">
             <div class="flex justify-between items-center text-lg">
                 <span class="font-bold text-gray-900">Total Líquido a Receber:</span>
                 <span class="font-bold text-blue-600">${formatCurrency(valorLiquido)}</span>
             </div>
         </div>`;
-    
+
     return html;
 }
 
@@ -734,6 +755,41 @@ export function hideCalculationMemoryModal() {
 
 
 // --- RESULT TEMPLATE FUNCTIONS ---
+
+function createFgtsResultHTML(results) {
+    if (Object.keys(state.fgts.errors).some(k => state.fgts.errors[k])) {
+        return '<p class="text-center text-red-500 font-semibold">Por favor, corrija os campos destacados acima para ver o seu cálculo.</p>';
+    }
+    if (!results || !results.salarioBruto) return '<p class="text-center text-muted-foreground">Preencha os campos para calcular.</p>';
+
+    const { depositoMensal, valorSaque, opcaoSaque } = results;
+    const saqueLabel = opcaoSaque === 'rescisao' ? 'Saque-Rescisão' : 'Saque-Aniversário';
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado da Simulação FGTS</h3>
+            <p class="text-sm text-muted-foreground">Resumo das suas simulações de FGTS.</p>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-4">
+                <div>
+                    <h4 class="text-lg font-semibold text-primary">Depósito Mensal</h4>
+                    <div class="flex justify-between result-row py-2">
+                        <span>Valor Estimado do Depósito:</span>
+                        <span class="font-mono text-green-600">${formatCurrency(depositoMensal)}</span>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-primary mt-4">Simulação de Saque</h4>
+                    <div class="flex justify-between result-row py-2">
+                        <span>Valor Estimado do ${saqueLabel}:</span>
+                        <span class="font-mono text-green-600">${formatCurrency(valorSaque)}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
 
 function createFeriasResultHTML(results) {
     if (Object.keys(state.ferias.errors).some(k => state.ferias.errors[k])) {
@@ -801,10 +857,10 @@ function renderSalarioLiquidoChart(results) {
 
     // Generate SVG chart
     const svgChart = generateSVGChart(segments);
-    
+
     // Clear container and add new chart
     chartContainer.innerHTML = svgChart;
-    
+
     // Add event listeners for tooltips
     addChartTooltipListeners(chartContainer, segments);
 }
@@ -823,30 +879,30 @@ function generateSVGChart(segments) {
     const center = size / 2;
     const radius = 70;
     const innerRadius = 30;
-    
+
     let cumulativeAngle = 0;
     let pathElements = '';
     let legendElements = '';
-    
+
     segments.forEach((segment, index) => {
         const angle = (segment.percentage / 100) * 360;
         const startAngle = cumulativeAngle;
         const endAngle = cumulativeAngle + angle;
-        
+
         // Create SVG path for donut segment
         const path = createDonutPath(center, center, innerRadius, radius, startAngle, endAngle);
-        
+
         pathElements += `
-            <path 
-                d="${path}" 
-                fill="${segment.color}" 
-                stroke="white" 
+            <path
+                d="${path}"
+                fill="${segment.color}"
+                stroke="white"
                 stroke-width="2"
                 class="chart-segment"
                 data-segment="${index}"
                 style="cursor: pointer; transition: all 0.3s ease;"
             />`;
-        
+
         // Create legend item
         legendElements += `
             <div class="flex items-center space-x-2 text-sm chart-legend-item" data-segment="${index}" style="cursor: pointer;">
@@ -854,10 +910,10 @@ function generateSVGChart(segments) {
                 <span class="font-medium">${segment.label}</span>
                 <span class="text-gray-600">(${segment.percentage.toFixed(1)}%)</span>
             </div>`;
-        
+
         cumulativeAngle += angle;
     });
-    
+
     return `
         <div class="flex flex-col items-center space-y-4">
             <div class="relative">
@@ -876,19 +932,19 @@ function generateSVGChart(segments) {
 function createDonutPath(cx, cy, innerRadius, outerRadius, startAngle, endAngle) {
     const startAngleRad = (startAngle - 90) * Math.PI / 180;
     const endAngleRad = (endAngle - 90) * Math.PI / 180;
-    
+
     const x1 = cx + outerRadius * Math.cos(startAngleRad);
     const y1 = cy + outerRadius * Math.sin(startAngleRad);
     const x2 = cx + outerRadius * Math.cos(endAngleRad);
     const y2 = cy + outerRadius * Math.sin(endAngleRad);
-    
+
     const x3 = cx + innerRadius * Math.cos(endAngleRad);
     const y3 = cy + innerRadius * Math.sin(endAngleRad);
     const x4 = cx + innerRadius * Math.cos(startAngleRad);
     const y4 = cy + innerRadius * Math.sin(startAngleRad);
-    
+
     const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
-    
+
     return [
         `M ${x1} ${y1}`,
         `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
@@ -902,7 +958,7 @@ function addChartTooltipListeners(container, segments) {
     const tooltip = container.querySelector('#chart-tooltip');
     const chartSegments = container.querySelectorAll('.chart-segment');
     const legendItems = container.querySelectorAll('.chart-legend-item');
-    
+
     function showTooltip(segmentIndex, event) {
         const segment = segments[segmentIndex];
         tooltip.innerHTML = `
@@ -911,22 +967,22 @@ function addChartTooltipListeners(container, segments) {
             <div class="text-xs mt-1 opacity-80">${segment.details}</div>
         `;
         tooltip.classList.remove('hidden');
-        
+
         // Position tooltip
         const rect = event.target.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
         tooltip.style.left = `${rect.left - containerRect.left + rect.width / 2}px`;
         tooltip.style.top = `${rect.top - containerRect.top - 10}px`;
     }
-    
+
     function hideTooltip() {
         tooltip.classList.add('hidden');
     }
-    
+
     function highlightSegment(segmentIndex, highlight = true) {
         const segment = chartSegments[segmentIndex];
         const legendItem = legendItems[segmentIndex];
-        
+
         if (highlight) {
             segment.style.filter = 'brightness(1.1)';
             segment.style.transform = 'scale(1.05)';
@@ -937,19 +993,19 @@ function addChartTooltipListeners(container, segments) {
             legendItem.style.backgroundColor = 'transparent';
         }
     }
-    
+
     // Add event listeners
     chartSegments.forEach((segment, index) => {
         segment.addEventListener('mouseenter', (e) => {
             showTooltip(index, e);
             highlightSegment(index, true);
         });
-        
+
         segment.addEventListener('mouseleave', () => {
             hideTooltip();
             highlightSegment(index, false);
         });
-        
+
         segment.addEventListener('mousemove', (e) => {
             const rect = e.target.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
@@ -957,13 +1013,13 @@ function addChartTooltipListeners(container, segments) {
             tooltip.style.top = `${e.clientY - containerRect.top - 10}px`;
         });
     });
-    
+
     // Add legend hover effects
     legendItems.forEach((item, index) => {
         item.addEventListener('mouseenter', () => {
             highlightSegment(index, true);
         });
-        
+
         item.addEventListener('mouseleave', () => {
             highlightSegment(index, false);
         });
@@ -1023,11 +1079,11 @@ export function generateReportHTML(data) {
 
     const { type, results, state: inputState } = data;
     const currentDate = new Date().toLocaleString('pt-BR');
-    
+
     // Generate the main content based on calculation type
     let contentHTML = '';
     let calculatorTitle = '';
-    
+
     switch (type) {
         case 'ferias':
             calculatorTitle = 'Cálculo de Férias';
@@ -1058,7 +1114,7 @@ export function generateReportHTML(data) {
                 <p>Relatório gerado em: <span id="print-date">${currentDate}</span></p>
             </div>
         </div>
-        
+
         <div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
             <div class="flex flex-col space-y-1.5 p-6">
                 <h3 class="text-xl font-semibold leading-none tracking-tight">${calculatorTitle}</h3>
@@ -1076,7 +1132,7 @@ export function generateReportHTML(data) {
  */
 function generateFeriasReportContent(results, inputState) {
     const { valorFerias, tercoConstitucional, valorAbono, tercoAbono, adiantamento13, descontoINSS, descontoIRRF, valorLiquido, venderFerias, adiantarDecimo, diasFerias } = results;
-    
+
     let html = `
         <div class="space-y-1">
             <h4 class="text-lg font-semibold text-primary mt-4">Proventos (Ganhos)</h4>
@@ -1088,7 +1144,7 @@ function generateFeriasReportContent(results, inputState) {
                 <span>1/3 Constitucional sobre Férias:</span>
                 <span class="font-mono text-green-600">${formatCurrency(tercoConstitucional)}</span>
             </div>`;
-    
+
     if (venderFerias && valorAbono > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1100,7 +1156,7 @@ function generateFeriasReportContent(results, inputState) {
                 <span class="font-mono text-green-600">${formatCurrency(tercoAbono)}</span>
             </div>`;
     }
-    
+
     if (adiantarDecimo && adiantamento13 > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1108,7 +1164,7 @@ function generateFeriasReportContent(results, inputState) {
                 <span class="font-mono text-green-600">${formatCurrency(adiantamento13)}</span>
             </div>`;
     }
-    
+
     html += `
             <h4 class="text-lg font-semibold text-red-600 mt-4">Descontos</h4>
             <div class="flex justify-between result-row py-2">
@@ -1120,12 +1176,12 @@ function generateFeriasReportContent(results, inputState) {
                 <span class="font-mono text-red-600">-${formatCurrency(descontoIRRF.value)}</span>
             </div>
         </div>
-        
+
         <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
             <span class="text-xl font-bold total-liquido-label">Total Líquido a Receber:</span>
             <span class="font-mono text-green-600 text-xl font-bold total-liquido-valor">${formatCurrency(valorLiquido)}</span>
         </div>`;
-    
+
     return html;
 }
 
@@ -1134,7 +1190,7 @@ function generateFeriasReportContent(results, inputState) {
  */
 function generateDecimoTerceiroReportContent(results, inputState) {
     const { baseDeCalculo, mesesTrabalhados, valorBrutoDecimo, descontoINSS, descontoIRRF, valorLiquidoDecimo, adiantamentoRecebido, valorAReceber } = results;
-    
+
     let html = `
         <div class="space-y-1">
             <div class="flex justify-between result-row py-2">
@@ -1149,7 +1205,7 @@ function generateDecimoTerceiroReportContent(results, inputState) {
                 <span>13º Salário Bruto:</span>
                 <span class="font-mono">${formatCurrency(valorBrutoDecimo)}</span>
             </div>
-            
+
             <h4 class="text-lg font-semibold text-red-600 mt-4">Descontos</h4>
             <div class="flex justify-between result-row py-2">
                 <span>INSS:</span>
@@ -1159,13 +1215,13 @@ function generateDecimoTerceiroReportContent(results, inputState) {
                 <span>IRRF:</span>
                 <span class="font-mono text-red-600">-${formatCurrency(descontoIRRF.value)}</span>
             </div>
-            
+
             <h4 class="text-lg font-semibold text-primary mt-4">Valores Finais</h4>
             <div class="flex justify-between result-row py-2">
                 <span>13º Salário Líquido:</span>
                 <span class="font-mono text-green-600">${formatCurrency(valorLiquidoDecimo)}</span>
             </div>`;
-    
+
     if (adiantamentoRecebido > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1173,15 +1229,15 @@ function generateDecimoTerceiroReportContent(results, inputState) {
                 <span class="font-mono text-red-600">-${formatCurrency(adiantamentoRecebido)}</span>
             </div>`;
     }
-    
+
     html += `
         </div>
-        
+
         <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
             <span class="text-xl font-bold total-liquido-label">Valor a Receber:</span>
             <span class="font-mono text-green-600 text-xl font-bold total-liquido-valor">${formatCurrency(valorAReceber)}</span>
         </div>`;
-    
+
     return html;
 }
 
@@ -1190,7 +1246,7 @@ function generateDecimoTerceiroReportContent(results, inputState) {
  */
 function generateSalarioLiquidoReportContent(results, inputState) {
     const { salarioBruto, horasExtras, adicionalPericulosidade, adicionalInsalubridade, adicionalNoturno, salarioFamilia, descontoINSS, descontoIRRF, descontoVT, descontoVR, descontoSaude, descontoAdiantamentos, totalProventos, totalDescontos, salarioLiquido } = results;
-    
+
     let html = `
         <div class="space-y-1">
             <h4 class="text-lg font-semibold text-primary mt-4">Proventos (Ganhos)</h4>
@@ -1198,7 +1254,7 @@ function generateSalarioLiquidoReportContent(results, inputState) {
                 <span>Salário Base:</span>
                 <span class="font-mono text-green-600">${formatCurrency(salarioBruto)}</span>
             </div>`;
-    
+
     if (horasExtras > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1206,7 +1262,7 @@ function generateSalarioLiquidoReportContent(results, inputState) {
                 <span class="font-mono text-green-600">${formatCurrency(horasExtras)}</span>
             </div>`;
     }
-    
+
     if (adicionalPericulosidade > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1214,7 +1270,7 @@ function generateSalarioLiquidoReportContent(results, inputState) {
                 <span class="font-mono text-green-600">${formatCurrency(adicionalPericulosidade)}</span>
             </div>`;
     }
-    
+
     if (adicionalInsalubridade > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1222,7 +1278,7 @@ function generateSalarioLiquidoReportContent(results, inputState) {
                 <span class="font-mono text-green-600">${formatCurrency(adicionalInsalubridade)}</span>
             </div>`;
     }
-    
+
     if (adicionalNoturno > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1230,7 +1286,7 @@ function generateSalarioLiquidoReportContent(results, inputState) {
                 <span class="font-mono text-green-600">${formatCurrency(adicionalNoturno)}</span>
             </div>`;
     }
-    
+
     if (salarioFamilia > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1238,13 +1294,13 @@ function generateSalarioLiquidoReportContent(results, inputState) {
                 <span class="font-mono text-green-600">${formatCurrency(salarioFamilia)}</span>
             </div>`;
     }
-    
+
     html += `
             <div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2">
                 <span>Total Bruto:</span>
                 <span class="font-mono text-green-600">${formatCurrency(totalProventos)}</span>
             </div>
-            
+
             <h4 class="text-lg font-semibold text-red-600 mt-4">Descontos</h4>
             <div class="flex justify-between result-row py-2">
                 <span>INSS:</span>
@@ -1254,7 +1310,7 @@ function generateSalarioLiquidoReportContent(results, inputState) {
                 <span>IRRF:</span>
                 <span class="font-mono text-red-600">-${formatCurrency(descontoIRRF.value)}</span>
             </div>`;
-    
+
     if (descontoVT > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1262,7 +1318,7 @@ function generateSalarioLiquidoReportContent(results, inputState) {
                 <span class="font-mono text-red-600">-${formatCurrency(descontoVT)}</span>
             </div>`;
     }
-    
+
     if (descontoVR > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1270,7 +1326,7 @@ function generateSalarioLiquidoReportContent(results, inputState) {
                 <span class="font-mono text-red-600">-${formatCurrency(descontoVR)}</span>
             </div>`;
     }
-    
+
     if (descontoSaude > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1278,7 +1334,7 @@ function generateSalarioLiquidoReportContent(results, inputState) {
                 <span class="font-mono text-red-600">-${formatCurrency(descontoSaude)}</span>
             </div>`;
     }
-    
+
     if (descontoAdiantamentos > 0) {
         html += `
             <div class="flex justify-between result-row py-2">
@@ -1286,19 +1342,19 @@ function generateSalarioLiquidoReportContent(results, inputState) {
                 <span class="font-mono text-red-600">-${formatCurrency(descontoAdiantamentos)}</span>
             </div>`;
     }
-    
+
     html += `
             <div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2">
                 <span>Total de Descontos:</span>
                 <span class="font-mono text-red-600">-${formatCurrency(totalDescontos)}</span>
             </div>
         </div>
-        
+
         <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
             <span class="text-xl font-bold total-liquido-label">Salário Líquido a Receber:</span>
             <span class="font-mono text-green-600 text-xl font-bold total-liquido-valor">${formatCurrency(salarioLiquido)}</span>
         </div>`;
-    
+
     return html;
 }
 
@@ -1307,11 +1363,11 @@ function generateSalarioLiquidoReportContent(results, inputState) {
  */
 function generateRescisaoReportContent(results, inputState) {
     const { proventos, descontos, totalProventos, totalDescontos, valorLiquido } = results;
-    
+
     let html = `
         <div class="space-y-1">
             <h4 class="text-lg font-semibold text-primary mt-4">Verbas Rescisórias (Ganhos)</h4>`;
-    
+
     // Add provento items
     Object.entries(proventos).forEach(([key, value]) => {
         if (value > 0) {
@@ -1322,15 +1378,15 @@ function generateRescisaoReportContent(results, inputState) {
                 </div>`;
         }
     });
-    
+
     html += `
             <div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2">
                 <span>Total de Proventos:</span>
                 <span class="font-mono text-green-600">${formatCurrency(totalProventos)}</span>
             </div>
-            
+
             <h4 class="text-lg font-semibold text-red-600 mt-4">Descontos</h4>`;
-    
+
     // Add desconto items
     Object.entries(descontos).forEach(([key, result]) => {
         if (result && (result.hasOwnProperty('value') ? result.value > 0 : result > 0)) {
@@ -1342,19 +1398,19 @@ function generateRescisaoReportContent(results, inputState) {
                 </div>`;
         }
     });
-    
+
     html += `
             <div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2">
                 <span>Total de Descontos:</span>
                 <span class="font-mono text-red-600">-${formatCurrency(totalDescontos)}</span>
             </div>
         </div>
-        
+
         <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
             <span class="text-xl font-bold total-liquido-label">Total Líquido a Receber:</span>
             <span class="font-mono text-green-600 text-xl font-bold total-liquido-valor">${formatCurrency(valorLiquido)}</span>
         </div>`;
-    
+
     return html;
 }
 
@@ -1365,6 +1421,9 @@ function renderTabs() {
     for (const tabName in tabTriggers) {
         const trigger = tabTriggers[tabName];
         const panel = calculatorPanels[tabName];
+
+        if (!trigger || !panel) continue;
+
         const isActive = tabName === activeTab;
 
         trigger.setAttribute('data-state', isActive ? 'active' : 'inactive');
@@ -1438,7 +1497,9 @@ export function render() {
     let html;
 
     // 1. Update form inputs to reflect the current state
-    renderFormInputs(activeCalculator);
+    if (state[activeCalculator]) {
+      renderFormInputs(activeCalculator);
+    }
 
     // 2. Run calculation based on active tab and generate HTML
     switch (activeCalculator) {
@@ -1458,6 +1519,18 @@ export function render() {
             results = calculations.calculateRescisao(state.rescisao);
             html = createRescisaoResultHTML(results);
             break;
+        case 'fgts':
+            results = calculations.calculateFGTS(state.fgts);
+            html = createFgtsResultHTML(results);
+            break;
+        case 'pisPasep':
+        case 'seguroDesemprego':
+        case 'horasExtras':
+        case 'inss':
+        case 'valeTransporte':
+        case 'irpf':
+            html = ''; // Placeholders do not render results yet
+            break;
     }
 
     // 3. Update the result container
@@ -1472,10 +1545,14 @@ export function render() {
     renderSalarioFamiliaUI();
 
     // 6. Update field states (e.g., disabled)
-    renderFieldStates(activeCalculator);
+    if (state[activeCalculator]) {
+      renderFieldStates(activeCalculator);
+    }
 
     // 7. Display validation errors
-    renderValidationErrors(activeCalculator);
+    if (state[activeCalculator]) {
+      renderValidationErrors(activeCalculator);
+    }
 }
 
 function renderFieldStates(calculatorName) {

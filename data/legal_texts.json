@@ -165,13 +165,61 @@
         "legal": "Base legal: Lei nº 6.321/76 e normas coletivas",
         "example": "Um acordo coletivo pode definir o valor diário do vale-refeição e o percentual máximo de desconto no salário do empregado."
       },
-      "fgts": {
+      "fgts_topic": {
         "title": "FGTS - Fundo de Garantia do Tempo de Serviço",
         "content": "<p>O empregador é obrigado a depositar mensalmente o valor correspondente a <strong>8% do salário bruto</strong> do empregado em uma conta vinculada em nome deste. O FGTS funciona como uma poupança compulsória que pode ser sacada em situações específicas, como demissão sem justa causa, aposentadoria ou compra de imóvel.</p>",
         "legal": "Base legal: Lei nº 8.036/90",
         "example": "Para um salário bruto de R$ 3.000,00, o depósito mensal no FGTS será de R$ 240,00."
       }
     }
+  },
+  "fgts": {
+    "title": "FGTS - Fundo de Garantia",
+    "description": "Entenda como funciona o depósito mensal e as modalidades de saque do seu FGTS.",
+    "topics": {
+      "deposito_mensal": {
+        "title": "Depósito Mensal do FGTS",
+        "content": "<p>O empregador é obrigado a depositar, até o dia 7 de cada mês, o valor correspondente a <strong>8% do salário bruto</strong> do empregado em uma conta vinculada na Caixa Econômica Federal. Este valor não é descontado do seu salário.</p>",
+        "legal": "Base legal: Art. 15 da Lei nº 8.036/90",
+        "example": "Com um salário de R$ 3.000,00, o depósito mensal do FGTS feito pela empresa será de R$ 240,00."
+      },
+      "saque_rescisao": {
+        "title": "Saque-Rescisão",
+        "content": "<p>Esta é a modalidade padrão. Em caso de demissão sem justa causa, o trabalhador tem direito a sacar o <strong>valor integral</strong> do saldo de sua conta do FGTS, acrescido de uma multa de 40% paga pelo empregador sobre o total depositado durante o contrato.</p>",
+        "legal": "Base legal: Art. 20, I da Lei nº 8.036/90",
+        "example": "Se você for demitido sem justa causa com um saldo de R$ 10.000,00 no FGTS, poderá sacar os R$ 10.000,00."
+      },
+      "saque_aniversario": {
+        "title": "Saque-Aniversário",
+        "content": "<p>Modalidade opcional que permite a retirada de parte do saldo da conta do FGTS, anualmente, no mês do seu aniversário. O valor do saque é um percentual do saldo mais uma parcela adicional, conforme a faixa de valor. <strong>Atenção:</strong> Ao optar por esta modalidade, o trabalhador perde o direito de sacar o saldo total em caso de demissão sem justa causa, mantendo apenas o direito à multa de 40%.</p>",
+        "legal": "Base legal: Lei nº 13.932/2019",
+        "example": "Com um saldo de R$ 6.000,00, o saque aniversário seria de 20% (R$ 1.200,00) + uma parcela de R$ 650,00, totalizando R$ 1.850,00."
+      }
+    }
+  },
+  "pis_pasep": {
+    "title": "PIS/PASEP",
+    "description": "Informações sobre o abono salarial (funcionalidade em desenvolvimento)."
+  },
+  "seguro_desemprego_topic": {
+    "title": "Seguro-Desemprego",
+    "description": "Informações sobre o benefício do seguro-desemprego (funcionalidade em desenvolvimento)."
+  },
+  "horas_extras_topic": {
+    "title": "Horas Extras e Adicionais",
+    "description": "Cálculo de horas extras e outros adicionais (funcionalidade em desenvolvimento)."
+  },
+  "inss_topic": {
+    "title": "Contribuição ao INSS",
+    "description": "Cálculo detalhado da sua contribuição previdenciária (funcionalidade em desenvolvimento)."
+  },
+  "vale_transporte_topic": {
+    "title": "Desconto de Vale-Transporte",
+    "description": "Cálculo do desconto do VT (funcionalidade em desenvolvimento)."
+  },
+  "irpf_topic": {
+    "title": "Imposto de Renda (IRPF)",
+    "description": "Simulador simplificado do seu imposto de renda anual (funcionalidade em desenvolvimento)."
   },
   "individual_topics": {
     "base_insalubridade": {

@@ -698,6 +698,27 @@
                     <button id="tab-salario-liquido" type="button" role="tab" data-state="inactive" value="salario-liquido" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
                         Salário Líquido
                     </button>
+                    <button id="tab-fgts" type="button" role="tab" data-state="inactive" value="fgts" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
+                        FGTS
+                    </button>
+                    <button id="tab-pis-pasep" type="button" role="tab" data-state="inactive" value="pis-pasep" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
+                        PIS/PASEP
+                    </button>
+                    <button id="tab-seguro-desemprego" type="button" role="tab" data-state="inactive" value="seguro-desemprego" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
+                        Seguro-Desemprego
+                    </button>
+                    <button id="tab-horas-extras" type="button" role="tab" data-state="inactive" value="horas-extras" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
+                        Horas Extras
+                    </button>
+                    <button id="tab-inss" type="button" role="tab" data-state="inactive" value="inss" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
+                        INSS
+                    </button>
+                    <button id="tab-vale-transporte" type="button" role="tab" data-state="inactive" value="vale-transporte" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
+                        Vale-Transporte
+                    </button>
+                    <button id="tab-irpf" type="button" role="tab" data-state="inactive" value="irpf" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
+                        IRPF
+                    </button>
                 </div>
 
                 <!-- Tab Content -->
@@ -1141,6 +1162,201 @@
                     </div>
 
                     <div id="salario-liquido-results" class="mt-10"></div>
+                </div>
+
+                <!-- FGTS Calculator -->
+                <div id="calculator-fgts" value="fgts" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                    <form id="form-fgts">
+                        <div class="space-y-8">
+                            <!-- Grupo: Simulador de Depósito Mensal -->
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Simulador de Depósito Mensal</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                    <div class="space-y-2">
+                                        <label for="salario-bruto-fgts" class="text-sm font-medium">Salário Bruto Mensal</label>
+                                        <input type="text" id="salario-bruto-fgts" name="salario-bruto-fgts" data-state="fgts.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Grupo: Simulador de Saque do FGTS -->
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Simulador de Saque do FGTS</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                    <div class="space-y-2">
+                                        <label for="saldo-total-fgts" class="text-sm font-medium">Saldo Total do FGTS</label>
+                                        <input type="text" id="saldo-total-fgts" name="saldo-total-fgts" data-state="fgts.saldoTotal" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 8000.00">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="opcao-saque-fgts" class="text-sm font-medium">Opção de Saque</label>
+                                        <select id="opcao-saque-fgts" name="opcao-saque-fgts" data-state="fgts.opcaoSaque" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
+                                            <option value="rescisao">Saque-Rescisão (Demissão sem Justa Causa)</option>
+                                            <option value="aniversario">Saque-Aniversário</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="fgts-results" class="mt-10"></div>
+                </div>
+
+                <!-- PIS/PASEP Calculator -->
+                <div id="calculator-pis-pasep" value="pis-pasep" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                    <form id="form-pis-pasep">
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de PIS/PASEP</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                <div class="space-y-2">
+                                    <label for="salario-medio-pis" class="text-sm font-medium">Salário Médio Mensal no Ano-Base</label>
+                                    <input type="text" id="salario-medio-pis" name="salario-medio-pis" data-state="pisPasep.salarioMedio" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 1800.00" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="meses-trabalhados-pis" class="text-sm font-medium">Meses Trabalhados no Ano-Base</label>
+                                    <input type="number" id="meses-trabalhados-pis" name="meses-trabalhados-pis" data-state="pisPasep.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 12" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="data-inscricao-pis" class="text-sm font-medium">Data de Inscrição no PIS/PASEP</label>
+                                    <input type="date" id="data-inscricao-pis" name="data-inscricao-pis" data-state="pisPasep.dataInscricao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" disabled>
+                                </div>
+                            </div>
+                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
+                        </div>
+                    </form>
+                    <div id="pis-pasep-results" class="mt-10"></div>
+                </div>
+
+                <!-- Seguro-Desemprego Calculator -->
+                <div id="calculator-seguro-desemprego" value="seguro-desemprego" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                    <form id="form-seguro-desemprego">
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Seguro-Desemprego</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                <div class="space-y-2">
+                                    <label for="salario-penultimo" class="text-sm font-medium">Penúltimo Salário</label>
+                                    <input type="text" id="salario-penultimo" name="salario-penultimo" data-state="seguroDesemprego.salarioPenultimo" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="salario-antepenultimo" class="text-sm font-medium">Antepenúltimo Salário</label>
+                                    <input type="text" id="salario-antepenultimo" name="salario-antepenultimo" data-state="seguroDesemprego.salarioAntepenultimo" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2400.00" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="tempo-servico-seguro" class="text-sm font-medium">Tempo de Serviço (meses)</label>
+                                    <input type="number" id="tempo-servico-seguro" name="tempo-servico-seguro" data-state="seguroDesemprego.tempoServico" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 24" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="solicitacoes-anteriores-seguro" class="text-sm font-medium">Nº de Solicitações Anteriores</label>
+                                    <input type="number" id="solicitacoes-anteriores-seguro" name="solicitacoes-anteriores-seguro" data-state="seguroDesemprego.solicitacoesAnteriores" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 0" disabled>
+                                </div>
+                            </div>
+                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
+                        </div>
+                    </form>
+                    <div id="seguro-desemprego-results" class="mt-10"></div>
+                </div>
+
+                <!-- Horas Extras Calculator -->
+                <div id="calculator-horas-extras" value="horas-extras" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                    <form id="form-horas-extras">
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Horas Extras e Adicionais</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                <div class="space-y-2">
+                                    <label for="salario-base-he" class="text-sm font-medium">Salário Base</label>
+                                    <input type="text" id="salario-base-he" name="salario-base-he" data-state="horasExtras.salarioBase" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="horas-contratuais-he" class="text-sm font-medium">Horas Contratuais Mensais</label>
+                                    <input type="number" id="horas-contratuais-he" name="horas-contratuais-he" data-state="horasExtras.horasContratuais" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 220" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="horas-extras-50" class="text-sm font-medium">Nº de Horas Extras 50%</label>
+                                    <input type="number" id="horas-extras-50" name="horas-extras-50" data-state="horasExtras.horasExtras50" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 10" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="horas-extras-100" class="text-sm font-medium">Nº de Horas Extras 100%</label>
+                                    <input type="number" id="horas-extras-100" name="horas-extras-100" data-state="horasExtras.horasExtras100" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 4" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="horas-noturnas" class="text-sm font-medium">Nº de Horas Noturnas</label>
+                                    <input type="number" id="horas-noturnas" name="horas-noturnas" data-state="horasExtras.horasNoturnas" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 20" disabled>
+                                </div>
+                            </div>
+                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
+                        </div>
+                    </form>
+                    <div id="horas-extras-results" class="mt-10"></div>
+                </div>
+
+                <!-- INSS Calculator -->
+                <div id="calculator-inss" value="inss" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                    <form id="form-inss">
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Contribuição Previdenciária (INSS)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                <div class="space-y-2">
+                                    <label for="salario-bruto-inss" class="text-sm font-medium">Salário Bruto</label>
+                                    <input type="text" id="salario-bruto-inss" name="salario-bruto-inss" data-state="inss.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 3000.00" disabled>
+                                </div>
+                            </div>
+                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
+                        </div>
+                    </form>
+                    <div id="inss-results" class="mt-10"></div>
+                </div>
+
+                <!-- Vale-Transporte Calculator -->
+                <div id="calculator-vale-transporte" value="vale-transporte" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                    <form id="form-vale-transporte">
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Desconto de Vale-Transporte</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                <div class="space-y-2">
+                                    <label for="salario-base-vt" class="text-sm font-medium">Salário Base</label>
+                                    <input type="text" id="salario-base-vt" name="salario-base-vt" data-state="valeTransporte.salarioBase" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="valor-passagem-vt" class="text-sm font-medium">Valor Unitário da Passagem</label>
+                                    <input type="text" id="valor-passagem-vt" name="valor-passagem-vt" data-state="valeTransporte.valorPassagem" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 4.50" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="dias-trabalhados-vt" class="text-sm font-medium">Dias Trabalhados no Mês</label>
+                                    <input type="number" id="dias-trabalhados-vt" name="dias-trabalhados-vt" data-state="valeTransporte.diasTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 22" disabled>
+                                </div>
+                            </div>
+                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
+                        </div>
+                    </form>
+                    <div id="vale-transporte-results" class="mt-10"></div>
+                </div>
+
+                <!-- IRPF Calculator -->
+                <div id="calculator-irpf" value="irpf" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                    <form id="form-irpf">
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Simulador Simplificado de Ajuste Anual de IRPF</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                <div class="space-y-2">
+                                    <label for="renda-anual-irpf" class="text-sm font-medium">Renda Tributável Anual</label>
+                                    <input type="text" id="renda-anual-irpf" name="renda-anual-irpf" data-state="irpf.rendaAnual" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 45000.00" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="dependentes-irpf" class="text-sm font-medium">Número de Dependentes</label>
+                                    <input type="number" id="dependentes-irpf" name="dependentes-irpf" data-state="irpf.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="deducoes-irpf" class="text-sm font-medium">Outras Deduções (Educação, Saúde)</label>
+                                    <input type="text" id="deducoes-irpf" name="deducoes-irpf" data-state="irpf.outrasDeducoes" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 5000.00" disabled>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="imposto-retido-irpf" class="text-sm font-medium">Imposto Retido na Fonte (anual)</label>
+                                    <input type="text" id="imposto-retido-irpf" name="imposto-retido-irpf" data-state="irpf.impostoRetido" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2000.00" disabled>
+                                </div>
+                            </div>
+                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
+                        </div>
+                    </form>
+                    <div id="irpf-results" class="mt-10"></div>
                 </div>
             </div>
             <!-- End of Calculator UI -->

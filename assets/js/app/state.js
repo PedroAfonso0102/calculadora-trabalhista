@@ -61,6 +61,50 @@ const initialState = {
         recebeSalarioFamilia: false,
         filhosSalarioFamilia: 0,
         errors: {}
+    },
+    fgts: {
+        salarioBruto: 0,
+        saldoTotal: 0,
+        opcaoSaque: 'rescisao',
+        errors: {}
+    },
+    pisPasep: {
+        salarioMedio: 0,
+        mesesTrabalhados: 0,
+        dataInscricao: '',
+        errors: {}
+    },
+    seguroDesemprego: {
+        salarioPenultimo: 0,
+        salarioAntepenultimo: 0,
+        tempoServico: 0,
+        solicitacoesAnteriores: 0,
+        errors: {}
+    },
+    horasExtras: {
+        salarioBase: 0,
+        horasContratuais: 220,
+        horasExtras50: 0,
+        horasExtras100: 0,
+        horasNoturnas: 0,
+        errors: {}
+    },
+    inss: {
+        salarioBruto: 0,
+        errors: {}
+    },
+    valeTransporte: {
+        salarioBase: 0,
+        valorPassagem: 0,
+        diasTrabalhados: 22,
+        errors: {}
+    },
+    irpf: {
+        rendaAnual: 0,
+        dependentes: 0,
+        outrasDeducoes: 0,
+        impostoRetido: 0,
+        errors: {}
     }
 };
 

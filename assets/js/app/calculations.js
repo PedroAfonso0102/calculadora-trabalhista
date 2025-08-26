@@ -387,6 +387,76 @@ export function calculateSalarioLiquido(liquidoState) {
 }
 
 /**
+ * Calculates FGTS deposit and withdrawal simulations.
+ * @param {object} fgtsState - The FGTS-specific slice of the application state.
+ * @returns {object} - An object containing all calculated FGTS details.
+ */
+export function calculateFGTS(fgtsState) {
+    const { salarioBruto, saldoTotal, opcaoSaque } = fgtsState;
+
+    // 1. Calculate Monthly Deposit
+    const depositoMensal = salarioBruto * 0.08;
+
+    // 2. Simulate Withdrawal
+    let valorSaque = 0;
+    if (saldoTotal > 0 && opcaoSaque) {
+        if (opcaoSaque === 'rescisao') {
+            valorSaque = saldoTotal;
+        } else if (opcaoSaque === 'aniversario') {
+            if (saldoTotal <= 500) {
+                valorSaque = saldoTotal * 0.50;
+            } else if (saldoTotal <= 1000) {
+                valorSaque = saldoTotal * 0.40 + 50;
+            } else if (saldoTotal <= 5000) {
+                valorSaque = saldoTotal * 0.30 + 150;
+            } else if (saldoTotal <= 10000) {
+                valorSaque = saldoTotal * 0.20 + 650;
+            } else if (saldoTotal <= 15000) {
+                valorSaque = saldoTotal * 0.15 + 1150;
+            } else if (saldoTotal <= 20000) {
+                valorSaque = saldoTotal * 0.10 + 1900;
+            } else {
+                valorSaque = saldoTotal * 0.05 + 2900;
+            }
+        }
+    }
+
+    return {
+        salarioBruto,
+        depositoMensal: roundMonetary(depositoMensal),
+        saldoTotal,
+        opcaoSaque,
+        valorSaque: roundMonetary(valorSaque)
+    };
+}
+
+export function calculatePISPASEP(state) {
+    return {};
+}
+
+export function calculateSeguroDesemprego(state) {
+    return {};
+}
+
+export function calculateHorasExtras(state) {
+    return {};
+}
+
+export function calculateINSSCalculator(state) {
+    // This is a placeholder for the dedicated INSS calculator tab.
+    // The main calculateINSS function is the helper used by other calculators.
+    return calculateINSS(state.salarioBruto);
+}
+
+export function calculateValeTransporte(state) {
+    return {};
+}
+
+export function calculateIRPF(state) {
+    return {};
+}
+
+/**
  * Calculates severance pay based on the severance state.
  * @param {object} rescisaoState - The severance-specific slice of the application state.
  * @returns {object} - An object containing all calculated severance pay details.

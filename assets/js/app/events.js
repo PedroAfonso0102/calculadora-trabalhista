@@ -223,6 +223,17 @@ export function initializeEventListeners() {
                 case 'rescisao': 
                     results = calculations.calculateRescisao(calculatorState); 
                     break;
+                case 'fgts':
+                    results = calculations.calculateFGTS(calculatorState);
+                    break;
+                case 'pisPasep':
+                case 'seguroDesemprego':
+                case 'horasExtras':
+                case 'inss':
+                case 'valeTransporte':
+                case 'irpf':
+                    results = {}; // No results for placeholders
+                    break;
                 default: 
                     console.error('Unknown calculator type:', calculatorName);
                     return;
@@ -257,6 +268,17 @@ export function initializeEventListeners() {
                     break;
                 case 'rescisao': 
                     results = calculations.calculateRescisao(calculatorState); 
+                    break;
+                case 'fgts':
+                    results = calculations.calculateFGTS(calculatorState);
+                    break;
+                case 'pisPasep':
+                case 'seguroDesemprego':
+                case 'horasExtras':
+                case 'inss':
+                case 'valeTransporte':
+                case 'irpf':
+                    results = {}; // No results for placeholders
                     break;
                 default: 
                     console.error('Unknown calculator type:', calculatorName);
@@ -326,6 +348,17 @@ export function initializeEventListeners() {
                     case 'rescisao': 
                         results = calculations.calculateRescisao(calculatorState); 
                         break;
+                case 'fgts':
+                    results = calculations.calculateFGTS(calculatorState);
+                    break;
+                case 'pisPasep':
+                case 'seguroDesemprego':
+                case 'horasExtras':
+                case 'inss':
+                case 'valeTransporte':
+                case 'irpf':
+                    results = {}; // No results for placeholders
+                    break;
                     default: 
                         console.error('Unknown calculator type:', calculatorName);
                         return;
