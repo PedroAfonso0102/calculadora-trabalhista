@@ -1204,23 +1204,24 @@
                 <!-- PIS/PASEP Calculator -->
                 <div id="calculator-pis-pasep" value="pis-pasep" role="tabpanel" data-state="inactive" class="hidden mt-4">
                     <form id="form-pis-pasep">
-                        <div class="space-y-4">
-                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de PIS/PASEP</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                <div class="space-y-2">
-                                    <label for="salario-medio-pis" class="text-sm font-medium">Salário Médio Mensal no Ano-Base</label>
-                                    <input type="text" id="salario-medio-pis" name="salario-medio-pis" data-state="pisPasep.salarioMedio" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 1800.00" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="meses-trabalhados-pis" class="text-sm font-medium">Meses Trabalhados no Ano-Base</label>
-                                    <input type="number" id="meses-trabalhados-pis" name="meses-trabalhados-pis" data-state="pisPasep.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 12" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="data-inscricao-pis" class="text-sm font-medium">Data de Inscrição no PIS/PASEP</label>
-                                    <input type="date" id="data-inscricao-pis" name="data-inscricao-pis" data-state="pisPasep.dataInscricao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" disabled>
+                        <div class="space-y-8">
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Abono Salarial (PIS/PASEP)</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                    <div class="space-y-2">
+                                        <label for="salario-medio-pis" class="text-sm font-medium">Salário Médio Mensal no Ano-Base</label>
+                                        <input type="text" id="salario-medio-pis" name="salario-medio-pis" data-state="pisPasep.salarioMedio" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 1800.00">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="meses-trabalhados-pis" class="text-sm font-medium">Meses Trabalhados no Ano-Base</label>
+                                        <input type="number" id="meses-trabalhados-pis" name="meses-trabalhados-pis" data-state="pisPasep.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 12" min="0" max="12">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="data-inscricao-pis" class="text-sm font-medium">Data de Inscrição no PIS/PASEP</label>
+                                        <input type="date" id="data-inscricao-pis" name="data-inscricao-pis" data-state="pisPasep.dataInscricao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                    </div>
                                 </div>
                             </div>
-                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
                         </div>
                     </form>
                     <div id="pis-pasep-results" class="mt-10"></div>
@@ -1229,27 +1230,36 @@
                 <!-- Seguro-Desemprego Calculator -->
                 <div id="calculator-seguro-desemprego" value="seguro-desemprego" role="tabpanel" data-state="inactive" class="hidden mt-4">
                     <form id="form-seguro-desemprego">
-                        <div class="space-y-4">
-                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Seguro-Desemprego</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                <div class="space-y-2">
-                                    <label for="salario-penultimo" class="text-sm font-medium">Penúltimo Salário</label>
-                                    <input type="text" id="salario-penultimo" name="salario-penultimo" data-state="seguroDesemprego.salarioPenultimo" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="salario-antepenultimo" class="text-sm font-medium">Antepenúltimo Salário</label>
-                                    <input type="text" id="salario-antepenultimo" name="salario-antepenultimo" data-state="seguroDesemprego.salarioAntepenultimo" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2400.00" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="tempo-servico-seguro" class="text-sm font-medium">Tempo de Serviço (meses)</label>
-                                    <input type="number" id="tempo-servico-seguro" name="tempo-servico-seguro" data-state="seguroDesemprego.tempoServico" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 24" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="solicitacoes-anteriores-seguro" class="text-sm font-medium">Nº de Solicitações Anteriores</label>
-                                    <input type="number" id="solicitacoes-anteriores-seguro" name="solicitacoes-anteriores-seguro" data-state="seguroDesemprego.solicitacoesAnteriores" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 0" disabled>
+                        <div class="space-y-8">
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Seguro-Desemprego</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                    <div class="space-y-2">
+                                        <label for="sd-salario-1" class="text-sm font-medium">Último Salário</label>
+                                        <input type="text" id="sd-salario-1" name="sd-salario-1" data-state="seguroDesemprego.salario1" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2600.00">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="sd-salario-2" class="text-sm font-medium">Penúltimo Salário</label>
+                                        <input type="text" id="sd-salario-2" name="sd-salario-2" data-state="seguroDesemprego.salario2" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="sd-salario-3" class="text-sm font-medium">Antepenúltimo Salário</label>
+                                        <input type="text" id="sd-salario-3" name="sd-salario-3" data-state="seguroDesemprego.salario3" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2400.00">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="sd-meses-trabalhados" class="text-sm font-medium">Meses Trabalhados (últimos 36 meses)</label>
+                                        <input type="number" id="sd-meses-trabalhados" name="sd-meses-trabalhados" data-state="seguroDesemprego.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 24">
+                                    </div>
+                                    <div class="space-y-2 md:col-span-2">
+                                        <label for="sd-solicitacoes-anteriores" class="text-sm font-medium">É a primeira vez que solicita o Seguro-Desemprego?</label>
+                                        <select id="sd-solicitacoes-anteriores" name="sd-solicitacoes-anteriores" data-state="seguroDesemprego.numSolicitacoes" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
+                                            <option value="0">Sim, é a primeira vez</option>
+                                            <option value="1">Não, é a segunda vez</option>
+                                            <option value="2">Não, é a terceira vez ou mais</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
                         </div>
                     </form>
                     <div id="seguro-desemprego-results" class="mt-10"></div>
@@ -1258,31 +1268,32 @@
                 <!-- Horas Extras Calculator -->
                 <div id="calculator-horas-extras" value="horas-extras" role="tabpanel" data-state="inactive" class="hidden mt-4">
                     <form id="form-horas-extras">
-                        <div class="space-y-4">
-                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Horas Extras e Adicionais</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                <div class="space-y-2">
-                                    <label for="salario-base-he" class="text-sm font-medium">Salário Base</label>
-                                    <input type="text" id="salario-base-he" name="salario-base-he" data-state="horasExtras.salarioBase" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="horas-contratuais-he" class="text-sm font-medium">Horas Contratuais Mensais</label>
-                                    <input type="number" id="horas-contratuais-he" name="horas-contratuais-he" data-state="horasExtras.horasContratuais" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 220" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="horas-extras-50" class="text-sm font-medium">Nº de Horas Extras 50%</label>
-                                    <input type="number" id="horas-extras-50" name="horas-extras-50" data-state="horasExtras.horasExtras50" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 10" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="horas-extras-100" class="text-sm font-medium">Nº de Horas Extras 100%</label>
-                                    <input type="number" id="horas-extras-100" name="horas-extras-100" data-state="horasExtras.horasExtras100" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 4" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="horas-noturnas" class="text-sm font-medium">Nº de Horas Noturnas</label>
-                                    <input type="number" id="horas-noturnas" name="horas-noturnas" data-state="horasExtras.horasNoturnas" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 20" disabled>
+                        <div class="space-y-8">
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Horas Extras e Adicionais</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                    <div class="space-y-2">
+                                        <label for="salario-base-he" class="text-sm font-medium">Salário Base</label>
+                                        <input type="text" id="salario-base-he" name="salario-base-he" data-state="horasExtras.salarioBase" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="horas-contratuais-he" class="text-sm font-medium">Horas Contratuais Mensais</label>
+                                        <input type="number" id="horas-contratuais-he" name="horas-contratuais-he" data-state="horasExtras.horasContratuais" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value="220" placeholder="Ex: 220">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="horas-extras-50" class="text-sm font-medium">Nº de Horas Extras 50%</label>
+                                        <input type="number" id="horas-extras-50" name="horas-extras-50" data-state="horasExtras.horasExtras50" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 10">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="horas-extras-100" class="text-sm font-medium">Nº de Horas Extras 100%</label>
+                                        <input type="number" id="horas-extras-100" name="horas-extras-100" data-state="horasExtras.horasExtras100" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 4">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="horas-noturnas" class="text-sm font-medium">Nº de Horas Noturnas</label>
+                                        <input type="number" id="horas-noturnas" name="horas-noturnas" data-state="horasExtras.horasNoturnas" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 20">
+                                    </div>
                                 </div>
                             </div>
-                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
                         </div>
                     </form>
                     <div id="horas-extras-results" class="mt-10"></div>

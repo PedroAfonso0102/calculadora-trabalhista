@@ -430,16 +430,141 @@ export function calculateFGTS(fgtsState) {
     };
 }
 
-export function calculatePISPASEP(state) {
-    return {};
+export function calculatePISPASEP(pisPasepState) {
+    const { salarioMedio, mesesTrabalhados, dataInscricao } = pisPasepState;
+    // Note: This assumes legalTexts has been loaded into the main state object.
+    // In a real app, you might pass state.legalTexts as an argument or ensure it's loaded.
+    const pisConstants = state.legalTexts.pisPasep.constants;
+    const SALARIO_MINIMO_VIGENTE = pisConstants.SALARIO_MINIMO_VIGENTE;
+    const MAX_SALARIO_PIS = SALARIO_MINIMO_VIGENTE * pisConstants.MAX_MULTIPLIER_SALARIO;
+    const MIN_ANOS_PIS = pisConstants.MIN_ANOS_INSCRICAO;
+
+    const anoAtual = new Date().getFullYear();
+    const anoInscricao = new Date(dataInscricao).getFullYear();
+    const anosDeInscricao = anoAtual - anoInscricao;
+
+    let elegivel = true;
+    let mensagem = 'Elegível ao PIS/PASEP';
+    let valorAbono = 0;
+
+    if (!dataInscricao || isNaN(anoInscricao)) {
+        elegivel = false;
+        mensagem = 'Data de inscrição inválida.';
+    } else if (anosDeInscricao < MIN_ANOS_PIS) {
+        elegivel = false;
+        mensagem = `Não elegível: Menos de ${MIN_ANOS_PIS} anos de inscrição no PIS/PASEP.`;
+    } else if (salarioMedio > MAX_SALARIO_PIS) {
+        elegivel = false;
+        mensagem = `Não elegível: Salário médio acima do limite de ${formatCurrency(MAX_SALARIO_PIS)}.`;
+    } else if (mesesTrabalhados < 1) {
+        elegivel = false;
+        mensagem = 'Não elegível: Mínimo de 1 mês trabalhado no ano-base.';
+    }
+
+    if (elegivel) {
+        const valorPorMes = SALARIO_MINIMO_VIGENTE / 12;
+        valorAbono = valorPorMes * mesesTrabalhados;
+        mensagem = 'Cálculo realizado com sucesso.';
+    }
+
+    return {
+        valorAbono: roundMonetary(valorAbono),
+        elegivel,
+        mensagem
+    };
 }
 
-export function calculateSeguroDesemprego(state) {
-    return {};
+export function calculateSeguroDesemprego(seguroDesempregoState) {
+    const { salario1, salario2, salario3, mesesTrabalhados, numSolicitacoes } = seguroDesempregoState;
+
+    const sdData = state.legalTexts.seguro_desemprego;
+    const SALARIO_MINIMO_VIGENTE = sdData.constants.SALARIO_MINIMO_VIGENTE;
+    const TETO_SEGURO_DESEMPREGO = sdData.constants.TETO_SEGURO_DESEMPREGO;
+    const TABELA_VALORES = sdData.tables.valores_parcelas;
+    const TABELA_PARCELAS = sdData.tables.numero_parcelas;
+
+    let numeroParcelas = 0;
+    let valorPorParcela = 0;
+    let elegivel = true;
+    let mensagem = 'Elegível ao Seguro-Desemprego.';
+
+    const mediaSalarial = (salario1 + salario2 + salario3) / 3;
+
+    // 1. Determinar Número de Parcelas
+    const solicitacaoAtual = (numSolicitacoes || 0) + 1;
+    const regraParcelas = TABELA_PARCELAS.find(regra =>
+        regra.solicitacao === solicitacaoAtual &&
+        mesesTrabalhados >= regra.meses_trabalhados.min &&
+        mesesTrabalhados <= regra.meses_trabalhados.max
+    );
+
+    if (regraParcelas) {
+        numeroParcelas = regraParcelas.parcelas;
+    } else {
+        elegivel = false;
+        mensagem = `Não elegível: Tempo de trabalho (${mesesTrabalhados} meses) ou número de solicitações (${solicitacaoAtual}ª) não atende aos critérios para o Seguro-Desemprego.`;
+        return { numeroParcelas: 0, valorPorParcela: 0, elegivel, mensagem };
+    }
+
+    // 2. Calcular Valor da Parcela
+    if (mediaSalarial <= TABELA_VALORES[0].faixa.max) {
+        valorPorParcela = mediaSalarial * TABELA_VALORES[0].percentual;
+    } else if (mediaSalarial <= TABELA_VALORES[1].faixa.max) {
+        valorPorParcela = (TABELA_VALORES[0].faixa.max * TABELA_VALORES[0].percentual) +
+                         ((mediaSalarial - TABELA_VALORES[0].faixa.max) * TABELA_VALORES[1].percentual);
+    } else {
+         valorPorParcela = TETO_SEGURO_DESEMPREGO;
+    }
+
+    // Ensure value is within min/max limits
+    valorPorParcela = Math.max(SALARIO_MINIMO_VIGENTE, Math.min(valorPorParcela, TETO_SEGURO_DESEMPREGO));
+
+    mensagem = `Elegível. Você tem direito a ${numeroParcelas} parcelas de ${formatCurrency(valorPorParcela)}.`;
+
+    return {
+        numeroParcelas,
+        valorPorParcela: roundMonetary(valorPorParcela),
+        elegivel,
+        mensagem
+    };
 }
 
-export function calculateHorasExtras(state) {
-    return {};
+export function calculateHorasExtras(horasExtrasState) {
+    const { salarioBase, horasContratuais, horasExtras50, horasExtras100, horasNoturnas } = horasExtrasState;
+
+    const heData = state.legalTexts.horasExtras;
+    const PERCENTUAL_HE_50 = heData.constants.PERCENTUAL_HE_50;
+    const PERCENTUAL_HE_100 = heData.constants.PERCENTUAL_HE_100;
+    const PERCENTUAL_ADICIONAL_NOTURNO = heData.constants.PERCENTUAL_ADICIONAL_NOTURNO;
+
+    if (horasContratuais <= 0) {
+        return {
+            totalValorHE50: 0,
+            totalValorHE100: 0,
+            totalValorAdicionalNoturno: 0,
+            totalGeralAdicionais: 0,
+            mensagem: "Horas contratuais devem ser maior que zero."
+        };
+    }
+
+    const valorHoraNormal = salarioBase / horasContratuais;
+    const valorHE50 = valorHoraNormal * (1 + PERCENTUAL_HE_50);
+    const valorHE100 = valorHoraNormal * (1 + PERCENTUAL_HE_100);
+    const valorAdicionalNoturnoHora = valorHoraNormal * PERCENTUAL_ADICIONAL_NOTURNO;
+
+    const totalValorHE50 = horasExtras50 * valorHE50;
+    const totalValorHE100 = horasExtras100 * valorHE100;
+    const totalValorAdicionalNoturno = horasNoturnas * valorAdicionalNoturnoHora;
+
+    const totalGeralAdicionais = totalValorHE50 + totalValorHE100 + totalValorAdicionalNoturno;
+
+    return {
+        totalValorHE50: roundMonetary(totalValorHE50),
+        totalValorHE100: roundMonetary(totalValorHE100),
+        totalValorAdicionalNoturno: roundMonetary(totalValorAdicionalNoturno),
+        totalGeralAdicionais: roundMonetary(totalGeralAdicionais),
+        mensagem: `Cálculo de Horas Extras e Adicionais.`
+    };
 }
 
 export function calculateINSSCalculator(state) {

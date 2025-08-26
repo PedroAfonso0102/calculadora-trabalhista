@@ -227,8 +227,14 @@ export function initializeEventListeners() {
                     results = calculations.calculateFGTS(calculatorState);
                     break;
                 case 'pisPasep':
+                    results = calculations.calculatePISPASEP(calculatorState);
+                    break;
                 case 'seguroDesemprego':
+                    results = calculations.calculateSeguroDesemprego(calculatorState);
+                    break;
                 case 'horasExtras':
+                    results = calculations.calculateHorasExtras(calculatorState);
+                    break;
                 case 'inss':
                 case 'valeTransporte':
                 case 'irpf':
@@ -273,8 +279,14 @@ export function initializeEventListeners() {
                     results = calculations.calculateFGTS(calculatorState);
                     break;
                 case 'pisPasep':
+                    results = calculations.calculatePISPASEP(calculatorState);
+                    break;
                 case 'seguroDesemprego':
+                    results = calculations.calculateSeguroDesemprego(calculatorState);
+                    break;
                 case 'horasExtras':
+                    results = calculations.calculateHorasExtras(calculatorState);
+                    break;
                 case 'inss':
                 case 'valeTransporte':
                 case 'irpf':
@@ -352,8 +364,14 @@ export function initializeEventListeners() {
                     results = calculations.calculateFGTS(calculatorState);
                     break;
                 case 'pisPasep':
+                    results = calculations.calculatePISPASEP(calculatorState);
+                    break;
                 case 'seguroDesemprego':
+                    results = calculations.calculateSeguroDesemprego(calculatorState);
+                    break;
                 case 'horasExtras':
+                    results = calculations.calculateHorasExtras(calculatorState);
+                    break;
                 case 'inss':
                 case 'valeTransporte':
                 case 'irpf':

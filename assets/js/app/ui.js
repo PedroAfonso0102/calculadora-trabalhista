@@ -638,7 +638,7 @@ function generateSalarioLiquidoModalContent(results, inputState) {
     html += `
                 <div class="flex justify-between font-semibold border-t pt-2 mt-2">
                     <span>Total de Descontos:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(totalDescontos)}</span>
+                    <span class="font-mono text-red-600">-${formatCurrency(totalDescontos)}</span>
                 </div>
             </div>
         </div>
@@ -702,7 +702,7 @@ function generateRescisaoModalContent(results, inputState) {
     html += `
                 <div class="flex justify-between font-semibold border-t pt-2 mt-2">
                     <span>Total de Descontos:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(totalDescontos)}</span>
+                    <span class="font-mono text-red-600">-${formatCurrency(totalDescontos)}</span>
                 </div>
             </div>
         </div>
@@ -786,6 +786,54 @@ function createFgtsResultHTML(results) {
                         <span class="font-mono text-green-600">${formatCurrency(valorSaque)}</span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function createPisPasepResultHTML(results) {
+    if (!results) return '';
+    const { valorAbono, elegivel, mensagem } = results;
+
+    let messageColorClass = elegivel ? 'text-gray-600' : 'text-red-500';
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Abono Salarial (PIS/PASEP)</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-2">
+                <div class="flex justify-between result-row py-2">
+                    <span>Valor Estimado do Abono:</span>
+                    <span class="font-mono text-green-600">${formatCurrency(valorAbono)}</span>
+                </div>
+                <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
+            </div>
+        </div>
+    </div>`;
+}
+
+function createSeguroDesempregoResultHTML(results) {
+    if (!results) return '';
+    const { numeroParcelas, valorPorParcela, elegivel, mensagem } = results;
+
+    let messageColorClass = elegivel ? 'text-gray-600' : 'text-red-500';
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Seguro-Desemprego</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-2">
+                <div class="flex justify-between result-row py-2">
+                    <span>Número de Parcelas:</span>
+                    <span class="font-mono text-blue-600">${numeroParcelas}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>Valor por Parcela:</span>
+                    <span class="font-mono text-green-600">${formatCurrency(valorPorParcela)}</span>
+                </div>
+                <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
             </div>
         </div>
     </div>`;
@@ -1461,6 +1509,7 @@ function renderFormInputs(calculatorName) {
     }
 
     const calculatorState = state[calculatorName];
+    if (!calculatorState) return;
 
     form.querySelectorAll('[data-state]').forEach(element => {
         const path = element.dataset.state;
@@ -1524,7 +1573,13 @@ export function render() {
             html = createFgtsResultHTML(results);
             break;
         case 'pisPasep':
+            results = calculations.calculatePISPASEP(state.pisPasep);
+            html = createPisPasepResultHTML(results);
+            break;
         case 'seguroDesemprego':
+            results = calculations.calculateSeguroDesemprego(state.seguroDesemprego);
+            html = createSeguroDesempregoResultHTML(results);
+            break;
         case 'horasExtras':
         case 'inss':
         case 'valeTransporte':
@@ -1586,6 +1641,54 @@ function renderFieldStates(calculatorName) {
     } else if (insalubridadeValue && insalubridadeValue !== "0") {
         periculosidadeCheckbox.disabled = true;
     }
+}
+
+function createPisPasepResultHTML(results) {
+    if (!results) return '';
+    const { valorAbono, elegivel, mensagem } = results;
+
+    let messageColorClass = elegivel ? 'text-gray-600' : 'text-red-500';
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Abono Salarial (PIS/PASEP)</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-2">
+                <div class="flex justify-between result-row py-2">
+                    <span>Valor Estimado do Abono:</span>
+                    <span class="font-mono text-green-600">${formatCurrency(valorAbono)}</span>
+                </div>
+                <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
+            </div>
+        </div>
+    </div>`;
+}
+
+function createSeguroDesempregoResultHTML(results) {
+    if (!results) return '';
+    const { numeroParcelas, valorPorParcela, elegivel, mensagem } = results;
+
+    let messageColorClass = elegivel ? 'text-gray-600' : 'text-red-500';
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Seguro-Desemprego</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-2">
+                <div class="flex justify-between result-row py-2">
+                    <span>Número de Parcelas:</span>
+                    <span class="font-mono text-blue-600">${numeroParcelas}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>Valor por Parcela:</span>
+                    <span class="font-mono text-green-600">${formatCurrency(valorPorParcela)}</span>
+                </div>
+                <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
+            </div>
+        </div>
+    </div>`;
 }
 
 function renderValidationErrors(calculatorName) {

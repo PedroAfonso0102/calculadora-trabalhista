@@ -197,13 +197,52 @@
       }
     }
   },
-  "pis_pasep": {
-    "title": "PIS/PASEP",
-    "description": "Informações sobre o abono salarial (funcionalidade em desenvolvimento)."
+  "pisPasep": {
+    "title": "Abono Salarial PIS/PASEP",
+    "description": "Regido pela Lei nº 7.998/1990 e suas alterações. Os critérios de elegibilidade incluem ter cadastro no PIS/PASEP há pelo menos 5 anos, ter trabalhado com carteira assinada por no mínimo 30 dias no ano-base, ter recebido em média até 2 salários mínimos no ano-base e ter os dados informados corretamente pelo empregador. O valor é proporcional aos meses trabalhados, limitado a 1 salário mínimo.",
+    "constants": {
+      "SALARIO_MINIMO_VIGENTE": 1412.00,
+      "MAX_MULTIPLIER_SALARIO": 2,
+      "MIN_ANOS_INSCRICAO": 5
+    },
+    "examples": [
+      {
+        "description": "Exemplo de cálculo para trabalhador elegível com 10 meses trabalhados.",
+        "inputs": {
+          "salario_medio_anobase": 1500.00,
+          "meses_trabalhados_anobase": 10,
+          "ano_inscricao": 2018
+        },
+        "expected_output": {
+          "valor_abono": 1176.67,
+          "elegivel": true
+        }
+      }
+    ]
   },
-  "seguro_desemprego_topic": {
+  "seguroDesemprego": {
     "title": "Seguro-Desemprego",
-    "description": "Informações sobre o benefício do seguro-desemprego (funcionalidade em desenvolvimento)."
+    "fundamentacao_legal": "Regido pela Lei nº 7.998/1990 e Resoluções do CODEFAT. A elegibilidade exige demissão sem justa causa, ausência de renda própria suficiente, e não estar recebendo outros benefícios previdenciários (exceto pensão por morte ou auxílio-acidente). O tempo mínimo de trabalho varia conforme o número de solicitações (1ª: 12 meses nos últimos 18; 2ª: 9 meses nos últimos 12; 3ª+: 6 meses imediatamente anteriores). O número de parcelas (3 a 5) e o valor são calculados com base na média dos 3 últimos salários, respeitando tabelas de faixas e teto.",
+    "constants": {
+      "SALARIO_MINIMO_VIGENTE": 1412.00,
+      "TETO_SEGURO_DESEMPREGO": 2309.13
+    },
+    "tables": {
+      "valores_parcelas": [
+        { "faixa": { "min": 0, "max": 2041.39 }, "percentual": 0.80, "parcela_deduzir": 0 },
+        { "faixa": { "min": 2041.40, "max": 3402.65 }, "percentual": 0.50, "parcela_deduzir": 1633.11 },
+        { "faixa": { "min": 3402.66, "max": 99999999 }, "percentual": 0, "parcela_deduzir": 0, "teto_aplicado": true }
+      ],
+      "numero_parcelas": [
+        { "solicitacao": 1, "meses_trabalhados": { "min": 12, "max": 23 }, "parcelas": 4 },
+        { "solicitacao": 1, "meses_trabalhados": { "min": 24, "max": 99999999 }, "parcelas": 5 },
+        { "solicitacao": 2, "meses_trabalhados": { "min": 9, "max": 23 }, "parcelas": 3 },
+        { "solicitacao": 2, "meses_trabalhados": { "min": 24, "max": 99999999 }, "parcelas": 4 },
+        { "solicitacao": 3, "meses_trabalhados": { "min": 6, "max": 11 }, "parcelas": 3 },
+        { "solicitacao": 3, "meses_trabalhados": { "min": 12, "max": 23 }, "parcelas": 4 },
+        { "solicitacao": 3, "meses_trabalhados": { "min": 24, "max": 99999999 }, "parcelas": 5 }
+      ]
+    }
   },
   "horas_extras_topic": {
     "title": "Horas Extras e Adicionais",
