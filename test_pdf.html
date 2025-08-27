@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Geração de PDF - Calculadora Trabalhista</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-container { max-width: 1000px; margin: 0 auto; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 8px 16px; margin: 5px; cursor: pointer; background: #007cba; color: white; border: none; border-radius: 3px; }
+        button:hover { background: #005a87; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 3px; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; max-height: 300px; }
+        .calculator-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .test-item { padding: 10px; border: 1px solid #ccc; border-radius: 5px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Teste de Geração de PDF - Calculadora Trabalhista</h1>
+        
+        <div class="test-section">
+            <h2>1. Testar Geração de PDF por Calculadora</h2>
+            <p>Clique no botão de cada calculadora para testar a geração do relatório PDF:</p>
+            
+            <div class="calculator-grid">
+                <div class="test-item">
+                    <h4>Férias</h4>
+                    <button onclick="testPDFGeneration('ferias')">Testar PDF</button>
+                </div>
+                <div class="test-item">
+                    <h4>13º Salário</h4>
+                    <button onclick="testPDFGeneration('decimoTerceiro')">Testar PDF</button>
+                </div>
+                <div class="test-item">
+                    <h4>Salário Líquido</h4>
+                    <button onclick="testPDFGeneration('salarioLiquido')">Testar PDF</button>
+                </div>
+                <div class="test-item">
+                    <h4>Rescisão</h4>
+                    <button onclick="testPDFGeneration('rescisao')">Testar PDF</button>
+                </div>
+                <div class="test-item">
+                    <h4>FGTS</h4>
+                    <button onclick="testPDFGeneration('fgts')">Testar PDF</button>
+                </div>
+                <div class="test-item">
+                    <h4>PIS/PASEP</h4>
+                    <button onclick="testPDFGeneration('pisPasep')">Testar PDF</button>
+                </div>
+                <div class="test-item">
+                    <h4>Seguro-Desemprego</h4>
+                    <button onclick="testPDFGeneration('seguroDesemprego')">Testar PDF</button>
+                </div>
+                <div class="test-item">
+                    <h4>Horas Extras</h4>
+                    <button onclick="testPDFGeneration('horasExtras')">Testar PDF</button>
+                </div>
+                <div class="test-item">
+                    <h4>INSS</h4>
+                    <button onclick="testPDFGeneration('inss')">Testar PDF</button>
+                </div>
+                <div class="test-item">
+                    <h4>Vale-Transporte</h4>
+                    <button onclick="testPDFGeneration('valeTransporte')">Testar PDF</button>
+                </div>
+                <div class="test-item">
+                    <h4>IRPF</h4>
+                    <button onclick="testPDFGeneration('irpf')">Testar PDF</button>
+                </div>
+            </div>
+            
+            <div id="pdfResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Preview do HTML Gerado</h2>
+            <button onclick="testAllPDFs()">Testar Todas as Calculadoras</button>
+            <div id="htmlPreview" class="result"></div>
+        </div>
+    </div>
+
+    <!-- Incluir o módulo UI -->
+    <script type="module">
+        import { generateReportHTML } from './assets/js/app/ui.js';
+        
+        // Dados de teste para cada calculadora
+        const testData = {
+            ferias: {
+                type: 'ferias',
+                results: {
+                    valorFerias: 2500,
+                    tercoConstitucional: 833.33,
+                    valorAbono: 833.33,
+                    tercoAbono: 277.78,
+                    adiantamento13: 1200,
+                    descontoINSS: { value: 150 },
+                    descontoIRRF: { value: 85 },
+                    valorLiquido: 4009.44,
+                    venderFerias: true,
+                    adiantarDecimo: true,
+                    diasFerias: 30
+                },
+                state: {
+                    salarioBruto: 3000,
+                    diasFerias: 30,
+                    dependentes: 2,
+                    abonoPecuniario: true,
+                    adiantarDecimo: true
+                }
+            },
+            decimoTerceiro: {
+                type: 'decimoTerceiro',
+                results: {
+                    baseDeCalculo: 3000,
+                    mesesTrabalhados: 12,
+                    valorBrutoDecimo: 3000,
+                    descontoINSS: { value: 180 },
+                    descontoIRRF: { value: 120 },
+                    valorLiquidoDecimo: 2700,
+                    adiantamentoRecebido: 1500,
+                    valorAReceber: 1200
+                },
+                state: {
+                    salarioBruto: 3000,
+                    mesesTrabalhados: 12,
+                    dependentes: 1,
+                    adiantamentoRecebido: 1500
+                }
+            },
+            salarioLiquido: {
+                type: 'salarioLiquido',
+                results: {
+                    salarioBruto: 3500,
+                    adicionais: { total: 500 },
+                    descontos: { total: 850 },
+                    salarioLiquido: 3150
+                },
+                state: {
+                    salarioBruto: 3500,
+                    horasExtras: 400,
+                    dependentes: 2,
+                    descontoVt: 150,
+                    descontoVr: 50
+                }
+            },
+            rescisao: {
+                type: 'rescisao',
+                results: {
+                    verbas: { total: 8500 },
+                    descontos: { total: 650 },
+                    valorLiquido: 7850
+                },
+                state: {
+                    motivo: 'sem_justa_causa',
+                    dataAdmissao: '2023-01-15',
+                    dataDemissao: '2025-08-27',
+                    salarioBruto: 3500
+                }
+            },
+            fgts: {
+                type: 'fgts',
+                results: {
+                    valorSaque: 5000,
+                    valorRendimentos: 250,
+                    valorTotal: 5250,
+                    saldoRestante: 10000
+                },
+                state: {
+                    salarioBruto: 2500,
+                    saldoTotal: 15000,
+                    opcaoSaque: 'aniversario'
+                }
+            },
+            pisPasep: {
+                type: 'pisPasep',
+                results: {
+                    valorAbono: 1212,
+                    elegivel: true,
+                    mesesTrabalhados: 10
+                },
+                state: {
+                    salarioMedio: 2200,
+                    mesesTrabalhados: 10,
+                    dataInscricao: '2020-03-15'
+                }
+            },
+            seguroDesemprego: {
+                type: 'seguroDesemprego',
+                results: {
+                    valorParcela: 1800,
+                    numeroParcelas: 5,
+                    valorTotal: 9000,
+                    elegivel: true
+                },
+                state: {
+                    salario1: 2800,
+                    salario2: 2700,
+                    salario3: 2600,
+                    mesesTrabalhados: 18,
+                    numSolicitacoes: 0
+                }
+            },
+            horasExtras: {
+                type: 'horasExtras',
+                results: {
+                    valorHorasExtras50: 450,
+                    valorHorasExtras100: 320,
+                    valorHorasNoturnas: 280,
+                    valorTotal: 1050
+                },
+                state: {
+                    salarioBase: 2400,
+                    horasContratuais: 220,
+                    horasExtras50: 15,
+                    horasExtras100: 8,
+                    horasNoturnas: 25
+                }
+            },
+            inss: {
+                type: 'inss',
+                results: {
+                    aliquota: 14,
+                    valorContribuicao: 630,
+                    faixaSalarial: 'Faixa 4'
+                },
+                state: {
+                    salarioBruto: 4500
+                }
+            },
+            valeTransporte: {
+                type: 'valeTransporte',
+                results: {
+                    valorVT: 187,
+                    descontoEmpregado: 120,
+                    custoEmpregador: 67,
+                    valorDiario: 8.50
+                },
+                state: {
+                    salarioBruto: 2000,
+                    custoDiario: 8.50,
+                    diasTrabalho: 22
+                }
+            },
+            irpf: {
+                type: 'irpf',
+                results: {
+                    impostoAnual: 3600,
+                    impostoMensal: 300,
+                    aliquota: 15,
+                    faixaIR: 'Faixa 2',
+                    impostoAReceber: 0,
+                    impostoAPagar: 1100
+                },
+                state: {
+                    rendaAnual: 48000,
+                    dependentes: 2,
+                    outrasDeducoes: 3000,
+                    impostoRetido: 2500
+                }
+            }
+        };
+
+        window.testPDFGeneration = function(calculatorType) {
+            try {
+                console.log(`Testando PDF para: ${calculatorType}`);
+                const data = testData[calculatorType];
+                
+                if (!data) {
+                    showResult('pdfResult', `Erro: Dados de teste não encontrados para ${calculatorType}`, 'error');
+                    return;
+                }
+
+                const htmlResult = generateReportHTML(data);
+                
+                if (htmlResult.includes('Erro:')) {
+                    showResult('pdfResult', `❌ Erro na geração do PDF para ${calculatorType}: ${htmlResult}`, 'error');
+                } else {
+                    showResult('pdfResult', `✅ PDF gerado com sucesso para ${calculatorType}!`, 'success');
+                    
+                    // Mostrar preview do HTML gerado
+                    document.getElementById('htmlPreview').innerHTML = 
+                        `<h4>Preview HTML - ${calculatorType}:</h4><pre>${htmlResult.substring(0, 1000)}...</pre>`;
+                }
+            } catch (error) {
+                console.error('Erro ao testar PDF:', error);
+                showResult('pdfResult', `❌ Erro ao testar ${calculatorType}: ${error.message}`, 'error');
+            }
+        };
+
+        window.testAllPDFs = function() {
+            const results = [];
+            
+            for (const [calculatorType, data] of Object.entries(testData)) {
+                try {
+                    const htmlResult = generateReportHTML(data);
+                    
+                    if (htmlResult.includes('Erro:')) {
+                        results.push(`❌ ${calculatorType}: FALHOU - ${htmlResult}`);
+                    } else {
+                        results.push(`✅ ${calculatorType}: SUCESSO`);
+                    }
+                } catch (error) {
+                    results.push(`❌ ${calculatorType}: ERRO - ${error.message}`);
+                }
+            }
+
+            const summary = results.join('<br>');
+            const successCount = results.filter(r => r.includes('SUCESSO')).length;
+            const totalCount = results.length;
+            
+            showResult('pdfResult', 
+                `<h4>Resumo dos Testes (${successCount}/${totalCount} sucessos):</h4>${summary}`, 
+                successCount === totalCount ? 'success' : 'error'
+            );
+        };
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            element.className = 'result ' + type;
+        }
+
+        // Executar teste automático ao carregar
+        window.onload = function() {
+            console.log('Página carregada, pronti para testes...');
+        };
+    </script>
+</body>
+</html>

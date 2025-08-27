@@ -1458,6 +1458,34 @@ export function generateReportHTML(data) {
             calculatorTitle = 'Cálculo de Rescisão';
             contentHTML = generateRescisaoReportContent(results, inputState);
             break;
+        case 'fgts':
+            calculatorTitle = 'Cálculo de FGTS';
+            contentHTML = generateFgtsReportContent(results, inputState);
+            break;
+        case 'pisPasep':
+            calculatorTitle = 'Cálculo de PIS/PASEP';
+            contentHTML = generatePisPasepReportContent(results, inputState);
+            break;
+        case 'seguroDesemprego':
+            calculatorTitle = 'Cálculo de Seguro-Desemprego';
+            contentHTML = generateSeguroDesempregoReportContent(results, inputState);
+            break;
+        case 'horasExtras':
+            calculatorTitle = 'Cálculo de Horas Extras';
+            contentHTML = generateHorasExtrasReportContent(results, inputState);
+            break;
+        case 'inss':
+            calculatorTitle = 'Cálculo de INSS';
+            contentHTML = generateInssReportContent(results, inputState);
+            break;
+        case 'valeTransporte':
+            calculatorTitle = 'Cálculo de Vale-Transporte';
+            contentHTML = generateValeTransporteReportContent(results, inputState);
+            break;
+        case 'irpf':
+            calculatorTitle = 'Cálculo de IRPF';
+            contentHTML = generateIrpfReportContent(results, inputState);
+            break;
         default:
             return '<p>Erro: Tipo de cálculo não reconhecido.</p>';
     }
@@ -1809,6 +1837,66 @@ export function hideCustomizeModal() {
     }
 }
 
+/**
+ * Renders the sidebar navigation (FASE 3)
+ * Substitui a navegação por abas pela sidebar moderna
+ */
+function renderSidebar() {
+    const navList = document.getElementById('sidebar-nav-list');
+    if (!navList) return;
+    
+    const calculatorNames = {
+        ferias: 'Cálculo de Férias',
+        rescisao: 'Cálculo de Rescisão',
+        decimoTerceiro: '13º Salário',
+        salarioLiquido: 'Salário Líquido',
+        fgts: 'FGTS',
+        pisPasep: 'PIS/PASEP',
+        seguroDesemprego: 'Seguro-Desemprego',
+        horasExtras: 'Horas Extras',
+        inss: 'INSS',
+        valeTransporte: 'Vale-Transporte',
+        irpf: 'IRPF'
+    };
+
+    const activeTab = state.activeTab;
+    const visibleCalculators = state.visibleCalculators;
+
+    navList.innerHTML = visibleCalculators.map(calc => `
+        <li>
+            <button class="sidebar-link w-full text-left ${activeTab === calc ? 'active' : ''}" 
+                    data-calculator="${calc}"
+                    aria-current="${activeTab === calc ? 'page' : 'false'}">
+                ${calculatorNames[calc]}
+            </button>
+        </li>
+    `).join('');
+
+    // Também precisa renderizar os panels
+    renderCalculatorPanels();
+}
+
+/**
+ * Renderiza os painéis das calculadoras (mostra/esconde baseado na aba ativa)
+ */
+function renderCalculatorPanels() {
+    const activeTab = state.activeTab;
+    
+    for (const tabName in calculatorPanels) {
+        const panel = calculatorPanels[tabName];
+        if (!panel) continue;
+
+        const isActive = tabName === activeTab;
+        panel.setAttribute('data-state', isActive ? 'active' : 'inactive');
+        
+        if (isActive) {
+            panel.classList.remove('hidden');
+        } else {
+            panel.classList.add('hidden');
+        }
+    }
+}
+
 function renderTabs() {
     const activeTab = state.activeTab;
     const visibleCalculators = state.visibleCalculators;
@@ -1956,8 +2044,8 @@ export function render() {
         resultContainers[activeCalculator].innerHTML = html;
     }
 
-    // 4. Update active tab UI
-    renderTabs();
+    // 4. Update sidebar navigation (FASE 3)
+    renderSidebar();
 
     // 5. Update conditional UI elements
     renderSalarioFamiliaUI();
@@ -2028,4 +2116,335 @@ function renderValidationErrors(calculatorName) {
             element.parentNode.insertBefore(errorDiv, element.nextSibling);
         }
     }
+}
+
+/**
+ * Generates the content HTML for FGTS calculation report
+ */
+function generateFgtsReportContent(results, inputState) {
+    const { valorSaque, valorRendimentos, valorTotal, saldoRestante } = results;
+
+    let html = `
+        <div class="space-y-1">
+            <h4 class="text-lg font-semibold text-primary mt-4">Informações do FGTS</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Saldo Total Atual:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.saldoTotal)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Salário Bruto:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.salarioBruto)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Modalidade de Saque:</span>
+                <span class="font-mono text-blue-600">${inputState.opcaoSaque === 'aniversario' ? 'Aniversário' : 'Rescisão'}</span>
+            </div>`;
+
+    if (valorSaque > 0) {
+        html += `
+            <h4 class="text-lg font-semibold text-green-600 mt-4">Valores Disponíveis</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Valor do Saque:</span>
+                <span class="font-mono text-green-600">${formatCurrency(valorSaque)}</span>
+            </div>`;
+    }
+
+    if (valorRendimentos > 0) {
+        html += `
+            <div class="flex justify-between result-row py-2">
+                <span>Rendimentos Estimados:</span>
+                <span class="font-mono text-green-600">${formatCurrency(valorRendimentos)}</span>
+            </div>`;
+    }
+
+    html += `
+        </div>
+        <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
+            <span class="text-xl font-bold total-liquido-label">Valor Total Disponível:</span>
+            <span class="font-mono text-green-600 text-xl font-bold total-liquido-valor">${formatCurrency(valorTotal)}</span>
+        </div>`;
+
+    return html;
+}
+
+/**
+ * Generates the content HTML for PIS/PASEP calculation report
+ */
+function generatePisPasepReportContent(results, inputState) {
+    const { valorAbono, elegivel, mesesTrabalhados } = results;
+
+    let html = `
+        <div class="space-y-1">
+            <h4 class="text-lg font-semibold text-primary mt-4">Informações do Trabalhador</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Salário Médio:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.salarioMedio)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Meses Trabalhados:</span>
+                <span class="font-mono text-blue-600">${inputState.mesesTrabalhados} meses</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Data de Inscrição:</span>
+                <span class="font-mono text-blue-600">${new Date(inputState.dataInscricao).toLocaleDateString('pt-BR')}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Elegível ao Abono:</span>
+                <span class="font-mono ${elegivel ? 'text-green-600' : 'text-red-600'}">${elegivel ? 'Sim' : 'Não'}</span>
+            </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
+            <span class="text-xl font-bold total-liquido-label">Valor do Abono:</span>
+            <span class="font-mono ${elegivel ? 'text-green-600' : 'text-red-600'} text-xl font-bold total-liquido-valor">${formatCurrency(valorAbono)}</span>
+        </div>`;
+
+    return html;
+}
+
+/**
+ * Generates the content HTML for Seguro-Desemprego calculation report
+ */
+function generateSeguroDesempregoReportContent(results, inputState) {
+    const { valorParcela, numeroParcelas, valorTotal, elegivel } = results;
+
+    let html = `
+        <div class="space-y-1">
+            <h4 class="text-lg font-semibold text-primary mt-4">Informações do Trabalhador</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Últimos 3 Salários:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.salario1)} | ${formatCurrency(inputState.salario2)} | ${formatCurrency(inputState.salario3)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Meses Trabalhados:</span>
+                <span class="font-mono text-blue-600">${inputState.mesesTrabalhados} meses</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Solicitações Anteriores:</span>
+                <span class="font-mono text-blue-600">${inputState.numSolicitacoes}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Elegível ao Seguro:</span>
+                <span class="font-mono ${elegivel ? 'text-green-600' : 'text-red-600'}">${elegivel ? 'Sim' : 'Não'}</span>
+            </div>`;
+
+    if (elegivel) {
+        html += `
+            <h4 class="text-lg font-semibold text-green-600 mt-4">Valores do Benefício</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Valor da Parcela:</span>
+                <span class="font-mono text-green-600">${formatCurrency(valorParcela)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Número de Parcelas:</span>
+                <span class="font-mono text-green-600">${numeroParcelas}</span>
+            </div>`;
+    }
+
+    html += `
+        </div>
+        <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
+            <span class="text-xl font-bold total-liquido-label">Valor Total do Benefício:</span>
+            <span class="font-mono ${elegivel ? 'text-green-600' : 'text-red-600'} text-xl font-bold total-liquido-valor">${formatCurrency(valorTotal)}</span>
+        </div>`;
+
+    return html;
+}
+
+/**
+ * Generates the content HTML for Horas Extras calculation report
+ */
+function generateHorasExtrasReportContent(results, inputState) {
+    const { valorHorasExtras50, valorHorasExtras100, valorHorasNoturnas, valorTotal } = results;
+
+    let html = `
+        <div class="space-y-1">
+            <h4 class="text-lg font-semibold text-primary mt-4">Informações Base</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Salário Base:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.salarioBase)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Horas Contratuais/Mês:</span>
+                <span class="font-mono text-blue-600">${inputState.horasContratuais}h</span>
+            </div>
+
+            <h4 class="text-lg font-semibold text-green-600 mt-4">Cálculo das Horas</h4>`;
+
+    if (inputState.horasExtras50 > 0) {
+        html += `
+            <div class="flex justify-between result-row py-2">
+                <span>Horas Extras 50% (${inputState.horasExtras50}h):</span>
+                <span class="font-mono text-green-600">${formatCurrency(valorHorasExtras50)}</span>
+            </div>`;
+    }
+
+    if (inputState.horasExtras100 > 0) {
+        html += `
+            <div class="flex justify-between result-row py-2">
+                <span>Horas Extras 100% (${inputState.horasExtras100}h):</span>
+                <span class="font-mono text-green-600">${formatCurrency(valorHorasExtras100)}</span>
+            </div>`;
+    }
+
+    if (inputState.horasNoturnas > 0) {
+        html += `
+            <div class="flex justify-between result-row py-2">
+                <span>Horas Noturnas (${inputState.horasNoturnas}h):</span>
+                <span class="font-mono text-green-600">${formatCurrency(valorHorasNoturnas)}</span>
+            </div>`;
+    }
+
+    html += `
+        </div>
+        <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
+            <span class="text-xl font-bold total-liquido-label">Total Horas Extras:</span>
+            <span class="font-mono text-green-600 text-xl font-bold total-liquido-valor">${formatCurrency(valorTotal)}</span>
+        </div>`;
+
+    return html;
+}
+
+/**
+ * Generates the content HTML for INSS calculation report
+ */
+function generateInssReportContent(results, inputState) {
+    const { aliquota, valorContribuicao, faixaSalarial } = results;
+
+    let html = `
+        <div class="space-y-1">
+            <h4 class="text-lg font-semibold text-primary mt-4">Informações da Contribuição</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Salário Bruto:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.salarioBruto)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Faixa Salarial:</span>
+                <span class="font-mono text-blue-600">${faixaSalarial}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Alíquota Aplicada:</span>
+                <span class="font-mono text-blue-600">${aliquota}%</span>
+            </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
+            <span class="text-xl font-bold total-liquido-label">Contribuição INSS:</span>
+            <span class="font-mono text-red-600 text-xl font-bold total-liquido-valor">${formatCurrency(valorContribuicao)}</span>
+        </div>`;
+
+    return html;
+}
+
+/**
+ * Generates the content HTML for Vale-Transporte calculation report
+ */
+function generateValeTransporteReportContent(results, inputState) {
+    const { valorVT, descontoEmpregado, custoEmpregador, valorDiario } = results;
+
+    let html = `
+        <div class="space-y-1">
+            <h4 class="text-lg font-semibold text-primary mt-4">Informações do Benefício</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Salário Bruto:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.salarioBruto)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Custo Diário Transporte:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.custoDiario)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Dias de Trabalho/Mês:</span>
+                <span class="font-mono text-blue-600">${inputState.diasTrabalho} dias</span>
+            </div>
+
+            <h4 class="text-lg font-semibold text-orange-600 mt-4">Cálculo do Vale-Transporte</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Valor Total VT/Mês:</span>
+                <span class="font-mono text-orange-600">${formatCurrency(valorVT)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Desconto do Empregado (6%):</span>
+                <span class="font-mono text-red-600">${formatCurrency(descontoEmpregado)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Custo para o Empregador:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(custoEmpregador)}</span>
+            </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
+            <span class="text-xl font-bold total-liquido-label">Valor Líquido VT:</span>
+            <span class="font-mono text-green-600 text-xl font-bold total-liquido-valor">${formatCurrency(valorVT - descontoEmpregado)}</span>
+        </div>`;
+
+    return html;
+}
+
+/**
+ * Generates the content HTML for IRPF calculation report
+ */
+function generateIrpfReportContent(results, inputState) {
+    const { impostoAnual, impostoMensal, aliquota, faixaIR, impostoAReceber, impostoAPagar } = results;
+
+    let html = `
+        <div class="space-y-1">
+            <h4 class="text-lg font-semibold text-primary mt-4">Informações da Declaração</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Renda Anual:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.rendaAnual)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Número de Dependentes:</span>
+                <span class="font-mono text-blue-600">${inputState.dependentes}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Outras Deduções:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.outrasDeducoes)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Imposto Retido na Fonte:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.impostoRetido)}</span>
+            </div>
+
+            <h4 class="text-lg font-semibold text-orange-600 mt-4">Cálculo do Imposto</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Faixa de Tributação:</span>
+                <span class="font-mono text-orange-600">${faixaIR}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Alíquota Aplicada:</span>
+                <span class="font-mono text-orange-600">${aliquota}%</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Imposto Anual Devido:</span>
+                <span class="font-mono text-orange-600">${formatCurrency(impostoAnual)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Imposto Mensal:</span>
+                <span class="font-mono text-orange-600">${formatCurrency(impostoMensal)}</span>
+            </div>
+        </div>`;
+
+    if (impostoAReceber > 0) {
+        html += `
+            <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
+                <span class="text-xl font-bold total-liquido-label">Imposto a Receber:</span>
+                <span class="font-mono text-green-600 text-xl font-bold total-liquido-valor">${formatCurrency(impostoAReceber)}</span>
+            </div>`;
+    } else if (impostoAPagar > 0) {
+        html += `
+            <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
+                <span class="text-xl font-bold total-liquido-label">Imposto a Pagar:</span>
+                <span class="font-mono text-red-600 text-xl font-bold total-liquido-valor">${formatCurrency(impostoAPagar)}</span>
+            </div>`;
+    } else {
+        html += `
+            <div class="mt-4 pt-4 border-t border-border flex justify-between items-center">
+                <span class="text-xl font-bold total-liquido-label">Situação:</span>
+                <span class="font-mono text-blue-600 text-xl font-bold total-liquido-valor">Sem impostos a pagar/receber</span>
+            </div>`;
+    }
+
+    return html;
 }

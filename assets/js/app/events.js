@@ -64,23 +64,145 @@ function validateField(path, value) {
     const [calculator, field] = path.split('.');
     let errorMessage = null;
 
-    if (field === 'salarioBruto' && value <= 0) {
-        errorMessage = 'Salário deve ser maior que zero.';
-    }
-    if (field === 'diasFerias' && (value < 1 || value > 30)) {
-        errorMessage = 'O valor deve ser entre 1 e 30.';
-    }
-    if ((field === 'dataAdmissao' || field === 'dataDemissao') && !value) {
-        errorMessage = 'Data é obrigatória.';
+    // Validações específicas por tipo de campo
+    switch (field) {
+        case 'salarioBruto':
+            if (!value || value <= 0) {
+                errorMessage = 'Salário deve ser maior que zero.';
+            }
+            break;
+        case 'diasFerias':
+            if (!value || value < 1 || value > 30) {
+                errorMessage = 'Deve estar entre 1 e 30 dias.';
+            }
+            break;
+        case 'dataAdmissao':
+        case 'dataDemissao':
+            if (!value) {
+                errorMessage = 'Data é obrigatória.';
+            } else {
+                const date = new Date(value);
+                if (isNaN(date.getTime())) {
+                    errorMessage = 'Data inválida.';
+                }
+            }
+            break;
+        case 'dependentes':
+            if (value < 0) {
+                errorMessage = 'Número de dependentes não pode ser negativo.';
+            }
+            break;
+        case 'mesesTrabalhados':
+            if (value < 1 || value > 12) {
+                errorMessage = 'Deve estar entre 1 e 12 meses.';
+            }
+            break;
+        case 'custodiario':
+        case 'custoDiario':
+            if (value <= 0) {
+                errorMessage = 'Custo deve ser maior que zero.';
+            }
+            break;
+        case 'diasTrabalho':
+            if (value < 1 || value > 31) {
+                errorMessage = 'Dias de trabalho deve estar entre 1 e 31.';
+            }
+            break;
     }
 
-    // Clear previous error
-    updateState(`${calculator}.errors.${field}`, null);
-    if (errorMessage) {
-        // Set new error
-        updateState(`${calculator}.errors.${field}`, errorMessage);
+    return {
+        isValid: !errorMessage,
+        message: errorMessage
+    };
+}
+
+/**
+ * Validação híbrida de campos - mostra erro apenas após primeiro blur, 
+ * depois valida em tempo real (FASE 3)
+ */
+function validateFieldWithFeedback(element, path) {
+    const value = getFieldValue(element);
+    
+    clearFieldValidation(element);
+    
+    const validation = validateField(path, value);
+    if (validation.isValid && value) {
+        showFieldSuccess(element);
+    } else if (!validation.isValid) {
+        showFieldError(element, validation.message);
     }
 }
+
+/**
+ * Obtém o valor do campo baseado no seu tipo
+ */
+function getFieldValue(element) {
+    switch (element.type) {
+        case 'checkbox':
+            return element.checked;
+        case 'radio':
+            return element.checked ? element.value : null;
+        case 'number':
+            return parseFloat(element.value) || 0;
+        case 'text':
+            if (element.classList.contains('money-mask')) {
+                return unmaskCurrency(element.value);
+            }
+            return element.value;
+        default:
+            return element.value;
+    }
+}
+
+/**
+ * Remove validação anterior do campo
+ */
+function clearFieldValidation(element) {
+    element.classList.remove('input-success', 'input-error', 'border-green-500', 'bg-green-50', 'border-red-500', 'bg-red-50');
+    
+    // Remove mensagens de validação existentes
+    const existingValidation = element.parentNode.querySelector('.field-validation');
+    if (existingValidation) {
+        existingValidation.remove();
+    }
+}
+
+/**
+ * Mostra erro de validação no campo
+ */
+function showFieldError(element, message) {
+    element.classList.add('input-error', 'border-red-500', 'bg-red-50');
+    element.classList.remove('input-success', 'border-green-500', 'bg-green-50');
+    
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-validation text-red-600';
+    errorDiv.innerHTML = `
+        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+        ${message}
+    `;
+    element.parentNode.appendChild(errorDiv);
+}
+
+/**
+ * Mostra sucesso de validação no campo
+ */
+function showFieldSuccess(element) {
+    element.classList.add('input-success', 'border-green-500', 'bg-green-50');
+    element.classList.remove('input-error', 'border-red-500', 'bg-red-50');
+    
+    const successDiv = document.createElement('div');
+    successDiv.className = 'field-validation text-green-600';
+    successDiv.innerHTML = `
+        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+        Válido
+    `;
+    element.parentNode.appendChild(successDiv);
+}
+
 
 
 function handleInputChange(event) {
@@ -115,7 +237,18 @@ function handleInputChange(event) {
             value = element.value;
     }
 
-    validateField(path, value);
+    // FASE 3: Validação híbrida em tempo real
+    const fieldContainer = element.closest('.space-y-2') || element.parentNode;
+    const isFirstBlur = !fieldContainer.dataset.hasBlurred;
+    
+    if (event.type === 'blur' && isFirstBlur) {
+        fieldContainer.dataset.hasBlurred = 'true';
+        validateFieldWithFeedback(element, path);
+    } else if (fieldContainer.dataset.hasBlurred === 'true') {
+        // Validação em tempo real após primeiro blur
+        validateFieldWithFeedback(element, path);
+    }
+
     updateState(path, value);
 
     if (path === 'salarioLiquido.recebeSalarioFamilia' && !value) {
@@ -130,8 +263,53 @@ function handleInputChange(event) {
 }
 
 /**
+ * Handles sidebar navigation clicks (FASE 3).
+ * Substitui o handleTabClick para usar a nova navegação por sidebar.
+ * @param {Event} event - The click event object.
+ */
+function handleSidebarClick(event) {
+    const button = event.target.closest('.sidebar-link');
+    if (!button) return;
+    
+    const newTab = button.dataset.calculator;
+    if (newTab && newTab !== state.activeTab) {
+        updateState('activeTab', newTab);
+        render();
+        
+        // Fechar sidebar no mobile após seleção
+        if (window.innerWidth < 1024) {
+            toggleMobileSidebar(false);
+        }
+    }
+}
+
+/**
+ * Toggle da sidebar móvel (FASE 3)
+ * @param {boolean} isOpen - Se deve abrir ou fechar a sidebar
+ */
+function toggleMobileSidebar(isOpen) {
+    const sidebar = document.getElementById('main-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    if (!sidebar || !overlay) return;
+    
+    if (isOpen) {
+        sidebar.classList.add('open');
+        overlay.classList.remove('hidden');
+        // Prevenir scroll do body quando sidebar está aberta
+        document.body.style.overflow = 'hidden';
+    } else {
+        sidebar.classList.remove('open');
+        overlay.classList.add('hidden');
+        // Restaurar scroll do body
+        document.body.style.overflow = '';
+    }
+}
+
+/**
  * Handles tab switching.
  * @param {Event} event - The click event object.
+ * @deprecated Substituída por handleSidebarClick na Fase 3
  */
 function handleTabClick(event) {
     let newTab = event.currentTarget.value; // e.g., "decimo-terceiro"
@@ -196,6 +374,7 @@ export function initializeEventListeners() {
 
     // Use event delegation for performance and simplicity
     appContainer.addEventListener('input', handleInputChange);
+    appContainer.addEventListener('blur', handleInputChange, true); // FASE 3: Captura evento blur para validação
     appContainer.addEventListener('change', (event) => {
         const target = event.target;
         if (target.type === 'checkbox' || target.type === 'radio' || target.tagName.toLowerCase() === 'select') {
@@ -289,7 +468,10 @@ export function initializeEventListeners() {
     }
 
     // Universal listeners
-    document.querySelectorAll('[role="tab"]').forEach(button => button.addEventListener('click', handleTabClick));
+    // FASE 3: Removido - document.querySelectorAll('[role="tab"]').forEach(button => button.addEventListener('click', handleTabClick));
+    
+    // FASE 3: Novos listeners para sidebar navigation
+    initializeSidebarEvents();
 
     // Salary simulator listener
     const salarySimulatorInput = document.getElementById('simular-salario-bruto');
@@ -503,6 +685,14 @@ function saveStateToLocalStorage() {
         rescisao: state.rescisao,
         decimoTerceiro: state.decimoTerceiro,
         salarioLiquido: state.salarioLiquido,
+        // FASE 3: Incluindo todas as calculadoras restantes
+        fgts: state.fgts,
+        pisPasep: state.pisPasep,
+        seguroDesemprego: state.seguroDesemprego,
+        horasExtras: state.horasExtras,
+        inss: state.inss,
+        valeTransporte: state.valeTransporte,
+        irpf: state.irpf,
         // We don't save activeTab or legalTexts
     };
     localStorage.setItem('appState', JSON.stringify(stateToSave));
@@ -578,4 +768,97 @@ function createAndPrintReport(reportHTML) {
             }
         }, 1000);
     };
+}
+
+/**
+ * Inicializa eventos da sidebar (FASE 3)
+ */
+function initializeSidebarEvents() {
+    // Event delegation para os links da sidebar (que são gerados dinamicamente)
+    const sidebar = document.getElementById('main-sidebar');
+    if (sidebar) {
+        sidebar.addEventListener('click', handleSidebarClick);
+    }
+    
+    // Botão hambúrguer mobile
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => toggleMobileSidebar(true));
+    }
+    
+    // Overlay da sidebar mobile
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => toggleMobileSidebar(false));
+    }
+    
+    // Botão de limpar dados
+    const clearDataBtn = document.getElementById('clear-data-btn');
+    if (clearDataBtn) {
+        clearDataBtn.addEventListener('click', handleClearData);
+    }
+    
+    // Fechar sidebar com ESC em mobile
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && window.innerWidth < 1024) {
+            toggleMobileSidebar(false);
+        }
+    });
+    
+    // Fechar sidebar automaticamente quando redimensionar para desktop
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 1024) {
+            toggleMobileSidebar(false);
+        }
+    });
+}
+
+/**
+ * Limpa todos os dados salvos do localStorage (FASE 3)
+ */
+function handleClearData() {
+    if (confirm('Tem certeza que deseja limpar todos os dados salvos? Esta ação não pode ser desfeita.')) {
+        // Limpar apenas dados de formulários, manter preferências
+        const keysToRemove = ['appState'];
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        
+        // Resetar estado para inicial
+        Object.keys(state).forEach(key => {
+            if (key !== 'activeTab' && key !== 'legalTexts' && key !== 'visibleCalculators') {
+                const initialValue = JSON.parse(JSON.stringify(initialState[key]));
+                if (initialValue) {
+                    state[key] = initialValue;
+                }
+            }
+        });
+        
+        render();
+        showNotification('Dados limpos com sucesso!', 'success');
+    }
+}
+
+/**
+ * Mostra notificação temporária (FASE 3)
+ * @param {string} message - Mensagem a ser exibida
+ * @param {string} type - Tipo da notificação: 'success', 'error', 'info'
+ */
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Trigger animation
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 }

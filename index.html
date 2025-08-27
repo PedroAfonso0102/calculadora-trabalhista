@@ -640,6 +640,127 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* === SIDEBAR STYLES (FASE 3) === */
+        
+        /* Sidebar Link Styles */
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease-in-out;
+            color: #374151;
+        }
+
+        .sidebar-link:hover {
+            background-color: #f9fafb;
+            color: #111827;
+        }
+
+        .sidebar-link.active {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+
+        .sidebar-link:hover:not(.active) {
+            background-color: #f3f4f6;
+        }
+
+        /* Mobile Sidebar States */
+        #main-sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        #main-sidebar.open {
+            transform: translateX(0) !important;
+        }
+
+        /* Sidebar Responsive Behavior */
+        @media (max-width: 1024px) {
+            #main-sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                height: 100vh !important;
+                width: 280px !important;
+                z-index: 50 !important;
+                transform: translateX(-100%) !important;
+            }
+        }
+
+        /* Input Validation Styles (FASE 3) */
+        .field-validation {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .field-validation svg {
+            width: 0.75rem;
+            height: 0.75rem;
+            margin-right: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        /* Success/Error Input States */
+        .input-success {
+            border-color: #10b981 !important;
+            background-color: #f0fdf4 !important;
+        }
+
+        .input-error {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            transform: translateY(-0.5rem);
+            opacity: 0;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.success {
+            background-color: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .notification.error {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .notification.info {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+
+        /* Improve mobile header spacing */
+        @media (max-width: 1024px) {
+            .lg\\:hidden {
+                display: block !important;
+            }
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -654,75 +775,76 @@
         <hr>
     </div>
 
-    <!-- Header -->
-    <header class="bg-background border-b">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <h1 class="text-3xl font-bold text-primary">
-                    Calculadora Trabalhista
-                </h1>
-                <!-- Educational Panel Menu Button -->
-                <button id="educational-panel-menu-btn" 
-                        class="flex items-center justify-center w-10 h-10 rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        aria-label="Abrir painel educacional"
-                        title="Informe-se - Conteúdo Educacional">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" x2="21" y1="6" y2="6"/>
-                        <line x1="3" x2="21" y1="12" y2="12"/>
-                        <line x1="3" x2="21" y1="18" y2="18"/>
-                    </svg>
+    <!-- Overlay para mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 hidden transition-opacity duration-300 lg:hidden"></div>
+
+    <!-- Layout Principal com Sidebar -->
+    <div class="flex min-h-screen bg-background">
+        <!-- Sidebar -->
+        <aside id="main-sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:w-64">
+            <!-- Logo -->
+            <div class="flex items-center h-16 px-6 border-b border-gray-200">
+                <h1 class="text-lg font-semibold text-primary">Calculadora Trabalhista</h1>
+            </div>
+            
+            <!-- Navigation Links -->
+            <nav class="flex-1 overflow-y-auto py-4">
+                <ul id="sidebar-nav-list" class="space-y-1 px-3">
+                    <!-- Links serão gerados dinamicamente pelo JavaScript -->
+                </ul>
+            </nav>
+            
+            <!-- Footer da Sidebar -->
+            <div class="border-t border-gray-200 p-4">
+                <button id="clear-data-btn" class="w-full text-sm text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-2 rounded-md transition-colors">
+                    Limpar Dados Salvos
                 </button>
             </div>
-        </div>
-    </header>
+        </aside>
 
-    <!-- Main Content -->
-    <main class="container mx-auto p-4 sm:p-6 md:p-8">
-        <div id="app" class="max-w-4xl mx-auto bg-card text-card-foreground p-4 sm:p-6 md:p-8 rounded-lg shadow-lg">
-            <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8 text-foreground">
-                Calcule Seus Direitos
-            </h2>
-
-            <!-- Calculator UI -->
-            <div id="calculator-container" data-value="ferias">
-                <!-- Tab Navigation -->
-                <div role="tablist" aria-orientation="horizontal" class="flex flex-col md:flex-row md:inline-flex h-auto md:h-10 items-stretch md:items-center justify-center rounded-md bg-muted p-1 text-muted-foreground mb-8">
-                    <button id="tab-ferias" type="button" role="tab" aria-selected="true" data-state="active" value="ferias" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
-                        Cálculo de Férias
+        <!-- Main Content Area -->
+        <div class="flex-1 lg:ml-0">
+            <!-- Header com botão hambúrguer mobile -->
+            <header class="bg-background border-b">
+                <div class="flex items-center justify-between px-4 py-3 lg:px-6 lg:py-4">
+                    <!-- Botão hambúrguer mobile -->
+                    <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md hover:bg-gray-100 transition-colors" aria-label="Abrir menu de navegação">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
                     </button>
-                    <button id="tab-rescisao" type="button" role="tab" data-state="inactive" value="rescisao" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
-                        Cálculo de Rescisão
-                    </button>
-                    <button id="tab-decimo-terceiro" type="button" role="tab" data-state="inactive" value="decimo-terceiro" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
-                        13º Salário
-                    </button>
-                    <button id="tab-salario-liquido" type="button" role="tab" data-state="inactive" value="salario-liquido" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
-                        Salário Líquido
-                    </button>
-                    <button id="tab-fgts" type="button" role="tab" data-state="inactive" value="fgts" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
-                        FGTS
-                    </button>
-                    <button id="tab-pis-pasep" type="button" role="tab" data-state="inactive" value="pis-pasep" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
-                        PIS/PASEP
-                    </button>
-                    <button id="tab-seguro-desemprego" type="button" role="tab" data-state="inactive" value="seguro-desemprego" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
-                        Seguro-Desemprego
-                    </button>
-                    <button id="tab-horas-extras" type="button" role="tab" data-state="inactive" value="horas-extras" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
-                        Horas Extras
-                    </button>
-                    <button id="tab-inss" type="button" role="tab" data-state="inactive" value="inss" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
-                        INSS
-                    </button>
-                    <button id="tab-vale-transporte" type="button" role="tab" data-state="inactive" value="vale-transporte" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
-                        Vale-Transporte
-                    </button>
-                    <button id="tab-irpf" type="button" role="tab" data-state="inactive" value="irpf" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out focus-visible:outline-none focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-accent active:scale-98">
-                        IRPF
+                    
+                    <!-- Logo mobile (visível apenas em mobile) -->
+                    <h1 class="text-lg font-semibold text-primary lg:hidden">Calculadora Trabalhista</h1>
+                    
+                    <!-- Educational Panel Menu Button -->
+                    <button id="educational-panel-menu-btn" 
+                            class="flex items-center justify-center w-10 h-10 rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            aria-label="Abrir painel educacional"
+                            title="Informe-se - Conteúdo Educacional">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" x2="21" y1="6" y2="6"/>
+                            <line x1="3" x2="21" y1="12" y2="12"/>
+                            <line x1="3" x2="21" y1="18" y2="18"/>
+                        </svg>
                     </button>
                 </div>
+            </header>
 
-                <!-- Tab Content -->
+            <!-- Main Content -->
+            <main class="p-4 sm:p-6 md:p-8">
+            <!-- Main Content -->
+            <main class="p-4 sm:p-6 md:p-8">
+                <div id="app" class="max-w-4xl mx-auto bg-card text-card-foreground p-4 sm:p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8 text-foreground">
+                        Calcule Seus Direitos
+                    </h2>
+
+                    <!-- Calculator UI -->
+                    <div id="calculator-container" data-value="ferias">
+                        <!-- REMOVIDO: Tab Navigation será substituída pela sidebar -->
+                        
+                        <!-- Tab Content -->
                 <!-- Férias Calculator -->
                 <div id="calculator-ferias" value="ferias" role="tabpanel" data-state="active" class="mt-4">
                     <form id="form-ferias">
@@ -1376,6 +1498,11 @@
             </div>
             <!-- End of Calculator UI -->
 
+                </div>
+            </main>
+        </div>
+    </div>
+
             <!-- Modal for Calculation Memory -->
             <div id="calculation-memory-modal" class="fixed inset-0 hidden flex items-center justify-center p-4" style="z-index: 9999;" data-state="closed">
                 <div id="calculation-memory-modal-overlay" class="absolute inset-0" style="background-color: rgba(0, 0, 0, 0.8); z-index: 9998;"></div>
@@ -1402,11 +1529,14 @@
 
     <!-- Footer -->
     <footer class="text-center py-6 mt-8 sm:mt-12 text-sm text-muted-foreground">
-        <div class="flex items-center justify-center space-x-4 mb-4">
+        <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 mb-4">
             <div class="flex items-center space-x-2">
                 <input type="checkbox" id="save-data-checkbox" name="save-data" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary">
                 <label for="save-data-checkbox" class="cursor-pointer">Lembrar meus dados</label>
             </div>
+            <span class="text-xs text-gray-500">
+                📁 Seus dados são salvos localmente para sua conveniência
+            </span>
             <button id="customize-calculators-btn" class="text-primary hover:underline">Personalizar Calculadoras</button>
         </div>
         <p>&copy; 2025 Calculadora Trabalhista. Uma ferramenta para o trabalhador.</p>
