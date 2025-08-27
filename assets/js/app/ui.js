@@ -333,6 +333,29 @@ export function updateAndShowModal(data) {
 }
 
 /**
+ * Generates a generic memory calculation block based on the `memoriaCalculo` object.
+ * @param {object} memoriaCalculo - The memory object from the calculation result.
+ * @returns {string} HTML content for the memory steps.
+ */
+function generateMemoryStepsHTML(memoriaCalculo) {
+    if (!memoriaCalculo) return '';
+    let html = '<div class="mt-4 space-y-2">';
+    html += '<h4 class="font-semibold text-gray-800">Memória de Cálculo</h4>';
+    html += '<div class="mt-2 space-y-1 text-sm p-3 bg-gray-50 rounded-md border">';
+    for (const [key, value] of Object.entries(memoriaCalculo)) {
+        html += `
+            <div class="flex justify-between py-1 border-b border-gray-200 last:border-b-0">
+                <span class="text-gray-600">${key}:</span>
+                <span class="font-medium text-right">${value}</span>
+            </div>
+        `;
+    }
+    html += '</div></div>';
+    return html;
+}
+
+
+/**
  * Generates modal-specific content HTML for any calculation type.
  * Reuses the logic from generateReportHTML but with modal-specific styling.
  * @param {Object} data - The calculation data object
@@ -361,6 +384,30 @@ function generateModalContent(data) {
             calculatorTitle = 'Cálculo de Rescisão';
             contentHTML += generateRescisaoModalContent(results, inputState);
             break;
+        case 'pisPasep':
+            calculatorTitle = 'Memória de Cálculo - PIS/PASEP';
+            contentHTML += generatePisPasepModalContent(results, inputState);
+            break;
+        case 'seguroDesemprego':
+            calculatorTitle = 'Memória de Cálculo - Seguro-Desemprego';
+            contentHTML += generateSeguroDesempregoModalContent(results, inputState);
+            break;
+        case 'horasExtras':
+            calculatorTitle = 'Memória de Cálculo - Horas Extras';
+            contentHTML += generateHorasExtrasModalContent(results, inputState);
+            break;
+        case 'inss':
+            calculatorTitle = 'Memória de Cálculo - INSS';
+            contentHTML += generateInssModalContent(results, inputState);
+            break;
+        case 'valeTransporte':
+            calculatorTitle = 'Memória de Cálculo - Vale-Transporte';
+            contentHTML += generateValeTransporteModalContent(results, inputState);
+            break;
+        case 'irpf':
+            calculatorTitle = 'Memória de Cálculo - IRPF';
+            contentHTML += generateIrpfModalContent(results, inputState);
+            break;
         default:
             return '<p class="text-red-500">Erro: Tipo de cálculo não reconhecido.</p>';
     }
@@ -376,6 +423,98 @@ function generateModalContent(data) {
 
     return modalHTML;
 }
+
+function generatePisPasepModalContent(results, inputState) {
+    const { valorAbono, elegivel, memoriaCalculo } = results;
+    let html = generateMemoryStepsHTML(memoriaCalculo);
+    html += `
+        <div class="mt-4 pt-4 border-t border-gray-200">
+            <div class="flex justify-between items-center text-lg">
+                <span class="font-bold text-gray-900">Valor do Abono:</span>
+                <span class="font-bold ${elegivel ? 'text-green-600' : 'text-red-600'}">${formatCurrency(valorAbono)}</span>
+            </div>
+        </div>`;
+    return html;
+}
+
+function generateSeguroDesempregoModalContent(results, inputState) {
+    const { numeroParcelas, valorPorParcela, memoriaCalculo } = results;
+    let html = generateMemoryStepsHTML(memoriaCalculo);
+    html += `
+        <div class="mt-4 pt-4 border-t border-gray-200 space-y-2">
+            <div class="flex justify-between items-center text-lg">
+                <span class="font-bold text-gray-900">Nº de Parcelas:</span>
+                <span class="font-bold text-blue-600">${numeroParcelas}</span>
+            </div>
+            <div class="flex justify-between items-center text-lg">
+                <span class="font-bold text-gray-900">Valor por Parcela:</span>
+                <span class="font-bold text-green-600">${formatCurrency(valorPorParcela)}</span>
+            </div>
+        </div>`;
+    return html;
+}
+
+function generateHorasExtrasModalContent(results, inputState) {
+    const { totalGeralAdicionais, memoriaCalculo } = results;
+    let html = generateMemoryStepsHTML(memoriaCalculo);
+    html += `
+        <div class="mt-4 pt-4 border-t border-gray-200">
+            <div class="flex justify-between items-center text-lg">
+                <span class="font-bold text-gray-900">Total de Adicionais:</span>
+                <span class="font-bold text-green-600">${formatCurrency(totalGeralAdicionais)}</span>
+            </div>
+        </div>`;
+    return html;
+}
+
+function generateInssModalContent(results, inputState) {
+    const { contribuicaoINSS, aliquotaEfetiva, memoriaCalculo } = results;
+    let html = generateMemoryStepsHTML(memoriaCalculo);
+    html += `
+        <div class="mt-4 pt-4 border-t border-gray-200">
+             <div class="flex justify-between items-center text-lg">
+                <span class="font-bold text-gray-900">Contribuição Devida:</span>
+                <span class="font-bold text-red-600">${formatCurrency(contribuicaoINSS)}</span>
+            </div>
+        </div>`;
+    return html;
+}
+
+function generateValeTransporteModalContent(results, inputState) {
+    const { descontoRealEmpregado, valorBeneficioEmpregador, memoriaCalculo } = results;
+    let html = generateMemoryStepsHTML(memoriaCalculo);
+    html += `
+        <div class="mt-4 pt-4 border-t border-gray-200 space-y-2">
+            <div class="flex justify-between items-center text-lg">
+                <span class="font-bold text-gray-900">Desconto do Empregado:</span>
+                <span class="font-bold text-red-600">${formatCurrency(descontoRealEmpregado)}</span>
+            </div>
+            <div class="flex justify-between items-center text-lg">
+                <span class="font-bold text-gray-900">Custeado pelo Empregador:</span>
+                <span class="font-bold text-green-600">${formatCurrency(valorBeneficioEmpregador)}</span>
+            </div>
+        </div>`;
+    return html;
+}
+
+function generateIrpfModalContent(results, inputState) {
+    const { ajusteFinal, tipoAjuste, memoriaCalculo } = results;
+    const isPagar = tipoAjuste === 'pagar';
+    const isRestituir = tipoAjuste === 'restituir';
+    const colorClass = isPagar ? 'text-red-600' : (isRestituir ? 'text-green-600' : 'text-gray-800');
+    const label = isPagar ? 'Imposto a Pagar:' : 'Imposto a Restituir:';
+
+    let html = generateMemoryStepsHTML(memoriaCalculo);
+    html += `
+        <div class="mt-4 pt-4 border-t border-gray-200">
+            <div class="flex justify-between items-center text-lg">
+                <span class="font-bold text-gray-900">${label}</span>
+                <span class="font-bold ${colorClass}">${formatCurrency(Math.abs(ajusteFinal))}</span>
+            </div>
+        </div>`;
+    return html;
+}
+
 
 /**
  * Generates modal content for Ferias calculation
@@ -792,6 +931,10 @@ function createFgtsResultHTML(results) {
                     </div>
                 </div>
             </div>
+            <div class="flex gap-2 w-full mt-6">
+                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
+                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
+            </div>
         </div>
     </div>`;
 }
@@ -813,6 +956,10 @@ function createPisPasepResultHTML(results) {
                     <span class="font-mono text-green-600">${formatCurrency(valorAbono)}</span>
                 </div>
                 <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
+            </div>
+            <div class="flex gap-2 w-full mt-6">
+                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
+                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
             </div>
         </div>
     </div>`;
@@ -840,6 +987,10 @@ function createSeguroDesempregoResultHTML(results) {
                 </div>
                 <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
             </div>
+            <div class="flex gap-2 w-full mt-6">
+                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
+                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
+            </div>
         </div>
     </div>`;
 }
@@ -859,6 +1010,10 @@ function createINSSResultHTML(results) {
                     <span class="font-mono text-red-600">${formatCurrency(contribuicaoINSS)}</span>
                 </div>
                 <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+            </div>
+            <div class="flex gap-2 w-full mt-6">
+                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
+                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
             </div>
         </div>
     </div>`;
@@ -892,6 +1047,10 @@ function createHorasExtrasResultHTML(results) {
                 </div>
                 <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
             </div>
+            <div class="flex gap-2 w-full mt-6">
+                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
+                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
+            </div>
         </div>
     </div>`;
 }
@@ -924,6 +1083,10 @@ function createValeTransporteResultHTML(results) {
                 </div>
                 <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
             </div>
+            <div class="flex gap-2 w-full mt-6">
+                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
+                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
+            </div>
         </div>
     </div>`;
 }
@@ -950,6 +1113,10 @@ function createIRPFResultHTML(results) {
                     <span class="font-mono ${ajusteColorClass}">${formatCurrency(Math.abs(ajusteFinal))}</span>
                 </div>
                 <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+            </div>
+            <div class="flex gap-2 w-full mt-6">
+                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
+                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
             </div>
         </div>
     </div>`;

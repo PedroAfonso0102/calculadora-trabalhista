@@ -146,8 +146,44 @@ function handleTabClick(event) {
 }
 
 /**
- * Initializes the IMask library on all relevant fields.
+ * Retrieves calculation results for a given calculator.
+ * This centralized function prevents code duplication in event handlers.
+ * @param {string} calculatorName - The name of the calculator (e.g., 'ferias').
+ * @param {object} calculatorState - The state object for that calculator.
+ * @param {object} legalTexts - The legal texts object from the main state.
+ * @returns {object|null} The results object from the calculation function, or null if not found.
  */
+function getCalculationResults(calculatorName, calculatorState, legalTexts) {
+    switch (calculatorName) {
+        case 'ferias':
+            return calculations.calculateFerias(calculatorState);
+        case 'decimoTerceiro':
+            return calculations.calculateDecimoTerceiro(calculatorState);
+        case 'salarioLiquido':
+            return calculations.calculateSalarioLiquido(calculatorState);
+        case 'rescisao':
+            return calculations.calculateRescisao(calculatorState);
+        case 'fgts':
+            return calculations.calculateFGTS(calculatorState);
+        case 'pisPasep':
+            return calculations.calculatePISPASEP(calculatorState, legalTexts);
+        case 'seguroDesemprego':
+            return calculations.calculateSeguroDesemprego(calculatorState, legalTexts);
+        case 'horasExtras':
+            return calculations.calculateHorasExtras(calculatorState, legalTexts);
+        case 'inss':
+            return calculations.calculateINSSCalculator(calculatorState, legalTexts);
+        case 'valeTransporte':
+            return calculations.calculateValeTransporte(calculatorState, legalTexts);
+        case 'irpf':
+            return calculations.calculateIRPF(calculatorState, legalTexts);
+        default:
+            console.error('Unknown calculator type:', calculatorName);
+            return null;
+    }
+}
+
+
 /**
  * Initializes all event listeners for the application.
  */
@@ -207,115 +243,33 @@ export function initializeEventListeners() {
         if (target.classList.contains('js-show-memory-modal')) {
             const calculatorName = state.activeTab;
             const calculatorState = state[calculatorName];
-            
-            // Get calculation results
-            let results;
-            switch (calculatorName) {
-                case 'ferias': 
-                    results = calculations.calculateFerias(calculatorState); 
-                    break;
-                case 'decimoTerceiro': 
-                    results = calculations.calculateDecimoTerceiro(calculatorState); 
-                    break;
-                case 'salarioLiquido': 
-                    results = calculations.calculateSalarioLiquido(calculatorState); 
-                    break;
-                case 'rescisao': 
-                    results = calculations.calculateRescisao(calculatorState); 
-                    break;
-                case 'fgts':
-                    results = calculations.calculateFGTS(calculatorState);
-                    break;
-                case 'pisPasep':
-                    results = calculations.calculatePISPASEP(calculatorState, state.legalTexts);
-                    break;
-                case 'seguroDesemprego':
-                    results = calculations.calculateSeguroDesemprego(calculatorState, state.legalTexts);
-                    break;
-                case 'horasExtras':
-                    results = calculations.calculateHorasExtras(calculatorState, state.legalTexts);
-                    break;
-                case 'inss':
-                    results = calculations.calculateINSSCalculator(calculatorState, state.legalTexts);
-                    break;
-                case 'valeTransporte':
-                    results = calculations.calculateValeTransporte(calculatorState, state.legalTexts);
-                    break;
-                case 'irpf':
-                    results = calculations.calculateIRPF(calculatorState, state.legalTexts);
-                    break;
-                default: 
-                    console.error('Unknown calculator type:', calculatorName);
-                    return;
+            const results = getCalculationResults(calculatorName, calculatorState, state.legalTexts);
+
+            if (results) {
+                const modalData = {
+                    type: calculatorName,
+                    results: results,
+                    state: calculatorState
+                };
+                updateAndShowModal(modalData);
             }
-            
-            // Use the centralized updateAndShowModal function
-            const modalData = {
-                type: calculatorName,
-                results: results,
-                state: calculatorState
-            };
-            
-            updateAndShowModal(modalData);
         }
 
         // Print logic
         if (target.classList.contains('js-print-result')) {
             const calculatorName = state.activeTab;
             const calculatorState = state[calculatorName];
-            
-            // Get calculation results
-            let results;
-            switch (calculatorName) {
-                case 'ferias': 
-                    results = calculations.calculateFerias(calculatorState); 
-                    break;
-                case 'decimoTerceiro': 
-                    results = calculations.calculateDecimoTerceiro(calculatorState); 
-                    break;
-                case 'salarioLiquido': 
-                    results = calculations.calculateSalarioLiquido(calculatorState); 
-                    break;
-                case 'rescisao': 
-                    results = calculations.calculateRescisao(calculatorState); 
-                    break;
-                case 'fgts':
-                    results = calculations.calculateFGTS(calculatorState);
-                    break;
-                case 'pisPasep':
-                    results = calculations.calculatePISPASEP(calculatorState, state.legalTexts);
-                    break;
-                case 'seguroDesemprego':
-                    results = calculations.calculateSeguroDesemprego(calculatorState, state.legalTexts);
-                    break;
-                case 'horasExtras':
-                    results = calculations.calculateHorasExtras(calculatorState, state.legalTexts);
-                    break;
-                case 'inss':
-                    results = calculations.calculateINSSCalculator(calculatorState, state.legalTexts);
-                    break;
-                case 'valeTransporte':
-                    results = calculations.calculateValeTransporte(calculatorState, state.legalTexts);
-                    break;
-                case 'irpf':
-                    results = calculations.calculateIRPF(calculatorState, state.legalTexts);
-                    break;
-                default: 
-                    console.error('Unknown calculator type:', calculatorName);
-                    return;
+            const results = getCalculationResults(calculatorName, calculatorState, state.legalTexts);
+
+            if (results) {
+                const reportData = {
+                    type: calculatorName,
+                    results: results,
+                    state: calculatorState
+                };
+                const reportHTML = generateReportHTML(reportData);
+                createAndPrintReport(reportHTML);
             }
-            
-            // Generate report HTML using the centralized function
-            const reportData = {
-                type: calculatorName,
-                results: results,
-                state: calculatorState
-            };
-            
-            const reportHTML = generateReportHTML(reportData);
-            
-            // Create a temporary iframe for printing
-            createAndPrintReport(reportHTML);
         }
     });
 
@@ -352,59 +306,17 @@ export function initializeEventListeners() {
             if (event.target.id === 'calculation-memory-modal-print-btn') {
                 const calculatorName = state.activeTab;
                 const calculatorState = state[calculatorName];
-                
-                // Get calculation results
-                let results;
-                switch (calculatorName) {
-                    case 'ferias': 
-                        results = calculations.calculateFerias(calculatorState); 
-                        break;
-                    case 'decimoTerceiro': 
-                        results = calculations.calculateDecimoTerceiro(calculatorState); 
-                        break;
-                    case 'salarioLiquido': 
-                        results = calculations.calculateSalarioLiquido(calculatorState); 
-                        break;
-                    case 'rescisao': 
-                        results = calculations.calculateRescisao(calculatorState); 
-                        break;
-                case 'fgts':
-                    results = calculations.calculateFGTS(calculatorState);
-                    break;
-                case 'pisPasep':
-                    results = calculations.calculatePISPASEP(calculatorState, state.legalTexts);
-                    break;
-                case 'seguroDesemprego':
-                    results = calculations.calculateSeguroDesemprego(calculatorState, state.legalTexts);
-                    break;
-                case 'horasExtras':
-                    results = calculations.calculateHorasExtras(calculatorState, state.legalTexts);
-                    break;
-                case 'inss':
-                    results = calculations.calculateINSSCalculator(calculatorState, state.legalTexts);
-                    break;
-                case 'valeTransporte':
-                    results = calculations.calculateValeTransporte(calculatorState, state.legalTexts);
-                    break;
-                case 'irpf':
-                    results = calculations.calculateIRPF(calculatorState, state.legalTexts);
-                    break;
-                    default: 
-                        console.error('Unknown calculator type:', calculatorName);
-                        return;
+                const results = getCalculationResults(calculatorName, calculatorState, state.legalTexts);
+
+                if (results) {
+                    const reportData = {
+                        type: calculatorName,
+                        results: results,
+                        state: calculatorState
+                    };
+                    const reportHTML = generateReportHTML(reportData);
+                    createAndPrintReport(reportHTML);
                 }
-                
-                // Generate report HTML using the centralized function
-                const reportData = {
-                    type: calculatorName,
-                    results: results,
-                    state: calculatorState
-                };
-                
-                const reportHTML = generateReportHTML(reportData);
-                
-                // Create and print the report
-                createAndPrintReport(reportHTML);
             }
         });
     }
@@ -568,11 +480,11 @@ function handleSalarySimulation(event) {
 
     // Get current dependents from the active salary liquid state
     const dependents = state.salarioLiquido.dependentes || 0;
-    
+
     // Calculate other discounts from current salary liquid state
-    const otherDiscounts = (state.salarioLiquido.descontoVt || 0) + 
-                          (state.salarioLiquido.descontoVr || 0) + 
-                          (state.salarioLiquido.descontoSaude || 0) + 
+    const otherDiscounts = (state.salarioLiquido.descontoVt || 0) +
+                          (state.salarioLiquido.descontoVr || 0) +
+                          (state.salarioLiquido.descontoSaude || 0) +
                           (state.salarioLiquido.descontoAdiantamentos || 0);
 
     // Use the new calculateNetSalary function
@@ -658,7 +570,7 @@ function createAndPrintReport(reportHTML) {
     printFrame.onload = function() {
         printFrame.contentWindow.focus();
         printFrame.contentWindow.print();
-        
+
         // Remove iframe after printing
         setTimeout(() => {
             if (document.body.contains(printFrame)) {
@@ -667,5 +579,3 @@ function createAndPrintReport(reportHTML) {
         }, 1000);
     };
 }
-
-

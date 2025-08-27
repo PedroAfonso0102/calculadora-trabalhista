@@ -461,31 +461,46 @@ export function calculatePISPASEP(pisPasepState, legalTexts) {
     let elegivel = true;
     let mensagem = 'Elegível ao PIS/PASEP';
     let valorAbono = 0;
+    const memoriaCalculo = {};
 
+    memoriaCalculo['Critério 1: Anos de Inscrição'] = `Ano atual (${anoAtual}) - Ano de inscrição (${anoInscricao || 'Inválido'}) = ${!isNaN(anosDeInscricao) ? anosDeInscricao : 'N/A'} anos. (Mínimo: ${MIN_ANOS_PIS} anos)`;
     if (!dataInscricao || isNaN(anoInscricao)) {
         elegivel = false;
         mensagem = 'Data de inscrição inválida.';
+        memoriaCalculo['Resultado'] = `Não elegível. ${mensagem}`;
     } else if (anosDeInscricao < MIN_ANOS_PIS) {
         elegivel = false;
         mensagem = `Não elegível: Menos de ${MIN_ANOS_PIS} anos de inscrição no PIS/PASEP.`;
-    } else if (salarioMedio > MAX_SALARIO_PIS) {
+        memoriaCalculo['Resultado'] = mensagem;
+    }
+
+    memoriaCalculo['Critério 2: Média Salarial'] = `Salário médio informado (${formatCurrency(salarioMedio)}) deve ser menor que ${formatCurrency(MAX_SALARIO_PIS)}.`;
+    if (elegivel && salarioMedio > MAX_SALARIO_PIS) {
         elegivel = false;
         mensagem = `Não elegível: Salário médio acima do limite de ${formatCurrency(MAX_SALARIO_PIS)}.`;
-    } else if (mesesTrabalhados < 1) {
+        memoriaCalculo['Resultado'] = mensagem;
+    }
+
+    memoriaCalculo['Critério 3: Meses Trabalhados'] = `Meses trabalhados no ano-base: ${mesesTrabalhados}. (Mínimo: 1 mês)`;
+    if (elegivel && mesesTrabalhados < 1) {
         elegivel = false;
         mensagem = 'Não elegível: Mínimo de 1 mês trabalhado no ano-base.';
+        memoriaCalculo['Resultado'] = mensagem;
     }
 
     if (elegivel) {
         const valorPorMes = SALARIO_MINIMO_VIGENTE / 12;
         valorAbono = valorPorMes * mesesTrabalhados;
         mensagem = 'Cálculo realizado com sucesso.';
+        memoriaCalculo['Cálculo do Abono'] = `(${formatCurrency(SALARIO_MINIMO_VIGENTE)} / 12 meses) * ${mesesTrabalhados} meses trabalhados = ${formatCurrency(valorAbono)}`;
+        memoriaCalculo['Resultado'] = `Elegível para receber ${formatCurrency(valorAbono)}.`;
     }
 
     return {
         valorAbono: roundMonetary(valorAbono),
         elegivel,
-        mensagem
+        mensagem,
+        memoriaCalculo
     };
 }
 
@@ -502,8 +517,10 @@ export function calculateSeguroDesemprego(seguroDesempregoState, legalTexts) {
     let valorPorParcela = 0;
     let elegivel = true;
     let mensagem = 'Elegível ao Seguro-Desemprego.';
+    const memoriaCalculo = {};
 
     const mediaSalarial = (salario1 + salario2 + salario3) / 3;
+    memoriaCalculo['Média Salarial'] = `(${formatCurrency(salario1)} + ${formatCurrency(salario2)} + ${formatCurrency(salario3)}) / 3 = ${formatCurrency(mediaSalarial)}`;
 
     // 1. Determinar Número de Parcelas
     const solicitacaoAtual = (numSolicitacoes || 0) + 1;
@@ -513,34 +530,44 @@ export function calculateSeguroDesemprego(seguroDesempregoState, legalTexts) {
         mesesTrabalhados <= regra.meses_trabalhados.max
     );
 
+    memoriaCalculo['Análise de Elegibilidade'] = `Solicitação nº: ${solicitacaoAtual}. Meses trabalhados: ${mesesTrabalhados}.`;
     if (regraParcelas) {
         numeroParcelas = regraParcelas.parcelas;
+        memoriaCalculo['Número de Parcelas'] = `Com base nas regras, você tem direito a ${numeroParcelas} parcelas.`;
     } else {
         elegivel = false;
         mensagem = `Não elegível: Tempo de trabalho (${mesesTrabalhados} meses) ou número de solicitações (${solicitacaoAtual}ª) não atende aos critérios para o Seguro-Desemprego.`;
-        return { numeroParcelas: 0, valorPorParcela: 0, elegivel, mensagem };
+        memoriaCalculo['Resultado'] = mensagem;
+        return { numeroParcelas: 0, valorPorParcela: 0, elegivel, mensagem, memoriaCalculo };
     }
 
     // 2. Calcular Valor da Parcela
+    memoriaCalculo['Cálculo do Valor da Parcela'] = `Analisando a média salarial de ${formatCurrency(mediaSalarial)}...`;
     if (mediaSalarial <= TABELA_VALORES[0].faixa.max) {
         valorPorParcela = mediaSalarial * TABELA_VALORES[0].percentual;
+        memoriaCalculo['Detalhe do Cálculo'] = `Faixa 1: ${formatCurrency(mediaSalarial)} * ${TABELA_VALORES[0].percentual * 100}% = ${formatCurrency(valorPorParcela)}`;
     } else if (mediaSalarial <= TABELA_VALORES[1].faixa.max) {
-        valorPorParcela = (TABELA_VALORES[0].faixa.max * TABELA_VALORES[0].percentual) +
-                         ((mediaSalarial - TABELA_VALORES[0].faixa.max) * TABELA_VALORES[1].percentual);
+        const valorFaixa1 = TABELA_VALORES[0].faixa.max * TABELA_VALORES[0].percentual;
+        const valorExcedente = (mediaSalarial - TABELA_VALORES[0].faixa.max) * TABELA_VALORES[1].percentual;
+        valorPorParcela = valorFaixa1 + valorExcedente;
+        memoriaCalculo['Detalhe do Cálculo'] = `Faixa 2: (${formatCurrency(valorFaixa1)}) + ((${formatCurrency(mediaSalarial)} - ${formatCurrency(TABELA_VALORES[0].faixa.max)}) * ${TABELA_VALORES[1].percentual * 100}%) = ${formatCurrency(valorPorParcela)}`;
     } else {
-         valorPorParcela = TETO_SEGURO_DESEMPREGO;
+        valorPorParcela = TETO_SEGURO_DESEMPREGO;
+        memoriaCalculo['Detalhe do Cálculo'] = `Média salarial (${formatCurrency(mediaSalarial)}) acima da Faixa 2, aplicando o teto de ${formatCurrency(TETO_SEGURO_DESEMPREGO)}.`;
     }
 
     // Ensure value is within min/max limits
     valorPorParcela = Math.max(SALARIO_MINIMO_VIGENTE, Math.min(valorPorParcela, TETO_SEGURO_DESEMPREGO));
-
+    memoriaCalculo['Ajuste Final'] = `Valor da parcela ajustado para estar entre o salário mínimo (${formatCurrency(SALARIO_MINIMO_VIGENTE)}) e o teto (${formatCurrency(TETO_SEGURO_DESEMPREGO)}). Valor final: ${formatCurrency(valorPorParcela)}.`;
     mensagem = `Elegível. Você tem direito a ${numeroParcelas} parcelas de ${formatCurrency(valorPorParcela)}.`;
 
     return {
         numeroParcelas,
         valorPorParcela: roundMonetary(valorPorParcela),
+        mediaSalarial,
         elegivel,
-        mensagem
+        mensagem,
+        memoriaCalculo
     };
 }
 
@@ -551,34 +578,52 @@ export function calculateHorasExtras(horasExtrasState, legalTexts) {
     const PERCENTUAL_HE_50 = heData.constants.PERCENTUAL_HE_50;
     const PERCENTUAL_HE_100 = heData.constants.PERCENTUAL_HE_100;
     const PERCENTUAL_ADICIONAL_NOTURNO = heData.constants.PERCENTUAL_ADICIONAL_NOTURNO;
+    const memoriaCalculo = {};
 
     if (horasContratuais <= 0) {
+        const mensagem = "Horas contratuais devem ser maior que zero.";
+        memoriaCalculo['Erro'] = mensagem;
         return {
             totalValorHE50: 0,
             totalValorHE100: 0,
             totalValorAdicionalNoturno: 0,
             totalGeralAdicionais: 0,
-            mensagem: "Horas contratuais devem ser maior que zero."
+            mensagem,
+            memoriaCalculo
         };
     }
 
     const valorHoraNormal = salarioBase / horasContratuais;
-    const valorHE50 = valorHoraNormal * (1 + PERCENTUAL_HE_50);
-    const valorHE100 = valorHoraNormal * (1 + PERCENTUAL_HE_100);
-    const valorAdicionalNoturnoHora = valorHoraNormal * PERCENTUAL_ADICIONAL_NOTURNO;
+    memoriaCalculo['Valor da Hora Normal'] = `${formatCurrency(salarioBase)} / ${horasContratuais}h = ${formatCurrency(valorHoraNormal)}/h`;
 
+    const valorHE50 = valorHoraNormal * (1 + PERCENTUAL_HE_50);
     const totalValorHE50 = horasExtras50 * valorHE50;
+    memoriaCalculo['Cálculo Horas Extras 50%'] = `${horasExtras50}h * (${formatCurrency(valorHoraNormal)} * ${1 + PERCENTUAL_HE_50}) = ${formatCurrency(totalValorHE50)}`;
+
+    const valorHE100 = valorHoraNormal * (1 + PERCENTUAL_HE_100);
     const totalValorHE100 = horasExtras100 * valorHE100;
+    memoriaCalculo['Cálculo Horas Extras 100%'] = `${horasExtras100}h * (${formatCurrency(valorHoraNormal)} * ${1 + PERCENTUAL_HE_100}) = ${formatCurrency(totalValorHE100)}`;
+
+    const valorAdicionalNoturnoHora = valorHoraNormal * PERCENTUAL_ADICIONAL_NOTURNO;
     const totalValorAdicionalNoturno = horasNoturnas * valorAdicionalNoturnoHora;
+    memoriaCalculo['Cálculo Adicional Noturno'] = `${horasNoturnas}h * (${formatCurrency(valorHoraNormal)} * ${PERCENTUAL_ADICIONAL_NOTURNO * 100}%) = ${formatCurrency(totalValorAdicionalNoturno)}`;
 
     const totalGeralAdicionais = totalValorHE50 + totalValorHE100 + totalValorAdicionalNoturno;
+    memoriaCalculo['Total Geral'] = `${formatCurrency(totalValorHE50)} (HE 50%) + ${formatCurrency(totalValorHE100)} (HE 100%) + ${formatCurrency(totalValorAdicionalNoturno)} (Ad. Noturno) = ${formatCurrency(totalGeralAdicionais)}`;
 
     return {
+        salarioBase,
+        horasContratuais,
+        horasExtras50,
+        horasExtras100,
+        horasNoturnas,
+        valorHoraNormal: roundMonetary(valorHoraNormal),
         totalValorHE50: roundMonetary(totalValorHE50),
         totalValorHE100: roundMonetary(totalValorHE100),
         totalValorAdicionalNoturno: roundMonetary(totalValorAdicionalNoturno),
         totalGeralAdicionais: roundMonetary(totalGeralAdicionais),
-        mensagem: `Cálculo de Horas Extras e Adicionais.`
+        mensagem: `Cálculo de Horas Extras e Adicionais.`,
+        memoriaCalculo
     };
 }
 
@@ -587,15 +632,22 @@ export function calculateINSSCalculator(inssState, legalTexts) {
     const inssData = legalTexts.inss;
     const TABELA_INSS = inssData.tables.aliquotas_progressivas;
     const TETO_CONTRIBUICAO_INSS_VALOR_REAL = inssData.constants.TETO_CONTRIBUICAO_INSS_VALOR_REAL;
+    const memoriaCalculo = {};
 
     let contribuicaoINSS = 0;
+    let aliquotaEfetiva = 0;
+
+    memoriaCalculo['Salário Bruto Informado'] = formatCurrency(salarioBruto);
 
     if (salarioBruto <= 0) {
-        return { contribuicaoINSS: 0, mensagem: "Salário bruto deve ser maior que zero." };
+        const mensagem = "Salário bruto deve ser maior que zero.";
+        memoriaCalculo['Erro'] = mensagem;
+        return { contribuicaoINSS: 0, aliquotaEfetiva: 0, mensagem, memoriaCalculo };
     }
 
     if (salarioBruto > TABELA_INSS[TABELA_INSS.length - 1].faixa.max) {
         contribuicaoINSS = TETO_CONTRIBUICAO_INSS_VALOR_REAL;
+        memoriaCalculo['Cálculo'] = `Salário bruto ultrapassa o teto. Contribuição fixada no valor máximo de ${formatCurrency(contribuicaoINSS)}.`;
     } else {
         let faixaEncontrada = null;
         for (const faixa of TABELA_INSS) {
@@ -607,48 +659,69 @@ export function calculateINSSCalculator(inssState, legalTexts) {
 
         if (faixaEncontrada) {
             contribuicaoINSS = (salarioBruto * faixaEncontrada.aliquota) - faixaEncontrada.parcela_deduzir;
+            memoriaCalculo['Faixa de Contribuição'] = `De ${formatCurrency(faixaEncontrada.faixa.min)} a ${formatCurrency(faixaEncontrada.faixa.max)}.`;
+            memoriaCalculo['Cálculo'] = `(${formatCurrency(salarioBruto)} * ${faixaEncontrada.aliquota * 100}%) - ${formatCurrency(faixaEncontrada.parcela_deduzir)} = ${formatCurrency(contribuicaoINSS)}`;
         }
     }
 
+    if (salarioBruto > 0) {
+        aliquotaEfetiva = (contribuicaoINSS / salarioBruto) * 100;
+        memoriaCalculo['Alíquota Efetiva'] = `(${formatCurrency(contribuicaoINSS)} / ${formatCurrency(salarioBruto)}) = ${aliquotaEfetiva.toFixed(2)}%`;
+    }
+
     return {
+        salarioBruto,
         contribuicaoINSS: roundMonetary(contribuicaoINSS),
-        mensagem: `Contribuição INSS calculada com base no salário de ${formatCurrency(salarioBruto)}.`
+        aliquotaEfetiva: aliquotaEfetiva,
+        mensagem: `Contribuição INSS calculada com base no salário de ${formatCurrency(salarioBruto)}.`,
+        memoriaCalculo
     };
 }
 
 export function calculateValeTransporte(valeTransporteState, legalTexts) {
     const { salarioBruto, custoDiario, diasTrabalho } = valeTransporteState;
     const vtConstants = legalTexts.valeTransporte.constants;
+    const memoriaCalculo = {};
 
     const dias = diasTrabalho || vtConstants.DIAS_UTEIS_PADRAO;
 
     if (salarioBruto <= 0 || custoDiario <= 0 || dias <= 0) {
+        const mensagem = "Por favor, preencha todos os campos com valores positivos.";
+        memoriaCalculo['Erro'] = mensagem;
         return {
             custoMensalTotal: 0,
             descontoMaximoSalario: 0,
             descontoRealEmpregado: 0,
             valorBeneficioEmpregador: 0,
-            mensagem: "Por favor, preencha todos os campos com valores positivos."
+            mensagem,
+            memoriaCalculo
         };
     }
 
     const custoMensalTotal = custoDiario * dias;
+    memoriaCalculo['Custo Total do Transporte'] = `${formatCurrency(custoDiario)}/dia * ${dias} dias = ${formatCurrency(custoMensalTotal)}`;
+
     const descontoMaximoSalario = salarioBruto * vtConstants.PERCENTUAL_DESCONTO_SALARIO;
+    memoriaCalculo['Limite de Desconto (6% do Salário)'] = `${formatCurrency(salarioBruto)} * 6% = ${formatCurrency(descontoMaximoSalario)}`;
 
     // The employee discount is the lesser of the two values.
-    // The employee never pays more than the actual cost of the transport.
     const descontoRealEmpregado = Math.min(custoMensalTotal, descontoMaximoSalario);
+    memoriaCalculo['Desconto do Empregado'] = `O menor valor entre o Custo Total (${formatCurrency(custoMensalTotal)}) e o Limite de 6% (${formatCurrency(descontoMaximoSalario)}) = ${formatCurrency(descontoRealEmpregado)}`;
 
-    // The employer pays the difference. If the employee's 6% is enough to cover the cost,
-    // the employer pays nothing.
+    // The employer pays the difference.
     const valorBeneficioEmpregador = Math.max(0, custoMensalTotal - descontoRealEmpregado);
+    memoriaCalculo['Benefício (Custeado pelo Empregador)'] = `Custo Total (${formatCurrency(custoMensalTotal)}) - Desconto do Empregado (${formatCurrency(descontoRealEmpregado)}) = ${formatCurrency(valorBeneficioEmpregador)}`;
 
     return {
+        salarioBruto,
+        custoDiario,
+        diasTrabalho: dias,
         custoMensalTotal: roundMonetary(custoMensalTotal),
         descontoMaximoSalario: roundMonetary(descontoMaximoSalario),
         descontoRealEmpregado: roundMonetary(descontoRealEmpregado),
         valorBeneficioEmpregador: roundMonetary(valorBeneficioEmpregador),
-        mensagem: "Cálculo do Vale-Transporte realizado com sucesso."
+        mensagem: "Cálculo do Vale-Transporte realizado com sucesso.",
+        memoriaCalculo
     };
 }
 
@@ -657,21 +730,31 @@ export function calculateIRPF(irpfState, legalTexts) {
     const irpfData = legalTexts.irpf;
     const TABELA_IRPF = irpfData.tables.tabela_anual_2025;
     const DEDUCAO_DEPENDENTE = irpfData.constants.DEDUCAO_POR_DEPENDENTE_ANUAL;
+    const memoriaCalculo = {};
+
+    memoriaCalculo['Rendimentos Tributáveis (Anual)'] = formatCurrency(rendaAnual);
 
     if (rendaAnual <= 0) {
+        const mensagem = "Informe a renda anual para calcular.";
+        memoriaCalculo['Erro'] = mensagem;
         return {
             impostoDevido: 0,
             ajusteFinal: 0,
             tipoAjuste: 'neutro',
-            mensagem: "Informe a renda anual para calcular."
+            mensagem,
+            memoriaCalculo
         };
     }
 
     const deducaoTotalDependentes = dependentes * DEDUCAO_DEPENDENTE;
-    // Assuming 'outrasDeducoes' is the sum of all other valid deductions (health, capped education, etc.)
+    memoriaCalculo['Dedução por Dependentes'] = `${dependentes} x ${formatCurrency(DEDUCAO_DEPENDENTE)} = ${formatCurrency(deducaoTotalDependentes)}`;
+    memoriaCalculo['Outras Deduções'] = formatCurrency(outrasDeducoes);
+
     const totalDeducoes = deducaoTotalDependentes + outrasDeducoes;
+    memoriaCalculo['Total de Deduções'] = `${formatCurrency(deducaoTotalDependentes)} + ${formatCurrency(outrasDeducoes)} = ${formatCurrency(totalDeducoes)}`;
 
     const baseDeCalculo = Math.max(0, rendaAnual - totalDeducoes);
+    memoriaCalculo['Base de Cálculo do Imposto'] = `${formatCurrency(rendaAnual)} - ${formatCurrency(totalDeducoes)} = ${formatCurrency(baseDeCalculo)}`;
 
     let impostoDevido = 0;
     let faixaEncontrada = null;
@@ -681,7 +764,6 @@ export function calculateIRPF(irpfState, legalTexts) {
             break;
         }
     }
-     // Handle case where baseDeCalculo is above the last tier's max
     if (!faixaEncontrada && baseDeCalculo > TABELA_IRPF[TABELA_IRPF.length - 1].faixa.max) {
         faixaEncontrada = TABELA_IRPF[TABELA_IRPF.length - 1];
     }
@@ -689,9 +771,13 @@ export function calculateIRPF(irpfState, legalTexts) {
 
     if (faixaEncontrada) {
         impostoDevido = (baseDeCalculo * faixaEncontrada.aliquota) - faixaEncontrada.parcela_deduzir;
+        memoriaCalculo['Cálculo do Imposto Devido'] = `(${formatCurrency(baseDeCalculo)} * ${faixaEncontrada.aliquota * 100}%) - ${formatCurrency(faixaEncontrada.parcela_deduzir)} = ${formatCurrency(impostoDevido)}`;
+    } else {
+        memoriaCalculo['Cálculo do Imposto Devido'] = 'Isento de imposto.';
     }
 
     impostoDevido = Math.max(0, impostoDevido);
+    memoriaCalculo['Imposto Retido na Fonte (informado)'] = `-${formatCurrency(impostoRetido)}`;
 
     const ajusteFinal = impostoDevido - impostoRetido;
 
@@ -700,22 +786,28 @@ export function calculateIRPF(irpfState, legalTexts) {
     if (ajusteFinal > 0) {
         tipoAjuste = 'pagar';
         mensagem = `Você tem um saldo de ${formatCurrency(ajusteFinal)} a pagar.`;
+        memoriaCalculo['Resultado Final'] = `Imposto a Pagar: ${formatCurrency(impostoDevido)} - ${formatCurrency(impostoRetido)} = ${formatCurrency(ajusteFinal)}`;
     } else if (ajusteFinal < 0) {
         tipoAjuste = 'restituir';
         mensagem = `Você tem uma restituição de ${formatCurrency(Math.abs(ajusteFinal))} a receber.`;
+        memoriaCalculo['Resultado Final'] = `Imposto a Restituir: ${formatCurrency(impostoRetido)} - ${formatCurrency(impostoDevido)} = ${formatCurrency(Math.abs(ajusteFinal))}`;
     } else {
         mensagem = 'Sua declaração resultou em um ajuste zero. Não há imposto a pagar nem a restituir.';
+        memoriaCalculo['Resultado Final'] = 'Ajuste nulo. Nenhum valor a pagar ou restituir.';
     }
 
     return {
         rendaAnual: roundMonetary(rendaAnual),
+        dependentes,
+        outrasDeducoes,
         totalDeducoes: roundMonetary(totalDeducoes),
         baseDeCalculo: roundMonetary(baseDeCalculo),
         impostoDevido: roundMonetary(impostoDevido),
         impostoRetido: roundMonetary(impostoRetido),
         ajusteFinal: roundMonetary(ajusteFinal),
         tipoAjuste,
-        mensagem
+        mensagem,
+        memoriaCalculo
     };
 }
 
