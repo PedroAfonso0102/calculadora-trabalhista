@@ -792,6 +792,29 @@
             display: none;
         }
 
+        /* Hide full title when collapsed, show initials */
+        #main-sidebar.collapsed .sidebar-title {
+            display: none;
+        }
+
+        #main-sidebar.collapsed .sidebar-initials {
+            display: block !important;
+        }
+
+        /* Hide initials when expanded, show full title */
+        #main-sidebar.expanded .sidebar-title {
+            display: block;
+        }
+
+        #main-sidebar.expanded .sidebar-initials {
+            display: none !important;
+        }
+
+        /* Hide footer button text when collapsed */
+        #main-sidebar.collapsed .sidebar-footer {
+            display: none;
+        }
+
         #main-sidebar.collapsed .sidebar-dots {
             display: flex;
             flex-direction: column;
@@ -821,6 +844,12 @@
         /* Collapsed state - show only dots */
         #main-sidebar.collapsed {
             width: 4rem; /* w-16 - 64px */
+        }
+
+        /* Adjust header padding when collapsed */
+        #main-sidebar.collapsed .sidebar-header {
+            padding-left: 0;
+            padding-right: 0;
         }
 
         /* Expanded state - default, full width */
@@ -969,8 +998,9 @@
         <!-- Sidebar -->
         <aside id="main-sidebar" class="z-50 w-64 bg-white border-r border-gray-200 transition-all duration-300 ease-in-out">
             <!-- Logo -->
-            <div class="sidebar-header flex items-center h-16 px-6 border-b border-gray-200">
-                <h1 class="text-lg font-semibold text-primary">Calculadora Trabalhista</h1>
+            <div class="sidebar-header flex items-center justify-center h-16 px-6 border-b border-gray-200">
+                <h1 class="sidebar-title text-lg font-semibold text-primary">Calculadora Trabalhista</h1>
+                <div class="sidebar-initials text-lg font-bold text-primary hidden">CT</div>
             </div>
             
             <!-- Navigation Links (Expanded Mode) -->
