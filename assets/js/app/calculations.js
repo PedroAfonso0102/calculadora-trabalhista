@@ -409,31 +409,44 @@ export function calculateSalarioLiquido(liquidoState) {
  */
 export function calculateFGTS(fgtsState) {
     const { salarioBruto, saldoTotal, opcaoSaque } = fgtsState;
+    const memoriaCalculo = {};
 
     // 1. Calculate Monthly Deposit
     const depositoMensal = salarioBruto * 0.08;
+    memoriaCalculo['Depósito Mensal'] = `Salário Bruto (${formatCurrency(salarioBruto)}) * 8% = ${formatCurrency(depositoMensal)}`;
 
     // 2. Simulate Withdrawal
     let valorSaque = 0;
+    memoriaCalculo['Simulação de Saque'] = `Opção selecionada: ${opcaoSaque === 'rescisao' ? 'Saque-Rescisão' : 'Saque-Aniversário'}`;
     if (saldoTotal > 0 && opcaoSaque) {
         if (opcaoSaque === 'rescisao') {
             valorSaque = saldoTotal;
+            memoriaCalculo['Valor do Saque'] = `Saque integral do saldo de ${formatCurrency(saldoTotal)}`;
         } else if (opcaoSaque === 'aniversario') {
+            let faixaDetalhe = '';
             if (saldoTotal <= 500) {
                 valorSaque = saldoTotal * 0.50;
+                faixaDetalhe = `${formatCurrency(saldoTotal)} * 50% = ${formatCurrency(valorSaque)}`;
             } else if (saldoTotal <= 1000) {
                 valorSaque = saldoTotal * 0.40 + 50;
+                faixaDetalhe = `(${formatCurrency(saldoTotal)} * 40%) + R$ 50,00 = ${formatCurrency(valorSaque)}`;
             } else if (saldoTotal <= 5000) {
                 valorSaque = saldoTotal * 0.30 + 150;
+                faixaDetalhe = `(${formatCurrency(saldoTotal)} * 30%) + R$ 150,00 = ${formatCurrency(valorSaque)}`;
             } else if (saldoTotal <= 10000) {
                 valorSaque = saldoTotal * 0.20 + 650;
+                faixaDetalhe = `(${formatCurrency(saldoTotal)} * 20%) + R$ 650,00 = ${formatCurrency(valorSaque)}`;
             } else if (saldoTotal <= 15000) {
                 valorSaque = saldoTotal * 0.15 + 1150;
+                faixaDetalhe = `(${formatCurrency(saldoTotal)} * 15%) + R$ 1.150,00 = ${formatCurrency(valorSaque)}`;
             } else if (saldoTotal <= 20000) {
                 valorSaque = saldoTotal * 0.10 + 1900;
+                faixaDetalhe = `(${formatCurrency(saldoTotal)} * 10%) + R$ 1.900,00 = ${formatCurrency(valorSaque)}`;
             } else {
                 valorSaque = saldoTotal * 0.05 + 2900;
+                faixaDetalhe = `(${formatCurrency(saldoTotal)} * 5%) + R$ 2.900,00 = ${formatCurrency(valorSaque)}`;
             }
+            memoriaCalculo['Cálculo Saque-Aniversário'] = faixaDetalhe;
         }
     }
 
@@ -442,7 +455,8 @@ export function calculateFGTS(fgtsState) {
         depositoMensal: roundMonetary(depositoMensal),
         saldoTotal,
         opcaoSaque,
-        valorSaque: roundMonetary(valorSaque)
+        valorSaque: roundMonetary(valorSaque),
+        memoriaCalculo
     };
 }
 

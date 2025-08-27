@@ -384,6 +384,10 @@ function generateModalContent(data) {
             calculatorTitle = 'Cálculo de Rescisão';
             contentHTML += generateRescisaoModalContent(results, inputState);
             break;
+        case 'fgts':
+            calculatorTitle = 'Memória de Cálculo - FGTS';
+            contentHTML += generateFgtsModalContent(results, inputState);
+            break;
         case 'pisPasep':
             calculatorTitle = 'Memória de Cálculo - PIS/PASEP';
             contentHTML += generatePisPasepModalContent(results, inputState);
@@ -495,6 +499,28 @@ function generateValeTransporteModalContent(results, inputState) {
             </div>
         </div>`;
     return html;
+}
+
+function generateFgtsModalContent(results, inputState) {
+    const { depositoMensal, valorSaque, memoriaCalculo } = results;
+    let html = generateMemoryStepsHTML(memoriaCalculo);
+    html += `
+        <div class="mt-4 pt-4 border-t border-gray-200 space-y-2">
+            <div class="flex justify-between items-center text-lg">
+                <span class="font-bold text-gray-900">Depósito Mensal Estimado:</span>
+                <span class="font-bold text-blue-600">${formatCurrency(depositoMensal)}</span>
+            </div>
+            <div class="flex justify-between items-center text-lg">
+                <span class="font-bold text-gray-900">Valor de Saque Estimado:</span>
+                <span class="font-bold text-green-600">${formatCurrency(valorSaque)}</span>
+            </div>
+        </div>`;
+    return html;
+}
+
+function generateGenericReportContent(results, inputState) {
+    const { memoriaCalculo } = results;
+    return generateMemoryStepsHTML(memoriaCalculo);
 }
 
 function generateIrpfModalContent(results, inputState) {
