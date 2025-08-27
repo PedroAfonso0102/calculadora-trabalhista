@@ -430,11 +430,10 @@ export function calculateFGTS(fgtsState) {
     };
 }
 
-export function calculatePISPASEP(pisPasepState) {
+export function calculatePISPASEP(pisPasepState, legalTexts) {
     const { salarioMedio, mesesTrabalhados, dataInscricao } = pisPasepState;
-    // Note: This assumes legalTexts has been loaded into the main state object.
-    // In a real app, you might pass state.legalTexts as an argument or ensure it's loaded.
-    const pisConstants = state.legalTexts.pisPasep.constants;
+
+    const pisConstants = legalTexts.pisPasep.constants;
     const SALARIO_MINIMO_VIGENTE = pisConstants.SALARIO_MINIMO_VIGENTE;
     const MAX_SALARIO_PIS = SALARIO_MINIMO_VIGENTE * pisConstants.MAX_MULTIPLIER_SALARIO;
     const MIN_ANOS_PIS = pisConstants.MIN_ANOS_INSCRICAO;
@@ -474,10 +473,10 @@ export function calculatePISPASEP(pisPasepState) {
     };
 }
 
-export function calculateSeguroDesemprego(seguroDesempregoState) {
+export function calculateSeguroDesemprego(seguroDesempregoState, legalTexts) {
     const { salario1, salario2, salario3, mesesTrabalhados, numSolicitacoes } = seguroDesempregoState;
 
-    const sdData = state.legalTexts.seguro_desemprego;
+    const sdData = legalTexts.seguroDesemprego;
     const SALARIO_MINIMO_VIGENTE = sdData.constants.SALARIO_MINIMO_VIGENTE;
     const TETO_SEGURO_DESEMPREGO = sdData.constants.TETO_SEGURO_DESEMPREGO;
     const TABELA_VALORES = sdData.tables.valores_parcelas;
@@ -529,10 +528,10 @@ export function calculateSeguroDesemprego(seguroDesempregoState) {
     };
 }
 
-export function calculateHorasExtras(horasExtrasState) {
+export function calculateHorasExtras(horasExtrasState, legalTexts) {
     const { salarioBase, horasContratuais, horasExtras50, horasExtras100, horasNoturnas } = horasExtrasState;
 
-    const heData = state.legalTexts.horasExtras;
+    const heData = legalTexts.horasExtras;
     const PERCENTUAL_HE_50 = heData.constants.PERCENTUAL_HE_50;
     const PERCENTUAL_HE_100 = heData.constants.PERCENTUAL_HE_100;
     const PERCENTUAL_ADICIONAL_NOTURNO = heData.constants.PERCENTUAL_ADICIONAL_NOTURNO;
@@ -567,18 +566,141 @@ export function calculateHorasExtras(horasExtrasState) {
     };
 }
 
-export function calculateINSSCalculator(state) {
-    // This is a placeholder for the dedicated INSS calculator tab.
-    // The main calculateINSS function is the helper used by other calculators.
-    return calculateINSS(state.salarioBruto);
+export function calculateINSSCalculator(inssState, legalTexts) {
+    const { salarioBruto } = inssState;
+    const inssData = legalTexts.inss;
+    const TABELA_INSS = inssData.tables.aliquotas_progressivas;
+    const TETO_CONTRIBUICAO_INSS_VALOR_REAL = inssData.constants.TETO_CONTRIBUICAO_INSS_VALOR_REAL;
+
+    let contribuicaoINSS = 0;
+
+    if (salarioBruto <= 0) {
+        return { contribuicaoINSS: 0, mensagem: "Salário bruto deve ser maior que zero." };
+    }
+
+    if (salarioBruto > TABELA_INSS[TABELA_INSS.length - 1].faixa.max) {
+        contribuicaoINSS = TETO_CONTRIBUICAO_INSS_VALOR_REAL;
+    } else {
+        let faixaEncontrada = null;
+        for (const faixa of TABELA_INSS) {
+            if (salarioBruto >= faixa.faixa.min && salarioBruto <= faixa.faixa.max) {
+                faixaEncontrada = faixa;
+                break;
+            }
+        }
+
+        if (faixaEncontrada) {
+            contribuicaoINSS = (salarioBruto * faixaEncontrada.aliquota) - faixaEncontrada.parcela_deduzir;
+        }
+    }
+
+    return {
+        contribuicaoINSS: roundMonetary(contribuicaoINSS),
+        mensagem: `Contribuição INSS calculada com base no salário de ${formatCurrency(salarioBruto)}.`
+    };
 }
 
-export function calculateValeTransporte(state) {
-    return {};
+export function calculateValeTransporte(valeTransporteState, legalTexts) {
+    const { salarioBruto, custoDiario, diasTrabalho } = valeTransporteState;
+    const vtConstants = legalTexts.valeTransporte.constants;
+
+    const dias = diasTrabalho || vtConstants.DIAS_UTEIS_PADRAO;
+
+    if (salarioBruto <= 0 || custoDiario <= 0 || dias <= 0) {
+        return {
+            custoMensalTotal: 0,
+            descontoMaximoSalario: 0,
+            descontoRealEmpregado: 0,
+            valorBeneficioEmpregador: 0,
+            mensagem: "Por favor, preencha todos os campos com valores positivos."
+        };
+    }
+
+    const custoMensalTotal = custoDiario * dias;
+    const descontoMaximoSalario = salarioBruto * vtConstants.PERCENTUAL_DESCONTO_SALARIO;
+
+    // The employee discount is the lesser of the two values.
+    // The employee never pays more than the actual cost of the transport.
+    const descontoRealEmpregado = Math.min(custoMensalTotal, descontoMaximoSalario);
+
+    // The employer pays the difference. If the employee's 6% is enough to cover the cost,
+    // the employer pays nothing.
+    const valorBeneficioEmpregador = Math.max(0, custoMensalTotal - descontoRealEmpregado);
+
+    return {
+        custoMensalTotal: roundMonetary(custoMensalTotal),
+        descontoMaximoSalario: roundMonetary(descontoMaximoSalario),
+        descontoRealEmpregado: roundMonetary(descontoRealEmpregado),
+        valorBeneficioEmpregador: roundMonetary(valorBeneficioEmpregador),
+        mensagem: "Cálculo do Vale-Transporte realizado com sucesso."
+    };
 }
 
-export function calculateIRPF(state) {
-    return {};
+export function calculateIRPF(irpfState, legalTexts) {
+    const { rendaAnual, dependentes, outrasDeducoes, impostoRetido } = irpfState;
+    const irpfData = legalTexts.irpf;
+    const TABELA_IRPF = irpfData.tables.tabela_anual_2025;
+    const DEDUCAO_DEPENDENTE = irpfData.constants.DEDUCAO_POR_DEPENDENTE_ANUAL;
+
+    if (rendaAnual <= 0) {
+        return {
+            impostoDevido: 0,
+            ajusteFinal: 0,
+            tipoAjuste: 'neutro',
+            mensagem: "Informe a renda anual para calcular."
+        };
+    }
+
+    const deducaoTotalDependentes = dependentes * DEDUCAO_DEPENDENTE;
+    // Assuming 'outrasDeducoes' is the sum of all other valid deductions (health, capped education, etc.)
+    const totalDeducoes = deducaoTotalDependentes + outrasDeducoes;
+
+    const baseDeCalculo = Math.max(0, rendaAnual - totalDeducoes);
+
+    let impostoDevido = 0;
+    let faixaEncontrada = null;
+    for (const faixa of TABELA_IRPF) {
+        if (baseDeCalculo >= faixa.faixa.min && baseDeCalculo <= faixa.faixa.max) {
+            faixaEncontrada = faixa;
+            break;
+        }
+    }
+     // Handle case where baseDeCalculo is above the last tier's max
+    if (!faixaEncontrada && baseDeCalculo > TABELA_IRPF[TABELA_IRPF.length - 1].faixa.max) {
+        faixaEncontrada = TABELA_IRPF[TABELA_IRPF.length - 1];
+    }
+
+
+    if (faixaEncontrada) {
+        impostoDevido = (baseDeCalculo * faixaEncontrada.aliquota) - faixaEncontrada.parcela_deduzir;
+    }
+
+    impostoDevido = Math.max(0, impostoDevido);
+
+    const ajusteFinal = impostoDevido - impostoRetido;
+
+    let tipoAjuste = 'neutro';
+    let mensagem = '';
+    if (ajusteFinal > 0) {
+        tipoAjuste = 'pagar';
+        mensagem = `Você tem um saldo de ${formatCurrency(ajusteFinal)} a pagar.`;
+    } else if (ajusteFinal < 0) {
+        tipoAjuste = 'restituir';
+        mensagem = `Você tem uma restituição de ${formatCurrency(Math.abs(ajusteFinal))} a receber.`;
+    } else {
+        mensagem = 'Sua declaração resultou em um ajuste zero. Não há imposto a pagar nem a restituir.';
+    }
+
+    return {
+        rendaAnual: roundMonetary(rendaAnual),
+        totalDeducoes: roundMonetary(totalDeducoes),
+        baseDeCalculo: roundMonetary(baseDeCalculo),
+        impostoDevido: roundMonetary(impostoDevido),
+        impostoRetido: roundMonetary(impostoRetido),
+        ajusteFinal: roundMonetary(ajusteFinal),
+        tipoAjuste,
+        mensagem
+    };
 }
 
 /**

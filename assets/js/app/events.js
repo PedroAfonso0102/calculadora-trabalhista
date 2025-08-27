@@ -6,7 +6,7 @@
  */
 
 import { state, updateState, initialState } from './state.js';
-import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome } from './ui.js';
+import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal } from './ui.js';
 import * as calculations from './calculations.js';
 import { debounce, unmaskCurrency, formatCurrency } from './utils.js';
 
@@ -227,18 +227,22 @@ export function initializeEventListeners() {
                     results = calculations.calculateFGTS(calculatorState);
                     break;
                 case 'pisPasep':
-                    results = calculations.calculatePISPASEP(calculatorState);
+                    results = calculations.calculatePISPASEP(calculatorState, state.legalTexts);
                     break;
                 case 'seguroDesemprego':
-                    results = calculations.calculateSeguroDesemprego(calculatorState);
+                    results = calculations.calculateSeguroDesemprego(calculatorState, state.legalTexts);
                     break;
                 case 'horasExtras':
-                    results = calculations.calculateHorasExtras(calculatorState);
+                    results = calculations.calculateHorasExtras(calculatorState, state.legalTexts);
                     break;
                 case 'inss':
+                    results = calculations.calculateINSSCalculator(calculatorState, state.legalTexts);
+                    break;
                 case 'valeTransporte':
+                    results = calculations.calculateValeTransporte(calculatorState, state.legalTexts);
+                    break;
                 case 'irpf':
-                    results = {}; // No results for placeholders
+                    results = calculations.calculateIRPF(calculatorState, state.legalTexts);
                     break;
                 default: 
                     console.error('Unknown calculator type:', calculatorName);
@@ -279,18 +283,22 @@ export function initializeEventListeners() {
                     results = calculations.calculateFGTS(calculatorState);
                     break;
                 case 'pisPasep':
-                    results = calculations.calculatePISPASEP(calculatorState);
+                    results = calculations.calculatePISPASEP(calculatorState, state.legalTexts);
                     break;
                 case 'seguroDesemprego':
-                    results = calculations.calculateSeguroDesemprego(calculatorState);
+                    results = calculations.calculateSeguroDesemprego(calculatorState, state.legalTexts);
                     break;
                 case 'horasExtras':
-                    results = calculations.calculateHorasExtras(calculatorState);
+                    results = calculations.calculateHorasExtras(calculatorState, state.legalTexts);
                     break;
                 case 'inss':
+                    results = calculations.calculateINSSCalculator(calculatorState, state.legalTexts);
+                    break;
                 case 'valeTransporte':
+                    results = calculations.calculateValeTransporte(calculatorState, state.legalTexts);
+                    break;
                 case 'irpf':
-                    results = {}; // No results for placeholders
+                    results = calculations.calculateIRPF(calculatorState, state.legalTexts);
                     break;
                 default: 
                     console.error('Unknown calculator type:', calculatorName);
@@ -364,18 +372,22 @@ export function initializeEventListeners() {
                     results = calculations.calculateFGTS(calculatorState);
                     break;
                 case 'pisPasep':
-                    results = calculations.calculatePISPASEP(calculatorState);
+                    results = calculations.calculatePISPASEP(calculatorState, state.legalTexts);
                     break;
                 case 'seguroDesemprego':
-                    results = calculations.calculateSeguroDesemprego(calculatorState);
+                    results = calculations.calculateSeguroDesemprego(calculatorState, state.legalTexts);
                     break;
                 case 'horasExtras':
-                    results = calculations.calculateHorasExtras(calculatorState);
+                    results = calculations.calculateHorasExtras(calculatorState, state.legalTexts);
                     break;
                 case 'inss':
+                    results = calculations.calculateINSSCalculator(calculatorState, state.legalTexts);
+                    break;
                 case 'valeTransporte':
+                    results = calculations.calculateValeTransporte(calculatorState, state.legalTexts);
+                    break;
                 case 'irpf':
-                    results = {}; // No results for placeholders
+                    results = calculations.calculateIRPF(calculatorState, state.legalTexts);
                     break;
                     default: 
                         console.error('Unknown calculator type:', calculatorName);
@@ -416,6 +428,54 @@ export function initializeEventListeners() {
 
     // Educational Panel Event Listeners
     initializeEducationalPanelEvents();
+
+    // Customization Modal Event Listeners
+    initializeCustomizeModalEvents();
+}
+
+/**
+ * Initializes event listeners for the calculator customization modal.
+ */
+function initializeCustomizeModalEvents() {
+    const openBtn = document.getElementById('customize-calculators-btn');
+    const cancelBtn = document.getElementById('customize-modal-cancel-btn');
+    const saveBtn = document.getElementById('customize-modal-save-btn');
+    const overlay = document.getElementById('customize-modal-overlay');
+
+    if (openBtn) {
+        openBtn.addEventListener('click', showCustomizeModal);
+    }
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', hideCustomizeModal);
+    }
+    if (overlay) {
+        overlay.addEventListener('click', hideCustomizeModal);
+    }
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            const checklist = document.getElementById('customize-checklist');
+            if (!checklist) return;
+
+            const selectedCalculators = [];
+            checklist.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedCalculators.push(checkbox.value);
+            });
+
+            // Update state
+            updateState('visibleCalculators', selectedCalculators);
+
+            // Save to localStorage
+            localStorage.setItem('visibleCalculators', JSON.stringify(selectedCalculators));
+
+            // If the currently active tab is now hidden, switch to the first visible one
+            if (!selectedCalculators.includes(state.activeTab)) {
+                updateState('activeTab', selectedCalculators[0] || 'ferias');
+            }
+
+            hideCustomizeModal();
+            render();
+        });
+    }
 }
 
 /**

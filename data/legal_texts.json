@@ -244,21 +244,57 @@
       ]
     }
   },
-  "horas_extras_topic": {
+  "horasExtras": {
     "title": "Horas Extras e Adicionais",
-    "description": "Cálculo de horas extras e outros adicionais (funcionalidade em desenvolvimento)."
+    "fundamentacao_legal": "Regido pela CLT (Art. 59 e 73) e Súmulas do TST. Horas extras diurnas (dias úteis) têm acréscimo mínimo de 50%. Horas extras em domingos e feriados têm acréscimo mínimo de 100%. O adicional noturno é de no mínimo 20% sobre a hora normal para o trabalho entre 22h e 5h.",
+    "constants": {
+      "PERCENTUAL_HE_50": 0.5,
+      "PERCENTUAL_HE_100": 1,
+      "PERCENTUAL_ADICIONAL_NOTURNO": 0.2,
+      "HORAS_MENSAIS_PADRAO": 220
+    },
+    "examples": []
   },
-  "inss_topic": {
-    "title": "Contribuição ao INSS",
-    "description": "Cálculo detalhado da sua contribuição previdenciária (funcionalidade em desenvolvimento)."
+  "inss": {
+    "title": "Contribuição Previdenciária (INSS)",
+    "fundamentacao_legal": "Regido pela Lei nº 8.212/1991 e Portarias Interministeriais anuais. A contribuição é calculada com alíquotas progressivas sobre faixas salariais, respeitando um teto máximo de contribuição. O valor é descontado diretamente do salário do trabalhador.",
+    "constants": {
+      "TETO_CONTRIBUICAO_INSS_VALOR_REAL": 908.85
+    },
+    "tables": {
+      "aliquotas_progressivas": [
+        { "faixa": { "min": 0, "max": 1412 }, "aliquota": 0.075, "parcela_deduzir": 0 },
+        { "faixa": { "min": 1412.01, "max": 2666.68 }, "aliquota": 0.09, "parcela_deduzir": 21.18 },
+        { "faixa": { "min": 2666.69, "max": 4000.03 }, "aliquota": 0.12, "parcela_deduzir": 84.66 },
+        { "faixa": { "min": 4000.04, "max": 7786.02 }, "aliquota": 0.14, "parcela_deduzir": 164.6 }
+      ]
+    }
   },
-  "vale_transporte_topic": {
+  "valeTransporte": {
     "title": "Desconto de Vale-Transporte",
-    "description": "Cálculo do desconto do VT (funcionalidade em desenvolvimento)."
+    "fundamentacao_legal": "Regido pela Lei nº 7.418/85. O empregador pode descontar até 6% do salário base do empregado. Caso o custo total do transporte seja inferior a este percentual, o desconto é limitado ao valor real do benefício.",
+    "constants": {
+      "PERCENTUAL_DESCONTO_SALARIO": 0.06,
+      "DIAS_UTEIS_PADRAO": 22
+    }
   },
-  "irpf_topic": {
-    "title": "Imposto de Renda (IRPF)",
-    "description": "Simulador simplificado do seu imposto de renda anual (funcionalidade em desenvolvimento)."
+  "irpf": {
+    "title": "Imposto de Renda (IRPF) - Ajuste Anual",
+    "fundamentacao_legal": "Cálculo do Imposto de Renda Pessoa Física para o ajuste anual, baseado na Instrução Normativa RFB nº 2174 e Lei n° 14.848. O cálculo considera a renda tributável anual, deduções legais (dependentes, saúde, educação) e o imposto já retido na fonte para apurar o imposto a pagar ou a restituir.",
+    "constants": {
+      "DEDUCAO_POR_DEPENDENTE_ANUAL": 2275.08,
+      "LIMITE_DESPESAS_EDUCACAO_ANUAL": 3561.50,
+      "LIMITE_DESCONTO_SIMPLIFICADO_ANUAL": 16754.34
+    },
+    "tables": {
+      "tabela_anual_2025": [
+        { "faixa": { "min": 0, "max": 27110.40 }, "aliquota": 0, "parcela_deduzir": 0 },
+        { "faixa": { "min": 27110.41, "max": 33919.80 }, "aliquota": 0.075, "parcela_deduzir": 2033.28 },
+        { "faixa": { "min": 33919.81, "max": 45012.60 }, "aliquota": 0.15, "parcela_deduzir": 4577.27 },
+        { "faixa": { "min": 45012.61, "max": 55976.16 }, "aliquota": 0.225, "parcela_deduzir": 7953.21 },
+        { "faixa": { "min": 55976.17, "max": 999999999 }, "aliquota": 0.275, "parcela_deduzir": 10752.02 }
+      ]
+    }
   },
   "individual_topics": {
     "base_insalubridade": {

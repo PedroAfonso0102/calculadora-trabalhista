@@ -1302,15 +1302,16 @@
                 <!-- INSS Calculator -->
                 <div id="calculator-inss" value="inss" role="tabpanel" data-state="inactive" class="hidden mt-4">
                     <form id="form-inss">
-                        <div class="space-y-4">
-                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Contribuição Previdenciária (INSS)</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                <div class="space-y-2">
-                                    <label for="salario-bruto-inss" class="text-sm font-medium">Salário Bruto</label>
-                                    <input type="text" id="salario-bruto-inss" name="salario-bruto-inss" data-state="inss.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 3000.00" disabled>
+                        <div class="space-y-8">
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Contribuição Previdenciária (INSS)</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                    <div class="space-y-2">
+                                        <label for="salario-bruto-inss" class="text-sm font-medium">Salário Bruto</label>
+                                        <input type="text" id="salario-bruto-inss" name="salario-bruto-inss" data-state="inss.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 3000.00">
+                                    </div>
                                 </div>
                             </div>
-                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
                         </div>
                     </form>
                     <div id="inss-results" class="mt-10"></div>
@@ -1319,23 +1320,24 @@
                 <!-- Vale-Transporte Calculator -->
                 <div id="calculator-vale-transporte" value="vale-transporte" role="tabpanel" data-state="inactive" class="hidden mt-4">
                     <form id="form-vale-transporte">
-                        <div class="space-y-4">
-                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Desconto de Vale-Transporte</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                <div class="space-y-2">
-                                    <label for="salario-base-vt" class="text-sm font-medium">Salário Base</label>
-                                    <input type="text" id="salario-base-vt" name="salario-base-vt" data-state="valeTransporte.salarioBase" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="valor-passagem-vt" class="text-sm font-medium">Valor Unitário da Passagem</label>
-                                    <input type="text" id="valor-passagem-vt" name="valor-passagem-vt" data-state="valeTransporte.valorPassagem" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 4.50" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="dias-trabalhados-vt" class="text-sm font-medium">Dias Trabalhados no Mês</label>
-                                    <input type="number" id="dias-trabalhados-vt" name="dias-trabalhados-vt" data-state="valeTransporte.diasTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 22" disabled>
+                        <div class="space-y-8">
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Vale-Transporte</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                    <div class="space-y-2">
+                                        <label for="salario-bruto-vt" class="text-sm font-medium">Salário Bruto</label>
+                                        <input type="text" id="salario-bruto-vt" name="salario-bruto-vt" data-state="valeTransporte.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="custo-diario-vt" class="text-sm font-medium">Custo Diário com Transporte (ida e volta)</label>
+                                        <input type="text" id="custo-diario-vt" name="custo-diario-vt" data-state="valeTransporte.custoDiario" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 9.00">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="dias-trabalho-vt" class="text-sm font-medium">Dias de Trabalho no Mês</label>
+                                        <input type="number" id="dias-trabalho-vt" name="dias-trabalho-vt" data-state="valeTransporte.diasTrabalho" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 22">
+                                    </div>
                                 </div>
                             </div>
-                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
                         </div>
                     </form>
                     <div id="vale-transporte-results" class="mt-10"></div>
@@ -1344,27 +1346,28 @@
                 <!-- IRPF Calculator -->
                 <div id="calculator-irpf" value="irpf" role="tabpanel" data-state="inactive" class="hidden mt-4">
                     <form id="form-irpf">
-                        <div class="space-y-4">
-                            <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Simulador Simplificado de Ajuste Anual de IRPF</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                <div class="space-y-2">
-                                    <label for="renda-anual-irpf" class="text-sm font-medium">Renda Tributável Anual</label>
-                                    <input type="text" id="renda-anual-irpf" name="renda-anual-irpf" data-state="irpf.rendaAnual" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 45000.00" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="dependentes-irpf" class="text-sm font-medium">Número de Dependentes</label>
-                                    <input type="number" id="dependentes-irpf" name="dependentes-irpf" data-state="irpf.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="deducoes-irpf" class="text-sm font-medium">Outras Deduções (Educação, Saúde)</label>
-                                    <input type="text" id="deducoes-irpf" name="deducoes-irpf" data-state="irpf.outrasDeducoes" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 5000.00" disabled>
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="imposto-retido-irpf" class="text-sm font-medium">Imposto Retido na Fonte (anual)</label>
-                                    <input type="text" id="imposto-retido-irpf" name="imposto-retido-irpf" data-state="irpf.impostoRetido" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2000.00" disabled>
+                        <div class="space-y-8">
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Simulador de Ajuste Anual de IRPF</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                    <div class="space-y-2">
+                                        <label for="renda-anual-irpf" class="text-sm font-medium">Renda Tributável Anual</label>
+                                        <input type="text" id="renda-anual-irpf" name="renda-anual-irpf" data-state="irpf.rendaAnual" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 45000.00">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="dependentes-irpf" class="text-sm font-medium">Número de Dependentes</label>
+                                        <input type="number" id="dependentes-irpf" name="dependentes-irpf" data-state="irpf.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2" value="0">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="deducoes-irpf" class="text-sm font-medium">Outras Deduções (Educação, Saúde, etc)</label>
+                                        <input type="text" id="deducoes-irpf" name="deducoes-irpf" data-state="irpf.outrasDeducoes" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 5000.00">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="imposto-retido-irpf" class="text-sm font-medium">Imposto Retido na Fonte (anual)</label>
+                                        <input type="text" id="imposto-retido-irpf" name="imposto-retido-irpf" data-state="irpf.impostoRetido" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2000.00">
+                                    </div>
                                 </div>
                             </div>
-                            <p class="text-center text-muted-foreground pt-4">Esta funcionalidade será implementada em breve.</p>
                         </div>
                     </form>
                     <div id="irpf-results" class="mt-10"></div>
@@ -1398,9 +1401,12 @@
 
     <!-- Footer -->
     <footer class="text-center py-6 mt-8 sm:mt-12 text-sm text-muted-foreground">
-        <div class="flex items-center justify-center space-x-2 mb-4">
-            <input type="checkbox" id="save-data-checkbox" name="save-data" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary">
-            <label for="save-data-checkbox" class="cursor-pointer">Lembrar meus dados para a próxima visita</label>
+        <div class="flex items-center justify-center space-x-4 mb-4">
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" id="save-data-checkbox" name="save-data" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary">
+                <label for="save-data-checkbox" class="cursor-pointer">Lembrar meus dados</label>
+            </div>
+            <button id="customize-calculators-btn" class="text-primary hover:underline">Personalizar Calculadoras</button>
         </div>
         <p>&copy; 2025 Calculadora Trabalhista. Uma ferramenta para o trabalhador.</p>
     </footer>
@@ -1476,5 +1482,20 @@
     </aside>
 
     <script type="module" src="assets/js/app/main.js" defer></script>
+
+    <!-- Customization Modal -->
+    <div id="customize-modal" class="fixed inset-0 hidden flex items-center justify-center p-4" style="z-index: 9999;">
+        <div id="customize-modal-overlay" class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+        <div role="dialog" id="customize-modal-content" class="relative w-full max-w-md bg-white text-gray-900 p-6 shadow-lg rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Personalizar Calculadoras Visíveis</h2>
+            <div id="customize-checklist" class="space-y-3 max-h-60 overflow-y-auto pr-2">
+                <!-- Checkboxes will be populated by JS -->
+            </div>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button id="customize-modal-cancel-btn" type="button" class="px-4 py-2 rounded-md border hover:bg-gray-100">Cancelar</button>
+                <button id="customize-modal-save-btn" type="button" class="px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/90">Salvar e Fechar</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -839,6 +839,26 @@ function createSeguroDesempregoResultHTML(results) {
     </div>`;
 }
 
+function createINSSResultHTML(results) {
+    if (!results) return '';
+    const { contribuicaoINSS, mensagem } = results;
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado da Contribuição INSS</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-2">
+                <div class="flex justify-between result-row py-2">
+                    <span>Valor da Contribuição:</span>
+                    <span class="font-mono text-red-600">${formatCurrency(contribuicaoINSS)}</span>
+                </div>
+                <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+            </div>
+        </div>
+    </div>`;
+}
+
 function createFeriasResultHTML(results) {
     if (Object.keys(state.ferias.errors).some(k => state.ferias.errors[k])) {
         return '<p class="text-center text-red-500 font-semibold">Por favor, corrija os campos destacados acima para ver o seu cálculo.</p>';
@@ -1464,13 +1484,57 @@ function generateRescisaoReportContent(results, inputState) {
 
 // --- MAIN RENDER FUNCTION ---
 
+export function renderCustomizationModal() {
+    const checklistContainer = document.getElementById('customize-checklist');
+    if (!checklistContainer) return;
+
+    const allCalculators = Object.keys(tabTriggers);
+    const visibleCalculators = state.visibleCalculators;
+
+    let checklistHTML = '';
+    allCalculators.forEach(key => {
+        const isChecked = visibleCalculators.includes(key);
+        const calculatorName = tabTriggers[key].textContent;
+        checklistHTML += `
+            <div class="flex items-center">
+                <input type="checkbox" id="customize-${key}" value="${key}" ${isChecked ? 'checked' : ''} class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary">
+                <label for="customize-${key}" class="ml-3 text-sm text-gray-700">${calculatorName}</label>
+            </div>
+        `;
+    });
+    checklistContainer.innerHTML = checklistHTML;
+}
+
+export function showCustomizeModal() {
+    const modal = document.getElementById('customize-modal');
+    if (modal) {
+        renderCustomizationModal();
+        modal.classList.remove('hidden');
+    }
+}
+
+export function hideCustomizeModal() {
+    const modal = document.getElementById('customize-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
 function renderTabs() {
     const activeTab = state.activeTab;
+    const visibleCalculators = state.visibleCalculators;
+
     for (const tabName in tabTriggers) {
         const trigger = tabTriggers[tabName];
         const panel = calculatorPanels[tabName];
 
         if (!trigger || !panel) continue;
+
+        if (!visibleCalculators.includes(tabName)) {
+            trigger.style.display = 'none';
+        } else {
+            trigger.style.display = ''; // Use default display
+        }
 
         const isActive = tabName === activeTab;
 
@@ -1573,18 +1637,28 @@ export function render() {
             html = createFgtsResultHTML(results);
             break;
         case 'pisPasep':
-            results = calculations.calculatePISPASEP(state.pisPasep);
+            results = calculations.calculatePISPASEP(state.pisPasep, state.legalTexts);
             html = createPisPasepResultHTML(results);
             break;
         case 'seguroDesemprego':
-            results = calculations.calculateSeguroDesemprego(state.seguroDesemprego);
+            results = calculations.calculateSeguroDesemprego(state.seguroDesemprego, state.legalTexts);
             html = createSeguroDesempregoResultHTML(results);
             break;
         case 'horasExtras':
+            results = calculations.calculateHorasExtras(state.horasExtras, state.legalTexts);
+            html = createHorasExtrasResultHTML(results);
+            break;
         case 'inss':
+            results = calculations.calculateINSSCalculator(state.inss, state.legalTexts);
+            html = createINSSResultHTML(results);
+            break;
         case 'valeTransporte':
+            results = calculations.calculateValeTransporte(state.valeTransporte, state.legalTexts);
+            html = createValeTransporteResultHTML(results);
+            break;
         case 'irpf':
-            html = ''; // Placeholders do not render results yet
+            results = calculations.calculateIRPF(state.irpf, state.legalTexts);
+            html = createIRPFResultHTML(results);
             break;
     }
 
@@ -1686,6 +1760,139 @@ function createSeguroDesempregoResultHTML(results) {
                     <span class="font-mono text-green-600">${formatCurrency(valorPorParcela)}</span>
                 </div>
                 <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
+            </div>
+        </div>
+    </div>`;
+}
+
+function createHorasExtrasResultHTML(results) {
+    if (!results) return '';
+    const { totalValorHE50, totalValorHE100, totalValorAdicionalNoturno, totalGeralAdicionais, mensagem } = results;
+
+    if (!totalGeralAdicionais && state.horasExtras.salarioBase <= 0) {
+        return '<p class="text-center text-muted-foreground">Preencha os campos para calcular.</p>';
+    }
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado de Horas Extras e Adicionais</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-2">
+                <div class="flex justify-between result-row py-2">
+                    <span>Total de Horas Extras (50%):</span>
+                    <span class="font-mono text-green-600">${formatCurrency(totalValorHE50)}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>Total de Horas Extras (100%):</span>
+                    <span class="font-mono text-green-600">${formatCurrency(totalValorHE100)}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>Total Adicional Noturno:</span>
+                    <span class="font-mono text-green-600">${formatCurrency(totalValorAdicionalNoturno)}</span>
+                </div>
+                <div class="flex justify-between font-semibold border-t pt-2 mt-2">
+                    <span class="total-liquido-label">Valor Total dos Adicionais:</span>
+                    <span class="font-mono text-blue-600 total-liquido-valor">${formatCurrency(totalGeralAdicionais)}</span>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function createValeTransporteResultHTML(results) {
+    if (!results || !results.custoMensalTotal) {
+        return '<p class="text-center text-muted-foreground">Preencha os campos para calcular.</p>';
+    }
+
+    const {
+        custoMensalTotal,
+        descontoMaximoSalario,
+        descontoRealEmpregado,
+        valorBeneficioEmpregador,
+        mensagem
+    } = results;
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Vale-Transporte</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-2">
+                <div class="flex justify-between result-row py-2">
+                    <span>Custo Mensal Total do Transporte:</span>
+                    <span class="font-mono">${formatCurrency(custoMensalTotal)}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>Desconto Máximo (6% do Salário):</span>
+                    <span class="font-mono">${formatCurrency(descontoMaximoSalario)}</span>
+                </div>
+                <div class="flex justify-between font-semibold result-row py-2 text-red-600">
+                    <span>Desconto do Empregado (Valor Real):</span>
+                    <span class="font-mono">-${formatCurrency(descontoRealEmpregado)}</span>
+                </div>
+                <div class="flex justify-between font-semibold border-t pt-2 mt-2 text-green-600">
+                    <span class="total-liquido-label">Benefício pago pelo Empregador:</span>
+                    <span class="font-mono total-liquido-valor">${formatCurrency(valorBeneficioEmpregador)}</span>
+                </div>
+                <p class="text-sm text-gray-600 pt-4">${mensagem}</p>
+            </div>
+        </div>
+    </div>`;
+}
+
+function createIRPFResultHTML(results) {
+    if (!results) return '';
+    const {
+        baseDeCalculo,
+        impostoDevido,
+        impostoRetido,
+        ajusteFinal,
+        tipoAjuste,
+        mensagem
+    } = results;
+
+    if (results.rendaAnual <= 0) {
+        return '<p class="text-center text-muted-foreground">Preencha os campos para calcular.</p>';
+    }
+
+    let finalResultClass = '';
+    let finalResultLabel = '';
+    if (tipoAjuste === 'pagar') {
+        finalResultClass = 'text-red-600';
+        finalResultLabel = 'Imposto a Pagar:';
+    } else if (tipoAjuste === 'restituir') {
+        finalResultClass = 'text-green-600';
+        finalResultLabel = 'Imposto a Restituir:';
+    } else {
+        finalResultClass = 'text-blue-600';
+        finalResultLabel = 'Ajuste Final:';
+    }
+
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Ajuste Anual de IRPF</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-2">
+                <div class="flex justify-between result-row py-2">
+                    <span>Base de Cálculo Anual:</span>
+                    <span class="font-mono">${formatCurrency(baseDeCalculo)}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>(+) Imposto Devido (calculado):</span>
+                    <span class="font-mono text-blue-600">${formatCurrency(impostoDevido)}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>(-) Imposto Retido na Fonte:</span>
+                    <span class="font-mono text-red-600">-${formatCurrency(impostoRetido)}</span>
+                </div>
+                <div class="flex justify-between font-semibold border-t pt-2 mt-2 ${finalResultClass}">
+                    <span class="total-liquido-label">${finalResultLabel}</span>
+                    <span class="font-mono total-liquido-valor">${formatCurrency(Math.abs(ajusteFinal))}</span>
+                </div>
+                <p class="text-sm text-gray-600 pt-4">${mensagem}</p>
             </div>
         </div>
     </div>`;

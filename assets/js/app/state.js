@@ -1,4 +1,25 @@
 // The single source of truth for the entire application.
+
+function getInitialVisibleCalculators() {
+    try {
+        const stored = localStorage.getItem('visibleCalculators');
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            // Basic validation
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                return parsed;
+            }
+        }
+    } catch (e) {
+        console.error("Failed to parse visibleCalculators from localStorage", e);
+    }
+    // Default if nothing is stored or if parsing fails
+    return [
+        'ferias', 'rescisao', 'decimoTerceiro', 'salarioLiquido', 'fgts',
+        'pisPasep', 'seguroDesemprego', 'horasExtras', 'inss', 'valeTransporte', 'irpf'
+    ];
+}
+
 const initialState = {
     ferias: {
         salarioBruto: 0,
@@ -75,10 +96,11 @@ const initialState = {
         errors: {}
     },
     seguroDesemprego: {
-        salarioPenultimo: 0,
-        salarioAntepenultimo: 0,
-        tempoServico: 0,
-        solicitacoesAnteriores: 0,
+        salario1: 0,
+        salario2: 0,
+        salario3: 0,
+        mesesTrabalhados: 0,
+        numSolicitacoes: 0,
         errors: {}
     },
     horasExtras: {
@@ -94,9 +116,9 @@ const initialState = {
         errors: {}
     },
     valeTransporte: {
-        salarioBase: 0,
-        valorPassagem: 0,
-        diasTrabalhados: 22,
+        salarioBruto: 0,
+        custoDiario: 0,
+        diasTrabalho: 22,
         errors: {}
     },
     irpf: {
@@ -110,6 +132,7 @@ const initialState = {
 
 const state = {
     activeTab: 'ferias',
+    visibleCalculators: getInitialVisibleCalculators(),
     ...JSON.parse(JSON.stringify(initialState)), // Deep copy to prevent mutation
     results: {}
 };
