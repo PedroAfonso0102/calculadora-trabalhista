@@ -52,6 +52,352 @@ const calculatorPanels = {
     irpf: document.getElementById('calculator-irpf')
 };
 
+// --- GENERIC RESULT VIEW TEMPLATES ---
+const resultTemplates = {
+    decimoTerceiro: {
+        title: 'Resultado do Cálculo do 13º Salário',
+        subtitle: 'Resumo do seu cálculo de 13º salário.',
+        sections: [
+            {
+                // No title for the first section, it's a summary
+                rows: [
+                    { label: 'Base de Cálculo:', valueKey: 'baseDeCalculo', isMono: true },
+                    { label: 'Meses trabalhados:', valueKey: 'mesesTrabalhados', suffix: ' meses', isMono: true },
+                    { label: '13º Salário Bruto:', valueKey: 'valorBrutoDecimo', isMono: true, isBold: true, isSummary: true },
+                ]
+            },
+            {
+                title: 'Descontos',
+                titleColor: 'text-red-600',
+                rows: [
+                    { label: 'INSS:', valueKey: 'descontoINSS.value', isMono: true, isNegative: true, details: { id: 'inss-details-13', contentKey: 'descontoINSS.details' } },
+                    { label: 'IRRF:', valueKey: 'descontoIRRF.value', isMono: true, isNegative: true, details: { id: 'irrf-details-13', contentKey: 'descontoIRRF.details' } },
+                ]
+            },
+            {
+                title: 'Valores Finais',
+                titleColor: 'text-primary',
+                rows: [
+                    { label: '13º Salário Líquido:', valueKey: 'valorLiquidoDecimo', isMono: true, valueColor: 'text-green-600' },
+                    { label: '(-) Adiantamento já recebido:', valueKey: 'adiantamentoRecebido', isMono: true, valueColor: 'text-red-600', isNegative: true, condition: (r) => r.adiantamentoRecebido > 0 },
+                ]
+            }
+        ],
+        footer: {
+            total: { label: 'Valor a Receber:', valueKey: 'valorAReceber', valueColor: 'text-green-600' },
+            buttons: [
+                { text: 'Ver Memória de Cálculo', class: 'js-show-memory-modal', primary: true },
+                { text: 'Imprimir', class: 'js-print-result', primary: false },
+            ]
+        }
+    },
+    ferias: {
+        title: 'Resultado do Cálculo de Férias',
+        subtitle: 'Resumo do seu cálculo de férias.',
+        sections: [
+            {
+                rows: [
+                    { label: 'Base de Cálculo para Férias:', valueKey: 'baseDeCalculo', isMono: true },
+                ]
+            },
+            {
+                title: 'Proventos (Ganhos)',
+                titleColor: 'text-primary',
+                rows: [
+                    { dynamicLabel: (r) => `Valor das Férias (${r.venderFerias ? (r.diasFerias - (r.diasFerias / 3)) : r.diasFerias} dias):`, valueKey: 'valorFerias', isMono: true, valueColor: 'text-green-600' },
+                    { label: '1/3 Constitucional sobre Férias:', valueKey: 'tercoConstitucional', isMono: true, valueColor: 'text-green-600' },
+                    { label: 'Abono Pecuniário (Venda 1/3):', valueKey: 'valorAbono', isMono: true, valueColor: 'text-green-600', condition: (r) => r.venderFerias && r.valorAbono > 0 },
+                    { label: '1/3 sobre Abono Pecuniário:', valueKey: 'tercoAbono', isMono: true, valueColor: 'text-green-600', condition: (r) => r.venderFerias && r.tercoAbono > 0 },
+                    { label: 'Adiantamento 13º Salário:', valueKey: 'adiantamento13', isMono: true, valueColor: 'text-green-600', condition: (r) => r.adiantarDecimo && r.adiantamento13 > 0 },
+                ]
+            },
+            {
+                title: 'Descontos',
+                titleColor: 'text-red-600',
+                rows: [
+                    { label: 'INSS sobre Férias:', valueKey: 'descontoINSS.value', isMono: true, isNegative: true, valueColor: 'text-red-600', details: { id: 'inss-details-ferias', contentKey: 'descontoINSS.details' } },
+                    { label: 'IRRF sobre Férias:', valueKey: 'descontoIRRF.value', isMono: true, isNegative: true, valueColor: 'text-red-600', details: { id: 'irrf-details-ferias', contentKey: 'descontoIRRF.details' } },
+                ]
+            }
+        ],
+        footer: {
+            total: { label: 'Total Líquido a Receber:', valueKey: 'valorLiquido', valueColor: 'text-green-600' },
+            buttons: [
+                { text: 'Ver Memória de Cálculo', class: 'js-show-memory-modal', primary: true },
+                { text: 'Imprimir', class: 'js-print-result', primary: false },
+            ]
+        }
+    }
+    // Other calculator templates will be added here
+    salarioLiquido: {
+        title: 'Resultado do Cálculo do Salário Líquido',
+        subtitle: 'Resumo detalhado do seu salário líquido mensal.',
+        layout: 'grid grid-cols-1 md:grid-cols-2 gap-8 items-center',
+        content: [
+            {
+                type: 'sections',
+                className: 'md:col-span-1',
+                sections: [
+                    {
+                        title: 'Proventos (Ganhos)',
+                        titleColor: 'text-primary',
+                        rows: [
+                            { label: 'Salário Base:', valueKey: 'salarioBruto', isMono: true, valueColor: 'text-green-600' },
+                            { label: 'Horas Extras:', valueKey: 'horasExtras', isMono: true, valueColor: 'text-green-600', condition: (r) => r.horasExtras > 0 },
+                            { label: 'Adicional de Periculosidade:', valueKey: 'adicionalPericulosidade', isMono: true, valueColor: 'text-green-600', condition: (r) => r.adicionalPericulosidade > 0 },
+                            { label: 'Adicional de Insalubridade:', valueKey: 'adicionalInsalubridade', isMono: true, valueColor: 'text-green-600', condition: (r) => r.adicionalInsalubridade > 0 },
+                            { label: 'Adicional Noturno:', valueKey: 'adicionalNoturno', isMono: true, valueColor: 'text-green-600', condition: (r) => r.adicionalNoturno > 0 },
+                            { label: 'Salário Família:', valueKey: 'salarioFamilia', isMono: true, valueColor: 'text-green-600', condition: (r) => r.salarioFamilia > 0 },
+                            { label: 'Total Bruto:', valueKey: 'totalProventos', isMono: true, valueColor: 'text-green-600', isBold: true, isSummary: true },
+                        ]
+                    },
+                    {
+                        title: 'Descontos',
+                        titleColor: 'text-red-600',
+                        rows: [
+                            { label: 'INSS:', valueKey: 'descontoINSS.value', isMono: true, isNegative: true, valueColor: 'text-red-600', details: { id: 'inss-details-salario', contentKey: 'descontoINSS.details' } },
+                            { label: 'IRRF:', valueKey: 'descontoIRRF.value', isMono: true, isNegative: true, valueColor: 'text-red-600', details: { id: 'irrf-details-salario', contentKey: 'descontoIRRF.details' } },
+                            { label: 'Vale-Transporte (6%):', valueKey: 'descontoVT', isMono: true, isNegative: true, valueColor: 'text-red-600', condition: (r) => r.descontoVT > 0 },
+                            { label: 'Vale-Refeição/Alimentação:', valueKey: 'descontoVR', isMono: true, isNegative: true, valueColor: 'text-red-600', condition: (r) => r.descontoVR > 0 },
+                            { label: 'Plano de Saúde / Odontológico:', valueKey: 'descontoSaude', isMono: true, isNegative: true, valueColor: 'text-red-600', condition: (r) => r.descontoSaude > 0 },
+                            { label: 'Adiantamentos (Vale):', valueKey: 'descontoAdiantamentos', isMono: true, isNegative: true, valueColor: 'text-red-600', condition: (r) => r.descontoAdiantamentos > 0 },
+                            { label: 'Total de Descontos:', valueKey: 'totalDescontos', isMono: true, isNegative: true, valueColor: 'text-red-600', isBold: true, isSummary: true },
+                        ]
+                    }
+                ]
+            },
+            {
+                type: 'custom',
+                className: 'md:col-span-1 flex flex-col items-center justify-center p-4',
+                html: '<div class="w-full max-w-[300px] mx-auto"><div id="salario-liquido-chart-container"></div></div>'
+            }
+        ],
+        footer: {
+            total: { label: 'Salário Líquido a Receber:', valueKey: 'salarioLiquido', valueColor: 'text-green-600' },
+            buttons: [
+                { text: 'Ver Memória de Cálculo', class: 'js-show-memory-modal', primary: true },
+                { text: 'Imprimir', class: 'js-print-result', primary: false },
+            ]
+        }
+    },
+    rescisao: {
+        title: 'Resultado do Cálculo de Rescisão',
+        subtitle: 'Resumo das suas verbas rescisórias.',
+        sections: [
+            {
+                title: 'Verbas Rescisórias (Ganhos)',
+                titleColor: 'text-primary',
+                dynamicRows: (r) => Object.entries(r.proventos)
+                    .filter(([, value]) => value > 0)
+                    .map(([key, value]) => ({
+                        label: `${key}:`,
+                        valueKey: `proventos.${key}`,
+                        isMono: true,
+                        valueColor: 'text-green-600'
+                    })),
+                summaryRow: { label: 'Total de Proventos:', valueKey: 'totalProventos', isMono: true, valueColor: 'text-green-600' }
+            },
+            {
+                title: 'Descontos',
+                titleColor: 'text-red-600',
+                dynamicRows: (r) => Object.entries(r.descontos)
+                    .filter(([, result]) => result && (result.hasOwnProperty('value') ? result.value > 0 : result > 0))
+                    .map(([key, result]) => ({
+                        label: `${key}:`,
+                        valueKey: `descontos.${key}${result.hasOwnProperty('value') ? '.value' : ''}`,
+                        isMono: true,
+                        isNegative: true,
+                        valueColor: 'text-red-600'
+                    })),
+                summaryRow: { label: 'Total de Descontos:', valueKey: 'totalDescontos', isMono: true, isNegative: true, valueColor: 'text-red-600' }
+            }
+        ],
+        footer: {
+            total: { label: 'Total Líquido a Receber:', valueKey: 'valorLiquido', valueColor: 'text-green-600' },
+            buttons: [
+                { text: 'Ver Memória de Cálculo', class: 'js-show-memory-modal', primary: true },
+                { text: 'Imprimir', class: 'js-print-result', primary: false },
+            ]
+        }
+    },
+    fgts: {
+        title: 'Resultado da Simulação FGTS',
+        subtitle: 'Resumo das suas simulações de FGTS.',
+        sections: [
+            {
+                title: 'Depósito Mensal',
+                titleColor: 'text-primary',
+                rows: [{ label: 'Valor Estimado do Depósito:', valueKey: 'depositoMensal', isMono: true, valueColor: 'text-green-600' }]
+            },
+            {
+                title: 'Simulação de Saque',
+                titleColor: 'text-primary',
+                rows: [{ dynamicLabel: (r) => `Valor Estimado do ${r.opcaoSaque === 'rescisao' ? 'Saque-Rescisão' : 'Saque-Aniversário'}:`, valueKey: 'valorSaque', isMono: true, valueColor: 'text-green-600' }]
+            }
+        ]
+    },
+    pisPasep: {
+        title: 'Resultado do Abono Salarial (PIS/PASEP)',
+        subtitle: 'Verifique se você tem direito ao abono salarial.',
+        sections: [{ rows: [{ label: 'Valor Estimado do Abono:', valueKey: 'valorAbono', isMono: true, valueColor: 'text-green-600' }] }],
+        message: { textKey: 'mensagem', colorClass: (r) => r.elegivel ? 'text-gray-600' : 'text-red-500' }
+    },
+    seguroDesemprego: {
+        title: 'Resultado do Seguro-Desemprego',
+        subtitle: 'Veja o valor e o número de parcelas do seu seguro-desemprego.',
+        sections: [
+            {
+                rows: [
+                    { label: 'Número de Parcelas:', valueKey: 'numeroParcelas', valueColor: 'text-blue-600' },
+                    { label: 'Valor por Parcela:', valueKey: 'valorPorParcela', isMono: true, valueColor: 'text-green-600' }
+                ]
+            }
+        ],
+        message: { textKey: 'mensagem', colorClass: (r) => r.elegivel ? 'text-gray-600' : 'text-red-500' }
+    },
+    inss: {
+        title: 'Resultado da Contribuição INSS',
+        subtitle: 'Calcule o valor da sua contribuição previdenciária.',
+        sections: [{ rows: [{ label: 'Valor da Contribuição:', valueKey: 'contribuicaoINSS', isMono: true, valueColor: 'text-red-600' }] }],
+        message: { textKey: 'mensagem', colorClass: () => 'text-gray-600' }
+    }
+};
+
+
+// --- GENERIC RESULT VIEW RENDERER ---
+function createResultView(template, results, calculatorName) {
+    // Check for validation errors first
+    if (state[calculatorName] && state[calculatorName].errors && Object.keys(state[calculatorName].errors).some(k => state[calculatorName].errors[k])) {
+        return '<p class="text-center text-red-500 font-semibold">Por favor, corrija os campos destacados acima para ver o seu cálculo.</p>';
+    }
+    // Check if results are available, but allow rendering if there's no specific value to check (like in 'inss' which might be 0)
+    if (!results || (template.checkValue && !getValue(results, template.checkValue))) {
+         return '<p class="text-center text-muted-foreground">Preencha os campos para calcular.</p>';
+    }
+
+    const getValue = (obj, path) => path.split('.').reduce((o, i) => (o ? o[i] : undefined), obj);
+
+    const createDetailsHTML = (detailsData) => {
+        if (!detailsData) return '';
+        if (Array.isArray(detailsData)) { // For INSS
+            return detailsData.map(d => `<p class="text-xs">${d.range}: ${formatCurrency(d.base)} x ${d.rate}% = <strong>${formatCurrency(d.value)}</strong></p>`).join('');
+        }
+        // For IRRF
+        return `<p class="text-xs">Base de Cálculo: ${formatCurrency(detailsData.base)}</p><p class="text-xs">Dedução por Dependentes: ${formatCurrency(detailsData.dependentsDeduction)}</p><p class="text-xs">Base p/ IRRF: ${formatCurrency(detailsData.irrfBase)}</p><p class="text-xs">Alíquota: ${detailsData.rate * 100}%</p><p class="text-xs">Parcela a Deduzir: ${formatCurrency(detailsData.deduction)}</p>`;
+    };
+
+    const generateRowsHTML = (rows) => {
+        return rows.map(row => {
+            if (row.condition && !row.condition(results)) return '';
+            const rawValue = getValue(results, row.valueKey);
+            if (rawValue === undefined) return ''; // Don't render if value is not in results
+            if (rawValue === 0 && row.hideIfZero) return '';
+
+            const displayValue = row.isMono ? formatCurrency(rawValue) : rawValue;
+            const finalValue = row.isNegative ? `-${displayValue}` : displayValue;
+            const suffix = row.suffix || '';
+            const label = row.dynamicLabel ? row.dynamicLabel(results) : row.label;
+
+            let detailsButtonHTML = '';
+            let detailsContentHTML = '';
+            if (row.details) {
+                const detailsData = getValue(results, row.details.contentKey);
+                if (detailsData) {
+                    detailsButtonHTML = ` <button class="details-btn text-primary text-xs" data-details-for="${row.details.id}">(Ver Detalhes)</button>`;
+                    detailsContentHTML = `<div id="${row.details.id}" class="hidden text-xs space-y-1 pl-4 border-l-2 py-2 my-2 bg-gray-50">${createDetailsHTML(detailsData)}</div>`;
+                }
+            }
+
+            return `
+                <div class="flex justify-between ${row.isSummary ? 'font-semibold border-t pt-2 mt-2' : ''} result-row py-2">
+                    <span>${label}${detailsButtonHTML}</span>
+                    <span class="font-mono ${row.valueColor || ''} ${row.isBold ? 'font-bold' : ''}">${finalValue}${suffix}</span>
+                </div>
+                ${detailsContentHTML}
+            `;
+        }).join('');
+    };
+
+    const generateSectionsHTML = (sections) => {
+        return sections.map(section => {
+            const sectionTitleHTML = section.title ? `<h4 class="text-lg font-semibold ${section.titleColor || 'text-primary'} mt-4">${section.title}</h4>` : '';
+
+            let allRows = [];
+            if (section.rows) {
+                allRows = allRows.concat(section.rows);
+            }
+            if (section.dynamicRows) {
+                allRows = allRows.concat(section.dynamicRows(results));
+            }
+
+            let rowsHTML = generateRowsHTML(allRows);
+
+            if (section.summaryRow) {
+                // Manually create and append summary row HTML
+                const summaryRowTemplate = { ...section.summaryRow, isSummary: true, isBold: true };
+                rowsHTML += generateRowsHTML([summaryRowTemplate]);
+            }
+
+            return `${sectionTitleHTML}<div class="space-y-1">${rowsHTML}</div>`;
+        }).join('');
+    };
+
+    // Determine main content based on template structure
+    let mainContentHTML = '';
+    if (template.content) { // For complex layouts like grid
+        mainContentHTML = template.content.map(item => {
+            let itemHTML = '';
+            if (item.type === 'sections') {
+                itemHTML = generateSectionsHTML(item.sections);
+            } else if (item.type === 'custom') {
+                itemHTML = item.html;
+            }
+            return `<div class="${item.className || ''}">${itemHTML}</div>`;
+        }).join('');
+    } else { // For simple, single-column layouts
+        mainContentHTML = generateSectionsHTML(template.sections);
+    }
+
+    let messageHTML = '';
+    if (template.message) {
+        const messageText = getValue(results, template.message.textKey);
+        if (messageText) {
+            const colorClass = template.message.colorClass(results);
+            messageHTML = `<p class="text-sm ${colorClass} pt-2">${messageText}</p>`;
+        }
+    }
+
+    const footerHTML = template.footer ? `
+        <div class="flex items-center p-6 pt-0 flex-col gap-4">
+            <div class="w-full border-t border-border pt-4 flex justify-between items-center">
+                <span class="total-liquido-label">${template.footer.total.label}</span>
+                <span class="font-mono ${template.footer.total.valueColor} total-liquido-valor">${formatCurrency(getValue(results, template.footer.total.valueKey))}</span>
+            </div>
+            <div class="flex gap-3 w-full">
+                ${template.footer.buttons.map(btn => `
+                    <button class="${btn.class} inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ${btn.primary ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'} h-10 px-4 py-2 flex-1">${btn.text}</button>
+                `).join('')}
+            </div>
+        </div>
+    ` : '';
+
+    return `
+        <div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+            <div class="flex flex-col space-y-1.5 p-6">
+                <h3 class="text-2xl font-semibold leading-none tracking-tight">${template.title}</h3>
+                ${template.subtitle ? `<p class="text-sm text-muted-foreground">${template.subtitle}</p>` : ''}
+            </div>
+            <div class="p-6 pt-0">
+                <div class="space-y-2">
+                    ${mainContentHTML}
+                    ${messageHTML}
+                </div>
+            </div>
+            ${footerHTML}
+        </div>
+    `;
+}
+
 
 // --- Tooltip UI Functions ---
 let currentTooltip = null;
@@ -756,135 +1102,6 @@ export function hideCalculationMemoryModal() {
 
 // --- RESULT TEMPLATE FUNCTIONS ---
 
-function createFgtsResultHTML(results) {
-    if (Object.keys(state.fgts.errors).some(k => state.fgts.errors[k])) {
-        return '<p class="text-center text-red-500 font-semibold">Por favor, corrija os campos destacados acima para ver o seu cálculo.</p>';
-    }
-    if (!results || !results.salarioBruto) return '<p class="text-center text-muted-foreground">Preencha os campos para calcular.</p>';
-
-    const { depositoMensal, valorSaque, opcaoSaque } = results;
-    const saqueLabel = opcaoSaque === 'rescisao' ? 'Saque-Rescisão' : 'Saque-Aniversário';
-
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado da Simulação FGTS</h3>
-            <p class="text-sm text-muted-foreground">Resumo das suas simulações de FGTS.</p>
-        </div>
-        <div class="p-6 pt-0">
-            <div class="space-y-4">
-                <div>
-                    <h4 class="text-lg font-semibold text-primary">Depósito Mensal</h4>
-                    <div class="flex justify-between result-row py-2">
-                        <span>Valor Estimado do Depósito:</span>
-                        <span class="font-mono text-green-600">${formatCurrency(depositoMensal)}</span>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold text-primary mt-4">Simulação de Saque</h4>
-                    <div class="flex justify-between result-row py-2">
-                        <span>Valor Estimado do ${saqueLabel}:</span>
-                        <span class="font-mono text-green-600">${formatCurrency(valorSaque)}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>`;
-}
-
-function createPisPasepResultHTML(results) {
-    if (!results) return '';
-    const { valorAbono, elegivel, mensagem } = results;
-
-    let messageColorClass = elegivel ? 'text-gray-600' : 'text-red-500';
-
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Abono Salarial (PIS/PASEP)</h3>
-        </div>
-        <div class="p-6 pt-0">
-            <div class="space-y-2">
-                <div class="flex justify-between result-row py-2">
-                    <span>Valor Estimado do Abono:</span>
-                    <span class="font-mono text-green-600">${formatCurrency(valorAbono)}</span>
-                </div>
-                <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
-            </div>
-        </div>
-    </div>`;
-}
-
-function createSeguroDesempregoResultHTML(results) {
-    if (!results) return '';
-    const { numeroParcelas, valorPorParcela, elegivel, mensagem } = results;
-
-    let messageColorClass = elegivel ? 'text-gray-600' : 'text-red-500';
-
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Seguro-Desemprego</h3>
-        </div>
-        <div class="p-6 pt-0">
-            <div class="space-y-2">
-                <div class="flex justify-between result-row py-2">
-                    <span>Número de Parcelas:</span>
-                    <span class="font-mono text-blue-600">${numeroParcelas}</span>
-                </div>
-                <div class="flex justify-between result-row py-2">
-                    <span>Valor por Parcela:</span>
-                    <span class="font-mono text-green-600">${formatCurrency(valorPorParcela)}</span>
-                </div>
-                <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
-            </div>
-        </div>
-    </div>`;
-}
-
-function createINSSResultHTML(results) {
-    if (!results) return '';
-    const { contribuicaoINSS, mensagem } = results;
-
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado da Contribuição INSS</h3>
-        </div>
-        <div class="p-6 pt-0">
-            <div class="space-y-2">
-                <div class="flex justify-between result-row py-2">
-                    <span>Valor da Contribuição:</span>
-                    <span class="font-mono text-red-600">${formatCurrency(contribuicaoINSS)}</span>
-                </div>
-                <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
-            </div>
-        </div>
-    </div>`;
-}
-
-function createFeriasResultHTML(results) {
-    if (Object.keys(state.ferias.errors).some(k => state.ferias.errors[k])) {
-        return '<p class="text-center text-red-500 font-semibold">Por favor, corrija os campos destacados acima para ver o seu cálculo.</p>';
-    }
-    if (!results || !results.salarioBruto) return '<p class="text-center text-muted-foreground">Preencha os campos para calcular.</p>';
-
-    const { baseDeCalculo, valorFerias, tercoConstitucional, valorAbono, tercoAbono, adiantamento13, descontoINSS, descontoIRRF, valorLiquido, venderFerias, adiantarDecimo, diasFerias } = results;
-    const inssDetailsHTML = descontoINSS.details.map(d => `<p class="text-xs">${d.range}: ${d.base} x ${d.rate} = <strong>${d.value}</strong></p>`).join('');
-    const irrfDetailsHTML = `<p class="text-xs">Base de Cálculo: ${descontoIRRF.details.base}</p><p class="text-xs">Dedução por Dependentes: ${descontoIRRF.details.dependentsDeduction}</p><p class="text-xs">Base p/ IRRF: ${descontoIRRF.details.irrfBase}</p><p class="text-xs">Alíquota: ${descontoIRRF.details.rate}</p><p class="text-xs">Parcela a Deduzir: ${descontoIRRF.details.deduction}</p>`;
-
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in"><div class="flex flex-col space-y-1.5 p-6"><h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Cálculo</h3><p class="text-sm text-muted-foreground">Resumo do seu cálculo de férias.</p></div><div class="p-6 pt-0"><div class="space-y-1"><div class="flex justify-between result-row py-2"><span>Base de Cálculo para Férias:</span> <span class="font-mono">${formatCurrency(baseDeCalculo)}</span></div><h4 class="text-lg font-semibold text-primary mt-4">Proventos (Ganhos)</h4><div class="flex justify-between result-row py-2"><span>Valor das Férias (${venderFerias ? (diasFerias - (diasFerias/3)) : diasFerias} dias):</span> <span class="font-mono text-green-600">${formatCurrency(valorFerias)}</span></div><div class="flex justify-between result-row py-2"><span>1/3 Constitucional sobre Férias:</span> <span class="font-mono text-green-600">${formatCurrency(tercoConstitucional)}</span></div>${venderFerias ? `<div class="flex justify-between result-row py-2"><span>Abono Pecuniário (Venda 1/3):</span> <span class="font-mono text-green-600">${formatCurrency(valorAbono)}</span></div><div class="flex justify-between result-row py-2"><span>1/3 sobre Abono Pecuniário:</span> <span class="font-mono text-green-600">${formatCurrency(tercoAbono)}</span></div>` : ''}${adiantarDecimo ? `<div class="flex justify-between result-row py-2"><span>Adiantamento 13º Salário:</span> <span class="font-mono text-green-600">${formatCurrency(adiantamento13)}</span></div>` : ''}<h4 class="text-lg font-semibold text-red-600 mt-4">Descontos</h4><div class="flex justify-between result-row py-2"><span>INSS sobre Férias: <button class="details-btn text-primary text-xs" data-details-for="inss-details-ferias">(Ver Detalhes)</button></span><span class="font-mono text-red-600">-${formatCurrency(descontoINSS.value)}</span></div><div id="inss-details-ferias" class="hidden text-xs space-y-1 pl-4 border-l-2 py-2 my-2 bg-gray-50">${inssDetailsHTML}</div><div class="flex justify-between result-row py-2"><span>IRRF sobre Férias: <button class="details-btn text-primary text-xs" data-details-for="irrf-details-ferias">(Ver Detalhes)</button></span><span class="font-mono text-red-600">-${formatCurrency(descontoIRRF.value)}</span></div><div id="irrf-details-ferias" class="hidden text-xs space-y-1 pl-4 border-l-2 py-2 my-2 bg-gray-50">${irrfDetailsHTML}</div></div></div><div class="flex items-center p-6 pt-0 flex-col gap-4"><div class="w-full border-t border-border pt-4 flex justify-between items-center"><span class="total-liquido-label">Total Líquido a Receber:</span><span class="font-mono text-green-600 total-liquido-valor">${formatCurrency(valorLiquido)}</span></div><div class="flex gap-2 w-full"><button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button><button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button></div></div></div>`;
-}
-
-function createDecimoTerceiroResultHTML(results) {
-    if (Object.keys(state.decimoTerceiro.errors).some(k => state.decimoTerceiro.errors[k])) {
-        return '<p class="text-center text-red-500 font-semibold">Por favor, corrija os campos destacados acima para ver o seu cálculo.</p>';
-    }
-    if (!results || !results.salarioBruto) return '<p class="text-center text-muted-foreground">Preencha os campos para calcular.</p>';
-
-    const { baseDeCalculo, mesesTrabalhados, valorBrutoDecimo, descontoINSS, descontoIRRF, valorLiquidoDecimo, adiantamentoRecebido, valorAReceber } = results;
-    const inssDetailsHTML = descontoINSS.details.map(d => `<p class="text-xs">${d.range}: ${d.base} x ${d.rate} = <strong>${d.value}</strong></p>`).join('');
-    const irrfDetailsHTML = `<p class="text-xs">Base de Cálculo: ${descontoIRRF.details.base}</p><p class="text-xs">Dedução por Dependentes: ${descontoIRRF.details.dependentsDeduction}</p><p class="text-xs">Base p/ IRRF: ${descontoIRRF.details.irrfBase}</p><p class="text-xs">Alíquota: ${descontoIRRF.details.rate}</p><p class="text-xs">Parcela a Deduzir: ${descontoIRRF.details.deduction}</p>`;
-
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in"><div class="flex flex-col space-y-1.5 p-6"><h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Cálculo do 13º Salário</h3><p class="text-sm text-muted-foreground">Resumo do seu cálculo de 13º salário.</p></div><div class="p-6 pt-0"><div class="space-y-1"><div class="flex justify-between result-row py-2"><span>Base de Cálculo:</span> <span class="font-mono">${formatCurrency(baseDeCalculo)}</span></div><div class="flex justify-between result-row py-2"><span>Meses trabalhados:</span> <span class="font-mono">${mesesTrabalhados} meses</span></div><div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2"><span>13º Salário Bruto:</span> <span class="font-mono">${formatCurrency(valorBrutoDecimo)}</span></div><h4 class="text-lg font-semibold text-red-600 mt-4">Descontos</h4><div class="flex justify-between result-row py-2"><span>INSS: <button class="details-btn text-primary text-xs" data-details-for="inss-details-13">(Ver Detalhes)</button></span><span class="font-mono text-red-600">-${formatCurrency(descontoINSS.value)}</span></div><div id="inss-details-13" class="hidden text-xs space-y-1 pl-4 border-l-2 py-2 my-2 bg-gray-50">${inssDetailsHTML}</div><div class="flex justify-between result-row py-2"><span>IRRF: <button class="details-btn text-primary text-xs" data-details-for="irrf-details-13">(Ver Detalhes)</button></span><span class="font-mono text-red-600">-${formatCurrency(descontoIRRF.value)}</span></div><div id="irrf-details-13" class="hidden text-xs space-y-1 pl-4 border-l-2 py-2 my-2 bg-gray-50">${irrfDetailsHTML}</div><h4 class="text-lg font-semibold text-primary mt-4">Valores Finais</h4><div class="flex justify-between result-row py-2"><span>13º Salário Líquido:</span> <span class="font-mono text-green-600">${formatCurrency(valorLiquidoDecimo)}</span></div>${adiantamentoRecebido > 0 ? `<div class="flex justify-between result-row py-2"><span>(-) Adiantamento já recebido:</span> <span class="font-mono text-red-600">-${formatCurrency(adiantamentoRecebido)}</span></div>` : ''}</div></div><div class="flex items-center p-6 pt-0 flex-col gap-4"><div class="w-full border-t border-border pt-4 flex justify-between items-center"><span class="total-liquido-label">Valor a Receber:</span><span class="font-mono text-green-600 total-liquido-valor">${formatCurrency(valorAReceber)}</span></div><div class="flex gap-3 w-full"><button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button><button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button></div></div></div>`;
-}
-
 function renderSalarioLiquidoChart(results) {
     const chartContainer = document.getElementById('salario-liquido-chart-container');
     if (!chartContainer) return;
@@ -1094,38 +1311,99 @@ function addChartTooltipListeners(container, segments) {
     });
 }
 
-function createSalarioLiquidoResultHTML(results) {
-    if (Object.keys(state.salarioLiquido.errors).some(k => state.salarioLiquido.errors[k])) {
-        return '<p class="text-center text-red-500 font-semibold">Por favor, corrija os campos destacados acima para ver o seu cálculo.</p>';
+    salarioLiquido: {
+        title: 'Resultado do Cálculo do Salário Líquido',
+        subtitle: 'Resumo detalhado do seu salário líquido mensal.',
+        layout: 'grid grid-cols-1 md:grid-cols-2 gap-8 items-center',
+        content: [
+            {
+                type: 'sections',
+                className: 'md:col-span-1',
+                sections: [
+                    {
+                        title: 'Proventos (Ganhos)',
+                        titleColor: 'text-primary',
+                        rows: [
+                            { label: 'Salário Base:', valueKey: 'salarioBruto', isMono: true, valueColor: 'text-green-600' },
+                            { label: 'Horas Extras:', valueKey: 'horasExtras', isMono: true, valueColor: 'text-green-600', condition: (r) => r.horasExtras > 0 },
+                            { label: 'Adicional de Periculosidade:', valueKey: 'adicionalPericulosidade', isMono: true, valueColor: 'text-green-600', condition: (r) => r.adicionalPericulosidade > 0 },
+                            { label: 'Adicional de Insalubridade:', valueKey: 'adicionalInsalubridade', isMono: true, valueColor: 'text-green-600', condition: (r) => r.adicionalInsalubridade > 0 },
+                            { label: 'Adicional Noturno:', valueKey: 'adicionalNoturno', isMono: true, valueColor: 'text-green-600', condition: (r) => r.adicionalNoturno > 0 },
+                            { label: 'Salário Família:', valueKey: 'salarioFamilia', isMono: true, valueColor: 'text-green-600', condition: (r) => r.salarioFamilia > 0 },
+                            { label: 'Total Bruto:', valueKey: 'totalProventos', isMono: true, valueColor: 'text-green-600', isBold: true, isSummary: true },
+                        ]
+                    },
+                    {
+                        title: 'Descontos',
+                        titleColor: 'text-red-600',
+                        rows: [
+                            { label: 'INSS:', valueKey: 'descontoINSS.value', isMono: true, isNegative: true, valueColor: 'text-red-600', details: { id: 'inss-details-salario', contentKey: 'descontoINSS.details' } },
+                            { label: 'IRRF:', valueKey: 'descontoIRRF.value', isMono: true, isNegative: true, valueColor: 'text-red-600', details: { id: 'irrf-details-salario', contentKey: 'descontoIRRF.details' } },
+                            { label: 'Vale-Transporte (6%):', valueKey: 'descontoVT', isMono: true, isNegative: true, valueColor: 'text-red-600', condition: (r) => r.descontoVT > 0 },
+                            { label: 'Vale-Refeição/Alimentação:', valueKey: 'descontoVR', isMono: true, isNegative: true, valueColor: 'text-red-600', condition: (r) => r.descontoVR > 0 },
+                            { label: 'Plano de Saúde / Odontológico:', valueKey: 'descontoSaude', isMono: true, isNegative: true, valueColor: 'text-red-600', condition: (r) => r.descontoSaude > 0 },
+                            { label: 'Adiantamentos (Vale):', valueKey: 'descontoAdiantamentos', isMono: true, isNegative: true, valueColor: 'text-red-600', condition: (r) => r.descontoAdiantamentos > 0 },
+                            { label: 'Total de Descontos:', valueKey: 'totalDescontos', isMono: true, isNegative: true, valueColor: 'text-red-600', isBold: true, isSummary: true },
+                        ]
+                    }
+                ]
+            },
+            {
+                type: 'custom',
+                className: 'md:col-span-1 flex flex-col items-center justify-center p-4',
+                html: '<div class="w-full max-w-[300px] mx-auto"><div id="salario-liquido-chart-container"></div></div>'
+            }
+        ],
+        footer: {
+            total: { label: 'Salário Líquido a Receber:', valueKey: 'salarioLiquido', valueColor: 'text-green-600' },
+            buttons: [
+                { text: 'Ver Memória de Cálculo', class: 'js-show-memory-modal', primary: true },
+                { text: 'Imprimir', class: 'js-print-result', primary: false },
+            ]
+        }
     }
-    if (!results || !results.salarioBruto) return '<p class="text-center text-muted-foreground">Preencha os campos para calcular.</p>';
-
-    const { salarioBruto, horasExtras, adicionalPericulosidade, adicionalInsalubridade, adicionalNoturno, salarioBrutoTotal, salarioFamilia, descontoINSS, descontoIRRF, descontoVT, descontoVR, descontoSaude, descontoAdiantamentos, totalProventos, totalDescontos, salarioLiquido } = results;
-    const inssDetailsHTML = descontoINSS.details.map(d => `<p class="text-xs">${d.range}: ${d.base} x ${d.rate} = <strong>${d.value}</strong></p>`).join('');
-    const irrfDetailsHTML = `<p class="text-xs">Base de Cálculo: ${descontoIRRF.details.base}</p><p class="text-xs">Dedução por Dependentes: ${descontoIRRF.details.dependentsDeduction}</p><p class="text-xs">Base p/ IRRF: ${descontoIRRF.details.irrfBase}</p><p class="text-xs">Alíquota: ${descontoIRRF.details.rate}</p><p class="text-xs">Parcela a Deduzir: ${descontoIRRF.details.deduction}</p>`;
-
-    // setTimeout to ensure the canvas is in the DOM before rendering the chart
-    setTimeout(() => renderSalarioLiquidoChart(results), 0);
-
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in"><div class="flex flex-col space-y-1.5 p-6"><h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Cálculo do Salário Líquido</h3><p class="text-sm text-muted-foreground">Resumo detalhado do seu salário líquido mensal.</p></div><div class="p-6 pt-0 grid grid-cols-1 md:grid-cols-2 gap-8 items-center"><div class="space-y-1 md:col-span-1"><h4 class="text-lg font-semibold text-primary mt-4">Proventos (Ganhos)</h4><div class="flex justify-between result-row py-2"><span>Salário Base:</span> <span class="font-mono text-green-600">${formatCurrency(salarioBruto)}</span></div>${horasExtras > 0 ? `<div class="flex justify-between result-row py-2"><span>Horas Extras:</span> <span class="font-mono text-green-600">${formatCurrency(horasExtras)}</span></div>` : ''}${adicionalPericulosidade > 0 ? `<div class="flex justify-between result-row py-2"><span>Adicional de Periculosidade:</span> <span class="font-mono text-green-600">${formatCurrency(adicionalPericulosidade)}</span></div>` : ''}${adicionalInsalubridade > 0 ? `<div class="flex justify-between result-row py-2"><span>Adicional de Insalubridade:</span> <span class="font-mono text-green-600">${formatCurrency(adicionalInsalubridade)}</span></div>` : ''}${adicionalNoturno > 0 ? `<div class="flex justify-between result-row py-2"><span>Adicional Noturno:</span> <span class="font-mono text-green-600">${formatCurrency(adicionalNoturno)}</span></div>` : ''}${salarioFamilia > 0 ? `<div class="flex justify-between result-row py-2"><span>Salário Família:</span> <span class="font-mono text-green-600">${formatCurrency(salarioFamilia)}</span></div>` : ''}<div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2"><span>Total Bruto:</span> <span class="font-mono text-green-600">${formatCurrency(totalProventos)}</span></div><h4 class="text-lg font-semibold text-red-600 mt-4">Descontos</h4><div class="flex justify-between result-row py-2"><span>INSS: <button class="details-btn text-primary text-xs" data-details-for="inss-details-salario">(Ver Detalhes)</button></span><span class="font-mono text-red-600">-${formatCurrency(descontoINSS.value)}</span></div><div id="inss-details-salario" class="hidden text-xs space-y-1 pl-4 border-l-2 py-2 my-2 bg-gray-50">${inssDetailsHTML}</div><div class="flex justify-between result-row py-2"><span>IRRF: <button class="details-btn text-primary text-xs" data-details-for="irrf-details-salario">(Ver Detalhes)</button></span><span class="font-mono text-red-600">-${formatCurrency(descontoIRRF.value)}</span></div><div id="irrf-details-salario" class="hidden text-xs space-y-1 pl-4 border-l-2 py-2 my-2 bg-gray-50">${irrfDetailsHTML}</div>${descontoVT > 0 ? `<div class="flex justify-between result-row py-2"><span>Vale-Transporte (6%):</span> <span class="font-mono text-red-600">-${formatCurrency(descontoVT)}</span></div>` : ''}${descontoVR > 0 ? `<div class="flex justify-between result-row py-2"><span>Vale-Refeição/Alimentação:</span> <span class="font-mono text-red-600">-${formatCurrency(descontoVR)}</span></div>` : ''}${descontoSaude > 0 ? `<div class="flex justify-between result-row py-2"><span>Plano de Saúde / Odontológico:</span> <span class="font-mono text-red-600">-${formatCurrency(descontoSaude)}</span></div>` : ''}${descontoAdiantamentos > 0 ? `<div class="flex justify-between result-row py-2"><span>Adiantamentos (Vale):</span> <span class="font-mono text-red-600">-${formatCurrency(descontoAdiantamentos)}</span></div>` : ''}<div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2"><span>Total de Descontos:</span> <span class="font-mono text-red-600">-${formatCurrency(totalDescontos)}</span></div></div><div class="md:col-span-1 flex flex-col items-center justify-center p-4"><div class="w-full max-w-[300px] mx-auto"><div id="salario-liquido-chart-container"></div></div></div></div><div class="flex items-center p-6 pt-0 flex-col gap-4"><div class="w-full border-t border-border pt-4 flex justify-between items-center"><span class="total-liquido-label">Salário Líquido a Receber:</span><span class="font-mono text-green-600 total-liquido-valor">${formatCurrency(salarioLiquido)}</span></div><div class="flex gap-3 w-full"><button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button><button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button></div></div></div>`;
-}
-
-function createRescisaoResultHTML(results) {
-    if (Object.keys(state.rescisao.errors).some(k => state.rescisao.errors[k])) {
-        return '<p class="text-center text-red-500 font-semibold">Por favor, corrija os campos destacados acima para ver o seu cálculo.</p>';
+};
+    rescisao: {
+        title: 'Resultado do Cálculo de Rescisão',
+        subtitle: 'Resumo das suas verbas rescisórias.',
+        sections: [
+            {
+                title: 'Verbas Rescisórias (Ganhos)',
+                titleColor: 'text-primary',
+                dynamicRows: (r) => Object.entries(r.proventos)
+                    .filter(([, value]) => value > 0)
+                    .map(([key, value]) => ({
+                        label: `${key}:`,
+                        valueKey: `proventos.${key}`,
+                        isMono: true,
+                        valueColor: 'text-green-600'
+                    })),
+                summaryRow: { label: 'Total de Proventos:', valueKey: 'totalProventos', isMono: true, valueColor: 'text-green-600' }
+            },
+            {
+                title: 'Descontos',
+                titleColor: 'text-red-600',
+                dynamicRows: (r) => Object.entries(r.descontos)
+                    .filter(([, result]) => result && (result.hasOwnProperty('value') ? result.value > 0 : result > 0))
+                    .map(([key, result]) => ({
+                        label: `${key}:`,
+                        valueKey: `descontos.${key}${result.hasOwnProperty('value') ? '.value' : ''}`,
+                        isMono: true,
+                        isNegative: true,
+                        valueColor: 'text-red-600'
+                    })),
+                summaryRow: { label: 'Total de Descontos:', valueKey: 'totalDescontos', isMono: true, isNegative: true, valueColor: 'text-red-600' }
+            }
+        ],
+        footer: {
+            total: { label: 'Total Líquido a Receber:', valueKey: 'valorLiquido', valueColor: 'text-green-600' },
+            buttons: [
+                { text: 'Ver Memória de Cálculo', class: 'js-show-memory-modal', primary: true },
+                { text: 'Imprimir', class: 'js-print-result', primary: false },
+            ]
+        }
     }
-    if (!results || !results.totalProventos) return '<p class="text-center text-muted-foreground">Preencha os campos para calcular.</p>';
-
-    const { proventos, descontos, totalProventos, totalDescontos, valorLiquido } = results;
-    const proventosHTML = Object.entries(proventos).map(([key, value]) => value > 0 ? `<div class="flex justify-between result-row py-2"><span>${key}:</span> <span class="font-mono text-green-600">${formatCurrency(value)}</span></div>` : '').join('');
-    const descontosHTML = Object.entries(descontos).map(([key, result]) => {
-        if (!result || (result.hasOwnProperty('value') && result.value === 0)) return '';
-        const value = result.value || result;
-        return `<div class="flex justify-between result-row py-2"><span>${key}:</span> <span class="font-mono text-red-600">-${formatCurrency(value)}</span></div>`;
-    }).join('');
-
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in"><div class="flex flex-col space-y-1.5 p-6"><h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Cálculo de Rescisão</h3><p class="text-sm text-muted-foreground">Resumo das suas verbas rescisórias.</p></div><div class="p-6 pt-0"><div class="space-y-1"><h4 class="text-lg font-semibold text-primary mt-4">Verbas Rescisórias (Ganhos)</h4>${proventosHTML}<div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2"><span>Total de Proventos:</span> <span class="font-mono text-green-600">${formatCurrency(totalProventos)}</span></div><h4 class="text-lg font-semibold text-red-600 mt-4">Descontos</h4>${descontosHTML}<div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2"><span>Total de Descontos:</span> <span class="font-mono text-red-600">-${formatCurrency(totalDescontos)}</span></div></div></div><div class="flex items-center p-6 pt-0 flex-col gap-4"><div class="w-full border-t border-border pt-4 flex justify-between items-center"><span class="total-liquido-label">Total Líquido a Receber:</span><span class="font-mono text-green-600 total-liquido-valor">${formatCurrency(valorLiquido)}</span></div><div class="flex gap-3 w-full"><button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button><button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button></div></div></div>`;
-}
+};
 
 
 // --- CENTRALIZED REPORT GENERATION ---
@@ -1618,31 +1896,32 @@ export function render() {
     switch (activeCalculator) {
         case 'ferias':
             results = calculations.calculateFerias(state.ferias);
-            html = createFeriasResultHTML(results);
+            html = createResultView(resultTemplates.ferias, results, 'ferias');
             break;
         case 'decimoTerceiro':
             results = calculations.calculateDecimoTerceiro(state.decimoTerceiro);
-            html = createDecimoTerceiroResultHTML(results);
+            html = createResultView(resultTemplates.decimoTerceiro, results, 'decimoTerceiro');
             break;
         case 'salarioLiquido':
             results = calculations.calculateSalarioLiquido(state.salarioLiquido);
-            html = createSalarioLiquidoResultHTML(results);
+            html = createResultView(resultTemplates.salarioLiquido, results, 'salarioLiquido');
+            setTimeout(() => renderSalarioLiquidoChart(results), 0);
             break;
         case 'rescisao':
             results = calculations.calculateRescisao(state.rescisao);
-            html = createRescisaoResultHTML(results);
+            html = createResultView(resultTemplates.rescisao, results, 'rescisao');
             break;
         case 'fgts':
             results = calculations.calculateFGTS(state.fgts);
-            html = createFgtsResultHTML(results);
+            html = createResultView(resultTemplates.fgts, results, 'fgts');
             break;
         case 'pisPasep':
             results = calculations.calculatePISPASEP(state.pisPasep, state.legalTexts);
-            html = createPisPasepResultHTML(results);
+            html = createResultView(resultTemplates.pisPasep, results, 'pisPasep');
             break;
         case 'seguroDesemprego':
             results = calculations.calculateSeguroDesemprego(state.seguroDesemprego, state.legalTexts);
-            html = createSeguroDesempregoResultHTML(results);
+            html = createResultView(resultTemplates.seguroDesemprego, results, 'seguroDesemprego');
             break;
         case 'horasExtras':
             results = calculations.calculateHorasExtras(state.horasExtras, state.legalTexts);
@@ -1650,7 +1929,7 @@ export function render() {
             break;
         case 'inss':
             results = calculations.calculateINSSCalculator(state.inss, state.legalTexts);
-            html = createINSSResultHTML(results);
+            html = createResultView(resultTemplates.inss, results, 'inss');
             break;
         case 'valeTransporte':
             results = calculations.calculateValeTransporte(state.valeTransporte, state.legalTexts);
