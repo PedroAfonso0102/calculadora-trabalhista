@@ -662,9 +662,15 @@
         }
 
         .sidebar-link.active {
-            background-color: hsl(var(--primary));
-            color: hsl(var(--primary-foreground));
-            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            background-color: #4b5563; /* gray-600 - um pouquinho mais escuro */
+            color: white;
+            box-shadow: 0 4px 8px 0 rgb(75 85 99 / 0.2);
+            font-weight: 600;
+        }
+
+        .sidebar-link.active:hover {
+            background-color: #374151; /* gray-700 on hover */
+            box-shadow: 0 6px 12px 0 rgb(75 85 99 / 0.3);
         }
 
         .sidebar-link:hover:not(.active) {
@@ -713,20 +719,34 @@
             box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.1);
         }
 
+        .sidebar-dot:hover:not(.active) {
+            background-color: #f9fafb; /* gray-50 */
+            border-color: #d1d5db; /* gray-300 */
+        }
+
         .sidebar-dot.active {
-            background-color: hsl(var(--primary));
-            border-color: hsl(var(--primary));
+            background-color: #4b5563; /* gray-600 - um pouquinho mais escuro */
+            border-color: #4b5563;
             color: white;
-            box-shadow: 0 2px 8px 0 hsl(var(--primary) / 0.3);
+            box-shadow: 0 4px 12px 0 rgb(75 85 99 / 0.3);
+            transform: scale(1.1);
+        }
+
+        .sidebar-dot.active:hover {
+            background-color: #374151; /* gray-700 on hover */
+            border-color: #374151;
+            box-shadow: 0 6px 16px 0 rgb(75 85 99 / 0.4);
         }
 
         .sidebar-dot.active .material-icons {
             color: white;
+            font-weight: 500;
         }
 
         .sidebar-dot .material-icons {
             font-size: 16px;
             color: #6b7280; /* gray-500 */
+            transition: all 0.2s ease-in-out;
         }
 
         /* Tooltip for collapsed sidebar */
@@ -784,12 +804,71 @@
         }
 
         /* Mobile Sidebar States */
+        /* === SIDEBAR GRID LAYOUT STYLES === */
         #main-sidebar {
-            transition: transform 0.3s ease-in-out;
+            transition: width 0.3s ease-in-out, margin-left 0.3s ease-in-out;
+            height: 100vh;
+            overflow-y: auto;
         }
 
-        #main-sidebar.open {
-            transform: translateX(0) !important;
+        /* Hidden state - sidebar completely hidden */
+        #main-sidebar.hidden {
+            width: 0;
+            margin-left: -1rem;
+            border-right: none;
+        }
+
+        /* Collapsed state - show only dots */
+        #main-sidebar.collapsed {
+            width: 4rem; /* w-16 - 64px */
+        }
+
+        /* Expanded state - default, full width */
+        #main-sidebar.expanded {
+            width: 16rem; /* w-64 - 256px */
+        }
+
+        /* Grid layout adjustments */
+        .grid.main-layout {
+            grid-template-columns: auto 1fr;
+        }
+
+        .grid.main-layout.sidebar-hidden {
+            grid-template-columns: 0 1fr;
+        }
+
+        .grid.main-layout.sidebar-collapsed {
+            grid-template-columns: 4rem 1fr;
+        }
+
+        .grid.main-layout.sidebar-expanded {
+            grid-template-columns: 16rem 1fr;
+        }
+
+        /* Header positioning - ensure it stays fixed at top */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+
+        /* Desktop Toggle Button Positioning */
+        @media (min-width: 1024px) {
+            /* Keep toggle button in normal document flow within header */
+            .sidebar-toggle-btn {
+                position: relative;
+                transition: margin-left 0.3s ease-in-out;
+            }
+            
+            /* When sidebar is collapsed, align button with sidebar center */
+            .grid.main-layout.sidebar-collapsed .sidebar-toggle-btn {
+                margin-left: 0.5rem; /* Align with center of collapsed sidebar area */
+            }
+            
+            /* When sidebar is expanded, keep button in normal position */
+            .grid.main-layout.sidebar-expanded .sidebar-toggle-btn {
+                margin-left: 0;
+            }
         }
 
         /* Input Validation Styles (FASE 3) */
@@ -875,13 +954,20 @@
         <hr>
     </div>
 
+    <!-- Active Calculator Indicator (quando sidebar escondida) -->
+    <div id="active-calculator-indicator" class="fixed top-4 left-4 z-60 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg hidden transition-all duration-300 ease-in-out">
+        <div class="flex items-center justify-center w-full h-full">
+            <span id="active-calculator-icon" class="material-icons text-white">calculate</span>
+        </div>
+    </div>
+
     <!-- Overlay para mobile sidebar -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 hidden transition-opacity duration-300 lg:hidden"></div>
 
-    <!-- Layout Principal com Sidebar -->
-    <div class="flex min-h-screen bg-background">
+    <!-- Layout Principal com Sidebar - Grid Layout -->
+    <div class="grid main-layout grid-cols-[auto_1fr] min-h-screen bg-background overflow-hidden">
         <!-- Sidebar -->
-        <aside id="main-sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform -translate-x-full transition-all duration-300 ease-in-out">
+        <aside id="main-sidebar" class="z-50 w-64 bg-white border-r border-gray-200 transition-all duration-300 ease-in-out">
             <!-- Logo -->
             <div class="sidebar-header flex items-center h-16 px-6 border-b border-gray-200">
                 <h1 class="text-lg font-semibold text-primary">Calculadora Trabalhista</h1>
@@ -918,7 +1004,7 @@
                     <div class="flex items-center">
                         <!-- Botão de abas para sidebar (estilo Brave) - SEMPRE VISÍVEL -->
                         <button id="mobile-menu-btn" 
-                                class="flex items-center justify-center p-2 rounded-md bg-white hover:bg-gray-50 border border-gray-300 transition-colors shadow-sm min-w-[40px] min-h-[40px]" 
+                                class="flex items-center justify-center p-2 rounded-md bg-white hover:bg-gray-50 border border-gray-300 transition-all duration-300 shadow-sm min-w-[40px] min-h-[40px] sidebar-toggle-btn" 
                                 aria-label="Mostrar/Ocultar calculadoras" 
                                 title="Alternar exibição das abas"
                                 style="z-index: 1000;">
@@ -938,7 +1024,7 @@
                                 class="flex items-center justify-center w-10 h-10 rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 aria-label="Abrir painel educacional"
                                 title="Informe-se - Conteúdo Educacional">
-                            <span class="material-icons">info</span>
+                            <span class="material-icons">menu_book</span>
                         </button>
                     </div>
                 </div>
@@ -1728,10 +1814,15 @@
                 <div id="educational-content" class="p-6 lg:p-8">
                     <!-- Welcome message -->
                     <div id="educational-welcome" class="text-center py-8">
-                        <div class="mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 mx-auto text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
+                        <div class="mb-4 flex justify-center items-center space-x-4">
+                            <!-- Ícone de livro (educacional) -->
+                            <div class="p-3 bg-blue-50 rounded-full">
+                                <span class="material-icons text-3xl text-blue-600">menu_book</span>
+                            </div>
+                            <!-- Ícone jurídico -->
+                            <div class="p-3 bg-gray-50 rounded-full">
+                                <span class="material-icons text-3xl text-gray-600">gavel</span>
+                            </div>
                         </div>
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">Bem-vindo ao Painel Educacional</h3>
                         <p class="text-gray-600 text-sm">Selecione um tópico acima para aprender mais sobre seus direitos trabalhistas.</p>

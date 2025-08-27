@@ -315,59 +315,97 @@ function toggleMobileSidebar(isOpen) {
 }
 
 /**
+ * Updates the active calculator indicator when sidebar is hidden
+ */
+function updateActiveIndicator() {
+    const indicator = document.getElementById('active-calculator-indicator');
+    const iconElement = document.getElementById('active-calculator-icon');
+    const sidebar = document.getElementById('main-sidebar');
+    
+    if (!indicator || !iconElement || !sidebar) return;
+    
+    const isHidden = sidebar.classList.contains('hidden');
+    
+    if (isHidden) {
+        // Show indicator with appropriate icon
+        const iconMap = {
+            ferias: 'beach_access',
+            rescisao: 'work_off',
+            decimoTerceiro: 'card_giftcard',
+            salarioLiquido: 'payments',
+            fgts: 'account_balance',
+            pisPasep: 'verified_user',
+            seguroDesemprego: 'security',
+            horasExtras: 'schedule',
+            inss: 'local_hospital',
+            valeTransporte: 'commute',
+            irpf: 'receipt_long'
+        };
+        
+        const activeCalculator = state.activeTab;
+        const icon = iconMap[activeCalculator] || 'calculate';
+        iconElement.textContent = icon;
+        indicator.classList.remove('hidden');
+    } else {
+        // Hide indicator
+        indicator.classList.add('hidden');
+    }
+}
+
+/**
  * Toggles the sidebar visibility and state (Brave-like functionality)
- * Three states: hidden, expanded, collapsed
- * - Mobile: toggle between hidden/expanded
- * - Desktop: toggle between expanded/collapsed (never fully hidden)
+ * Two states on desktop: expanded, collapsed
+ * Two states on mobile: hidden, expanded
  */
 function toggleSidebar() {
     const sidebar = document.getElementById('main-sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
+    const mainLayout = document.querySelector('.main-layout');
     const toggleBtn = document.getElementById('mobile-menu-btn');
+    const indicator = document.getElementById('active-calculator-indicator');
     
-    if (!sidebar || !overlay) return;
+    if (!sidebar || !mainLayout) return;
     
-    const isCurrentlyOpen = sidebar.classList.contains('open');
+    const isCurrentlyHidden = sidebar.classList.contains('hidden');
     const isCurrentlyCollapsed = sidebar.classList.contains('collapsed');
     const isMobile = window.innerWidth < 1024;
     
+    // Remove all state classes first
+    sidebar.classList.remove('hidden', 'collapsed', 'expanded');
+    mainLayout.classList.remove('sidebar-hidden', 'sidebar-collapsed', 'sidebar-expanded');
+    
     if (isMobile) {
         // Mobile behavior: toggle between hidden/expanded
-        if (isCurrentlyOpen) {
+        if (isCurrentlyHidden) {
+            // Show sidebar (expanded)
+            sidebar.classList.add('expanded');
+            mainLayout.classList.add('sidebar-expanded');
+            localStorage.setItem('sidebar-state', 'expanded');
+            updateSidebarToggleIcon(toggleBtn, 'expanded');
+            if (indicator) indicator.classList.add('hidden');
+        } else {
             // Hide sidebar
-            sidebar.classList.remove('open', 'collapsed');
-            overlay.classList.add('hidden');
-            document.body.style.overflow = '';
+            sidebar.classList.add('hidden');
+            mainLayout.classList.add('sidebar-hidden');
             localStorage.setItem('sidebar-state', 'hidden');
             updateSidebarToggleIcon(toggleBtn, 'hidden');
-        } else {
-            // Show sidebar (expanded)
-            sidebar.classList.add('open');
-            sidebar.classList.remove('collapsed');
-            overlay.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            localStorage.setItem('sidebar-state', 'expanded');
-            updateSidebarToggleIcon(toggleBtn, 'expanded');
+            updateActiveIndicator();
         }
     } else {
-        // Desktop behavior: toggle between expanded/collapsed
-        if (isCurrentlyOpen && !isCurrentlyCollapsed) {
-            // Collapse sidebar
+        // Desktop behavior: toggle between expanded and collapsed only
+        if (!isCurrentlyCollapsed) {
+            // Currently expanded, go to collapsed
             sidebar.classList.add('collapsed');
+            mainLayout.classList.add('sidebar-collapsed');
             localStorage.setItem('sidebar-state', 'collapsed');
             updateSidebarToggleIcon(toggleBtn, 'collapsed');
-        } else if (isCurrentlyOpen && isCurrentlyCollapsed) {
-            // Expand sidebar
-            sidebar.classList.remove('collapsed');
-            localStorage.setItem('sidebar-state', 'expanded');
-            updateSidebarToggleIcon(toggleBtn, 'expanded');
+            if (indicator) indicator.classList.add('hidden');
         } else {
-            // Show and expand sidebar (from hidden state)
-            sidebar.classList.add('open');
-            sidebar.classList.remove('collapsed');
-            overlay.classList.add('hidden'); // Desktop doesn't need overlay
+            // Currently collapsed, go to expanded
+            sidebar.classList.add('expanded');
+            mainLayout.classList.add('sidebar-expanded');
             localStorage.setItem('sidebar-state', 'expanded');
             updateSidebarToggleIcon(toggleBtn, 'expanded');
+            if (indicator) indicator.classList.add('hidden');
         }
     }
     
@@ -390,29 +428,45 @@ function updateSidebarToggleIcon(button, state) {
     const iconElement = button.querySelector('.material-icons');
     if (!iconElement) return;
     
-    switch (state) {
-        case 'expanded':
-            iconElement.textContent = 'menu_open';
-            button.setAttribute('title', 'Recolher calculadoras');
-            button.setAttribute('aria-label', 'Recolher painel de calculadoras');
-            break;
-        case 'collapsed':
-            iconElement.textContent = 'apps';
-            button.setAttribute('title', 'Expandir calculadoras');
-            button.setAttribute('aria-label', 'Expandir painel de calculadoras');
-            break;
-        case 'hidden':
-        default:
-            iconElement.textContent = 'menu';
-            button.setAttribute('title', 'Abrir calculadoras');
-            button.setAttribute('aria-label', 'Abrir painel de calculadoras');
-            break;
+    const isMobile = window.innerWidth < 1024;
+    
+    if (isMobile) {
+        // Mobile: toggle between menu (hidden) and menu_open (expanded)
+        switch (state) {
+            case 'expanded':
+                iconElement.textContent = 'menu_open';
+                button.setAttribute('title', 'Fechar calculadoras');
+                button.setAttribute('aria-label', 'Fechar painel de calculadoras');
+                break;
+            case 'hidden':
+            default:
+                iconElement.textContent = 'menu';
+                button.setAttribute('title', 'Abrir calculadoras');
+                button.setAttribute('aria-label', 'Abrir painel de calculadoras');
+                break;
+        }
+    } else {
+        // Desktop: toggle between menu_open (expanded) and apps (collapsed)
+        switch (state) {
+            case 'expanded':
+                iconElement.textContent = 'menu_open';
+                button.setAttribute('title', 'Recolher calculadoras');
+                button.setAttribute('aria-label', 'Recolher painel de calculadoras');
+                break;
+            case 'collapsed':
+            default:
+                iconElement.textContent = 'apps';
+                button.setAttribute('title', 'Expandir calculadoras');
+                button.setAttribute('aria-label', 'Expandir painel de calculadoras');
+                break;
+        }
     }
 }
 
 /**
  * Initializes sidebar state from localStorage (Brave-like behavior)
- * This restores the previous sidebar state: hidden, expanded, or collapsed
+ * Desktop: expanded or collapsed states only
+ * Mobile: hidden or expanded states only
  */
 function initializeSidebarState() {
     const sidebar = document.getElementById('main-sidebar');
@@ -421,11 +475,22 @@ function initializeSidebarState() {
     
     if (!sidebar || !overlay) return;
     
-    // Get saved state from localStorage (default to hidden for mobile, expanded for desktop)
+    // Get saved state from localStorage
     const savedState = localStorage.getItem('sidebar-state');
     const isMobile = window.innerWidth < 1024;
+    
+    // Set default states based on device type
     const defaultState = isMobile ? 'hidden' : 'expanded';
-    const currentState = savedState || defaultState;
+    let currentState = savedState || defaultState;
+    
+    // Validate state for device type
+    if (!isMobile && currentState === 'hidden') {
+        // Desktop shouldn't have hidden state, default to expanded
+        currentState = 'expanded';
+    } else if (isMobile && currentState === 'collapsed') {
+        // Mobile shouldn't have collapsed state, default to hidden
+        currentState = 'hidden';
+    }
     
     // Apply the appropriate state
     switch (currentState) {
@@ -458,6 +523,10 @@ function initializeSidebarState() {
             overlay.classList.add('hidden');
             document.body.style.overflow = '';
             updateSidebarToggleIcon(toggleBtn, 'hidden');
+            if (!isMobile) {
+                // On desktop, if hidden state was somehow set, show active indicator
+                updateActiveIndicator();
+            }
             break;
     }
 }

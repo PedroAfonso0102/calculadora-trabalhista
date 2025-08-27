@@ -1500,7 +1500,10 @@ export function generateReportHTML(data) {
     return `
         <div class="print-header">
             <div class="print-company-info">
-                <h1>Calculadora Trabalhista</h1>
+                <div class="flex items-center justify-center gap-2 mb-1">
+                    <span class="material-icons text-gray-700" style="font-size: 1.2rem;">gavel</span>
+                    <h1>Calculadora Trabalhista</h1>
+                </div>
                 <p>Pedro Afonso MEI - Estúdio Criativo Labareda</p>
                 <p>Relatório gerado em: <span id="print-date">${currentDate}</span></p>
             </div>
