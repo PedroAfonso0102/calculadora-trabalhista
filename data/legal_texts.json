@@ -1,4 +1,149 @@
 {
+  "fgts": {
+    "title": "FGTS - Fundo de Garantia",
+    "description": "Entenda a fundo o que é, como funciona o depósito mensal e as principais modalidades de saque do seu Fundo de Garantia por Tempo de Serviço.",
+    "topics": {
+      "o_que_e_fgts": {
+        "title": "O que é o FGTS?",
+        "content": "<p>O Fundo de Garantia do Tempo de Serviço (FGTS) é uma poupança compulsória constituída por depósitos mensais realizados pelo empregador em nome do empregado. Seu principal objetivo é proteger o trabalhador demitido sem justa causa, mas também pode ser utilizado em outras situações específicas, como a aquisição de moradia própria.</p><p class='mt-2'>O valor depositado <strong>não é descontado do salário</strong>, sendo uma obrigação exclusiva do empregador.</p>",
+        "legal": "Base legal: Lei nº 8.036/90",
+        "example": "Funciona como uma segurança financeira, garantindo recursos em momentos de transição de carreira ou para a realização de grandes projetos."
+      },
+      "deposito_mensal": {
+        "title": "Depósito Mensal",
+        "content": "<p>O empregador é obrigado a depositar, até o dia 20 de cada mês (conforme novas regras do FGTS Digital), o valor correspondente a <strong>8% do salário bruto</strong> do empregado em uma conta vinculada na Caixa Econômica Federal. Este percentual é de 2% para contratos de aprendizagem.</p>",
+        "legal": "Base legal: Art. 15 da Lei nº 8.036/90",
+        "example": "Para um salário bruto de R$ 3.500,00, o depósito mensal obrigatório do FGTS, feito pela empresa, será de R$ 280,00."
+      },
+      "saque_rescisao": {
+        "title": "Saque-Rescisão",
+        "content": "<p>Esta é a modalidade padrão de saque. Ao ser demitido <strong>sem justa causa</strong>, o trabalhador tem o direito de sacar o <strong>saldo integral</strong> de sua conta do FGTS. Além do saldo, o empregador deve pagar uma multa rescisória de 40% sobre o montante de todos os depósitos realizados durante o contrato de trabalho.</p>",
+        "legal": "Base legal: Art. 18 e Art. 20, I da Lei nº 8.036/90",
+        "example": "Se um trabalhador é demitido sem justa causa com um saldo de R$ 15.000,00 no FGTS, ele poderá sacar a totalidade dos R$ 15.000,00."
+      },
+      "multa_40": {
+        "title": "Multa Rescisória de 40%",
+        "content": "<p>A multa de 40% é uma indenização paga pelo empregador na demissão sem justa causa. Ela é calculada sobre <strong>todos os depósitos</strong> realizados na conta do FGTS durante o contrato, devidamente atualizados, e não apenas sobre o saldo final. O valor é depositado na conta do FGTS para ser sacado juntamente com o saldo principal.</p>",
+        "legal": "Base legal: Art. 18, § 1º da Lei nº 8.036/90",
+        "example": "Se o total depositado durante o contrato foi de R$ 20.000,00, a multa rescisória a ser paga pelo empregador será de R$ 8.000,00."
+      },
+      "saque_aniversario": {
+        "title": "Saque-Aniversário",
+        "content": "<p>É uma modalidade <strong>opcional</strong> que permite ao trabalhador retirar parte do saldo do FGTS anualmente, no mês de seu aniversário. Em contrapartida, ao optar por este sistema, o trabalhador <strong>perde o direito ao saque integral</strong> do saldo em caso de demissão sem justa causa, mantendo apenas o direito à multa de 40%.</p>",
+        "legal": "Base legal: Lei nº 13.932/2019",
+        "example": "Um trabalhador que opta pelo saque-aniversário e é demitido sem justa causa poderá sacar apenas o valor da multa de 40%, mas não o saldo remanescente na conta."
+      }
+    }
+  },
+  "pisPasep": {
+    "title": "Abono Salarial (PIS/PASEP)",
+    "description": "O Abono Salarial é um benefício anual, no valor máximo de um salário mínimo, destinado a trabalhadores que satisfazem critérios específicos definidos em lei. A hermenêutica do direito exige o cumprimento de todos os requisitos de forma cumulativa.",
+    "fundamentacao_legal": "<p>Regido pela Lei nº 7.998/90, o direito ao abono salarial exige que o trabalhador atenda a <strong>cinco requisitos</strong>:</p><p>1. Estar cadastrado no PIS/PASEP há pelo menos <strong>cinco anos</strong>.</p><p>2. Ter recebido remuneração média de até <strong>dois salários mínimos</strong> durante o ano-base.</p><p>3. Ter exercido atividade remunerada para Pessoa Jurídica, durante pelo menos <strong>30 dias</strong>, consecutivos ou não, no ano-base considerado para apuração.</p><p>4. Ter seus dados informados corretamente pelo empregador na Relação Anual de Informações Sociais (RAIS) ou no eSocial.</p><p class='mt-2'>O valor do abono é <strong>proporcional</strong> ao número de meses trabalhados no ano-base, onde cada mês equivale a 1/12 do salário mínimo vigente na data do pagamento.</p>",
+    "constants": {
+      "SALARIO_MINIMO_VIGENTE": 1412.00,
+      "MAX_MULTIPLIER_SALARIO": 2,
+      "MIN_ANOS_INSCRICAO": 5
+    },
+    "examples": [
+      {
+        "description": "Exemplo de cálculo para trabalhador elegível com 10 meses trabalhados.",
+        "inputs": {
+          "salario_medio_anobase": 1500.00,
+          "meses_trabalhados_anobase": 10,
+          "ano_inscricao": 2018
+        },
+        "expected_output": {
+          "valor_abono": 1176.67,
+          "elegivel": true
+        }
+      }
+    ]
+  },
+  "seguroDesemprego": {
+    "title": "Seguro-Desemprego",
+    "description": "Benefício que provê assistência financeira temporária ao trabalhador dispensado involuntariamente (sem justa causa).",
+    "fundamentacao_legal": "<p>Regulamentado pela Lei nº 7.998/90 e resoluções do CODEFAT, o Seguro-Desemprego é um pilar da seguridade social. Para ter direito, o trabalhador deve ter sido dispensado sem justa causa, não possuir renda própria para seu sustento e não estar recebendo benefício previdenciário de prestação continuada (exceto pensão por morte ou auxílio-acidente).</p><p class='mt-2'>A quantidade de parcelas e o tempo de trabalho exigido (carência) variam conforme o número de vezes que o benefício foi solicitado:</p><p><strong>1ª Solicitação:</strong> Ter trabalhado por pelo menos 12 meses nos últimos 18 meses.</p><p><strong>2ª Solicitação:</strong> Ter trabalhado por pelo menos 9 meses nos últimos 12 meses.</p><p><strong>3ª Solicitação em diante:</strong> Ter trabalhado nos 6 meses imediatamente anteriores.</p><p class='mt-2'>O valor do benefício é calculado com base na média dos salários dos últimos 3 meses anteriores à dispensa, conforme faixas de valores estipuladas pelo governo.</p>",
+    "constants": {
+      "SALARIO_MINIMO_VIGENTE": 1412.00,
+      "TETO_SEGURO_DESEMPREGO": 2309.13
+    },
+    "tables": {
+      "valores_parcelas": [
+        { "faixa": { "min": 0, "max": 2041.39 }, "percentual": 0.80, "parcela_deduzir": 0 },
+        { "faixa": { "min": 2041.40, "max": 3402.65 }, "percentual": 0.50, "parcela_deduzir": 1633.11 },
+        { "faixa": { "min": 3402.66, "max": 99999999 }, "percentual": 0, "parcela_deduzir": 0, "teto_aplicado": true }
+      ],
+      "numero_parcelas": [
+        { "solicitacao": 1, "meses_trabalhados": { "min": 12, "max": 23 }, "parcelas": 4 },
+        { "solicitacao": 1, "meses_trabalhados": { "min": 24, "max": 99999999 }, "parcelas": 5 },
+        { "solicitacao": 2, "meses_trabalhados": { "min": 9, "max": 23 }, "parcelas": 3 },
+        { "solicitacao": 2, "meses_trabalhados": { "min": 24, "max": 99999999 }, "parcelas": 4 },
+        { "solicitacao": 3, "meses_trabalhados": { "min": 6, "max": 11 }, "parcelas": 3 },
+        { "solicitacao": 3, "meses_trabalhados": { "min": 12, "max": 23 }, "parcelas": 4 },
+        { "solicitacao": 3, "meses_trabalhados": { "min": 24, "max": 99999999 }, "parcelas": 5 }
+      ]
+    }
+  },
+  "horasExtras": {
+    "title": "Cálculo de Horas Extras",
+    "description": "Compreenda a sistemática de cálculo das horas trabalhadas além da jornada normal, incluindo os adicionais e reflexos legais.",
+    "fundamentacao_legal": "<p>A Constituição Federal (Art. 7º, XVI) e a CLT (Art. 59) garantem a remuneração superior para o serviço extraordinário. O cálculo parte do valor da hora normal, que é acrescida de um adicional.</p><p><strong>Adicionais Mínimos:</strong></p><p>• <strong>50%</strong> para horas extras prestadas de segunda a sábado.</p><p>• <strong>100%</strong> para horas extras prestadas em domingos e feriados.</p><p class='mt-2'><strong>Reflexo no DSR:</strong> As horas extras habitualmente prestadas integram o salário para todos os efeitos legais, gerando reflexos no cálculo do Descanso Semanal Remunerado (DSR), férias, 13º salário, aviso prévio e FGTS. A hermenêutica consolidada pelo TST (Súmula nº 172) determina que o valor das horas extras deve ser somado ao DSR.</p>",
+    "constants": {
+      "PERCENTUAL_HE_50": 0.5,
+      "PERCENTUAL_HE_100": 1,
+      "PERCENTUAL_ADICIONAL_NOTURNO": 0.2,
+      "HORAS_MENSAIS_PADRAO": 220
+    },
+    "examples": []
+  },
+  "inss": {
+    "title": "Contribuição Previdenciária (INSS)",
+    "description": "Desconto mensal obrigatório que garante ao trabalhador o direito a benefícios da Previdência Social.",
+    "fundamentacao_legal": "<p>Prevista na Lei nº 8.212/91, a contribuição ao INSS é fundamental para o custeio de aposentadorias, auxílios e pensões. O cálculo é feito de forma <strong>progressiva</strong>, ou seja, as alíquotas são aplicadas sobre cada faixa do salário de contribuição, e não de forma única sobre o total.</p><p class='mt-2'>Isso significa que o salário é 'fatiado' e cada fatia paga a alíquota correspondente. As faixas e alíquotas são atualizadas anualmente por portaria do Governo Federal. Existe um teto de contribuição, de modo que salários acima desse teto contribuem apenas até o limite estabelecido.</p>",
+    "constants": {
+      "TETO_CONTRIBUICAO_INSS_VALOR_REAL": 908.85
+    },
+    "tables": {
+      "aliquotas_progressivas": [
+        { "faixa": { "min": 0, "max": 1412 }, "aliquota": 0.075, "parcela_deduzir": 0 },
+        { "faixa": { "min": 1412.01, "max": 2666.68 }, "aliquota": 0.09, "parcela_deduzir": 21.18 },
+        { "faixa": { "min": 2666.69, "max": 4000.03 }, "aliquota": 0.12, "parcela_deduzir": 84.66 },
+        { "faixa": { "min": 4000.04, "max": 7786.02 }, "aliquota": 0.14, "parcela_deduzir": 164.6 }
+      ]
+    }
+  },
+  "valeTransporte": {
+    "title": "Cálculo do Vale-Transporte",
+    "description": "Entenda a regra de custeio do benefício de transporte e como funciona o desconto no salário do empregado.",
+    "fundamentacao_legal": "<p>Instituído pela Lei nº 7.418/85, o Vale-Transporte é uma obrigação do empregador de antecipar ao empregado os valores para seu deslocamento residência-trabalho-residência. A hermenêutica da lei define uma co-participação.</p><p class='mt-2'>A empresa é autorizada a descontar do empregado o valor de até <strong>6% do seu salário base</strong>. O valor que exceder esses 6% é de responsabilidade integral do empregador.</p><p><strong>Regra fundamental:</strong> O desconto é sempre o menor valor entre o custo total do transporte e o limite de 6% do salário. Se o custo do transporte for inferior a 6% do salário, o desconto será limitado a esse custo.</p>",
+    "constants": {
+      "PERCENTUAL_DESCONTO_SALARIO": 0.06,
+      "DIAS_UTEIS_PADRAO": 22
+    }
+  },
+  "irrf": {
+    "title": "Imposto de Renda Retido na Fonte (IRRF)",
+    "description": "Antencipação do Imposto de Renda devido anualmente, descontado diretamente na folha de pagamento.",
+    "fundamentacao_legal": "<p>Regido pela Lei nº 7.713/88 e regulamentado pela Receita Federal, o IRRF incide sobre o rendimento tributável do trabalhador. A correta interpretação da base de cálculo é crucial.</p><p><strong>Base de Cálculo:</strong> Salário Bruto (-) Contribuição ao INSS (-) Deduções por Dependentes Legais.</p><p class='mt-2'>Sobre essa base, aplica-se uma tabela com alíquotas <strong>progressivas</strong> (de 0% a 27,5%). Assim como no INSS, o cálculo é feito por faixas. Do imposto apurado, subtrai-se uma 'parcela a deduzir' correspondente à faixa de alíquota, resultando no valor final a ser retido na fonte.</p>"
+  },
+  "irpf": {
+    "title": "Imposto de Renda (IRPF) - Ajuste Anual",
+    "fundamentacao_legal": "Cálculo do Imposto de Renda Pessoa Física para o ajuste anual, baseado na Instrução Normativa RFB nº 2174 e Lei n° 14.848. O cálculo considera a renda tributável anual, deduções legais (dependentes, saúde, educação) e o imposto já retido na fonte para apurar o imposto a pagar ou a restituir.",
+    "constants": {
+      "DEDUCAO_POR_DEPENDENTE_ANUAL": 2275.08,
+      "LIMITE_DESPESAS_EDUCACAO_ANUAL": 3561.50,
+      "LIMITE_DESCONTO_SIMPLIFICADO_ANUAL": 16754.34
+    },
+    "tables": {
+      "tabela_anual_2025": [
+        { "faixa": { "min": 0, "max": 27110.40 }, "aliquota": 0, "parcela_deduzir": 0 },
+        { "faixa": { "min": 27110.41, "max": 33919.80 }, "aliquota": 0.075, "parcela_deduzir": 2033.28 },
+        { "faixa": { "min": 33919.81, "max": 45012.60 }, "aliquota": 0.15, "parcela_deduzir": 4577.27 },
+        { "faixa": { "min": 45012.61, "max": 55976.16 }, "aliquota": 0.225, "parcela_deduzir": 7953.21 },
+        { "faixa": { "min": 55976.17, "max": 999999999 }, "aliquota": 0.275, "parcela_deduzir": 10752.02 }
+      ]
+    }
+  },
   "ferias": {
     "title": "Direito às Férias",
     "description": "Entenda seus direitos relacionados às férias, incluindo o cálculo e as modalidades.",
@@ -171,129 +316,6 @@
         "legal": "Base legal: Lei nº 8.036/90",
         "example": "Para um salário bruto de R$ 3.000,00, o depósito mensal no FGTS será de R$ 240,00."
       }
-    }
-  },
-  "fgts": {
-    "title": "FGTS - Fundo de Garantia",
-    "description": "Entenda como funciona o depósito mensal e as modalidades de saque do seu FGTS.",
-    "topics": {
-      "deposito_mensal": {
-        "title": "Depósito Mensal do FGTS",
-        "content": "<p>O empregador é obrigado a depositar, até o dia 7 de cada mês, o valor correspondente a <strong>8% do salário bruto</strong> do empregado em uma conta vinculada na Caixa Econômica Federal. Este valor não é descontado do seu salário.</p>",
-        "legal": "Base legal: Art. 15 da Lei nº 8.036/90",
-        "example": "Com um salário de R$ 3.000,00, o depósito mensal do FGTS feito pela empresa será de R$ 240,00."
-      },
-      "saque_rescisao": {
-        "title": "Saque-Rescisão",
-        "content": "<p>Esta é a modalidade padrão. Em caso de demissão sem justa causa, o trabalhador tem direito a sacar o <strong>valor integral</strong> do saldo de sua conta do FGTS, acrescido de uma multa de 40% paga pelo empregador sobre o total depositado durante o contrato.</p>",
-        "legal": "Base legal: Art. 20, I da Lei nº 8.036/90",
-        "example": "Se você for demitido sem justa causa com um saldo de R$ 10.000,00 no FGTS, poderá sacar os R$ 10.000,00."
-      },
-      "saque_aniversario": {
-        "title": "Saque-Aniversário",
-        "content": "<p>Modalidade opcional que permite a retirada de parte do saldo da conta do FGTS, anualmente, no mês do seu aniversário. O valor do saque é um percentual do saldo mais uma parcela adicional, conforme a faixa de valor. <strong>Atenção:</strong> Ao optar por esta modalidade, o trabalhador perde o direito de sacar o saldo total em caso de demissão sem justa causa, mantendo apenas o direito à multa de 40%.</p>",
-        "legal": "Base legal: Lei nº 13.932/2019",
-        "example": "Com um saldo de R$ 6.000,00, o saque aniversário seria de 20% (R$ 1.200,00) + uma parcela de R$ 650,00, totalizando R$ 1.850,00."
-      }
-    }
-  },
-  "pisPasep": {
-    "title": "Abono Salarial PIS/PASEP",
-    "description": "Regido pela Lei nº 7.998/1990 e suas alterações. Os critérios de elegibilidade incluem ter cadastro no PIS/PASEP há pelo menos 5 anos, ter trabalhado com carteira assinada por no mínimo 30 dias no ano-base, ter recebido em média até 2 salários mínimos no ano-base e ter os dados informados corretamente pelo empregador. O valor é proporcional aos meses trabalhados, limitado a 1 salário mínimo.",
-    "constants": {
-      "SALARIO_MINIMO_VIGENTE": 1412.00,
-      "MAX_MULTIPLIER_SALARIO": 2,
-      "MIN_ANOS_INSCRICAO": 5
-    },
-    "examples": [
-      {
-        "description": "Exemplo de cálculo para trabalhador elegível com 10 meses trabalhados.",
-        "inputs": {
-          "salario_medio_anobase": 1500.00,
-          "meses_trabalhados_anobase": 10,
-          "ano_inscricao": 2018
-        },
-        "expected_output": {
-          "valor_abono": 1176.67,
-          "elegivel": true
-        }
-      }
-    ]
-  },
-  "seguroDesemprego": {
-    "title": "Seguro-Desemprego",
-    "fundamentacao_legal": "Regido pela Lei nº 7.998/1990 e Resoluções do CODEFAT. A elegibilidade exige demissão sem justa causa, ausência de renda própria suficiente, e não estar recebendo outros benefícios previdenciários (exceto pensão por morte ou auxílio-acidente). O tempo mínimo de trabalho varia conforme o número de solicitações (1ª: 12 meses nos últimos 18; 2ª: 9 meses nos últimos 12; 3ª+: 6 meses imediatamente anteriores). O número de parcelas (3 a 5) e o valor são calculados com base na média dos 3 últimos salários, respeitando tabelas de faixas e teto.",
-    "constants": {
-      "SALARIO_MINIMO_VIGENTE": 1412.00,
-      "TETO_SEGURO_DESEMPREGO": 2309.13
-    },
-    "tables": {
-      "valores_parcelas": [
-        { "faixa": { "min": 0, "max": 2041.39 }, "percentual": 0.80, "parcela_deduzir": 0 },
-        { "faixa": { "min": 2041.40, "max": 3402.65 }, "percentual": 0.50, "parcela_deduzir": 1633.11 },
-        { "faixa": { "min": 3402.66, "max": 99999999 }, "percentual": 0, "parcela_deduzir": 0, "teto_aplicado": true }
-      ],
-      "numero_parcelas": [
-        { "solicitacao": 1, "meses_trabalhados": { "min": 12, "max": 23 }, "parcelas": 4 },
-        { "solicitacao": 1, "meses_trabalhados": { "min": 24, "max": 99999999 }, "parcelas": 5 },
-        { "solicitacao": 2, "meses_trabalhados": { "min": 9, "max": 23 }, "parcelas": 3 },
-        { "solicitacao": 2, "meses_trabalhados": { "min": 24, "max": 99999999 }, "parcelas": 4 },
-        { "solicitacao": 3, "meses_trabalhados": { "min": 6, "max": 11 }, "parcelas": 3 },
-        { "solicitacao": 3, "meses_trabalhados": { "min": 12, "max": 23 }, "parcelas": 4 },
-        { "solicitacao": 3, "meses_trabalhados": { "min": 24, "max": 99999999 }, "parcelas": 5 }
-      ]
-    }
-  },
-  "horasExtras": {
-    "title": "Horas Extras e Adicionais",
-    "fundamentacao_legal": "Regido pela CLT (Art. 59 e 73) e Súmulas do TST. Horas extras diurnas (dias úteis) têm acréscimo mínimo de 50%. Horas extras em domingos e feriados têm acréscimo mínimo de 100%. O adicional noturno é de no mínimo 20% sobre a hora normal para o trabalho entre 22h e 5h.",
-    "constants": {
-      "PERCENTUAL_HE_50": 0.5,
-      "PERCENTUAL_HE_100": 1,
-      "PERCENTUAL_ADICIONAL_NOTURNO": 0.2,
-      "HORAS_MENSAIS_PADRAO": 220
-    },
-    "examples": []
-  },
-  "inss": {
-    "title": "Contribuição Previdenciária (INSS)",
-    "fundamentacao_legal": "Regido pela Lei nº 8.212/1991 e Portarias Interministeriais anuais. A contribuição é calculada com alíquotas progressivas sobre faixas salariais, respeitando um teto máximo de contribuição. O valor é descontado diretamente do salário do trabalhador.",
-    "constants": {
-      "TETO_CONTRIBUICAO_INSS_VALOR_REAL": 908.85
-    },
-    "tables": {
-      "aliquotas_progressivas": [
-        { "faixa": { "min": 0, "max": 1412 }, "aliquota": 0.075, "parcela_deduzir": 0 },
-        { "faixa": { "min": 1412.01, "max": 2666.68 }, "aliquota": 0.09, "parcela_deduzir": 21.18 },
-        { "faixa": { "min": 2666.69, "max": 4000.03 }, "aliquota": 0.12, "parcela_deduzir": 84.66 },
-        { "faixa": { "min": 4000.04, "max": 7786.02 }, "aliquota": 0.14, "parcela_deduzir": 164.6 }
-      ]
-    }
-  },
-  "valeTransporte": {
-    "title": "Desconto de Vale-Transporte",
-    "fundamentacao_legal": "Regido pela Lei nº 7.418/85. O empregador pode descontar até 6% do salário base do empregado. Caso o custo total do transporte seja inferior a este percentual, o desconto é limitado ao valor real do benefício.",
-    "constants": {
-      "PERCENTUAL_DESCONTO_SALARIO": 0.06,
-      "DIAS_UTEIS_PADRAO": 22
-    }
-  },
-  "irpf": {
-    "title": "Imposto de Renda (IRPF) - Ajuste Anual",
-    "fundamentacao_legal": "Cálculo do Imposto de Renda Pessoa Física para o ajuste anual, baseado na Instrução Normativa RFB nº 2174 e Lei n° 14.848. O cálculo considera a renda tributável anual, deduções legais (dependentes, saúde, educação) e o imposto já retido na fonte para apurar o imposto a pagar ou a restituir.",
-    "constants": {
-      "DEDUCAO_POR_DEPENDENTE_ANUAL": 2275.08,
-      "LIMITE_DESPESAS_EDUCACAO_ANUAL": 3561.50,
-      "LIMITE_DESCONTO_SIMPLIFICADO_ANUAL": 16754.34
-    },
-    "tables": {
-      "tabela_anual_2025": [
-        { "faixa": { "min": 0, "max": 27110.40 }, "aliquota": 0, "parcela_deduzir": 0 },
-        { "faixa": { "min": 27110.41, "max": 33919.80 }, "aliquota": 0.075, "parcela_deduzir": 2033.28 },
-        { "faixa": { "min": 33919.81, "max": 45012.60 }, "aliquota": 0.15, "parcela_deduzir": 4577.27 },
-        { "faixa": { "min": 45012.61, "max": 55976.16 }, "aliquota": 0.225, "parcela_deduzir": 7953.21 },
-        { "faixa": { "min": 55976.17, "max": 999999999 }, "aliquota": 0.275, "parcela_deduzir": 10752.02 }
-      ]
     }
   },
   "individual_topics": {
