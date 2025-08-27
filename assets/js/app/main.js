@@ -3,7 +3,7 @@
  * This file is responsible for initializing the application modules.
  */
 
-import { initializeEventListeners } from './events.js';
+import { initializeEventListeners, initializeSidebarState } from './events.js';
 import { render } from './ui.js';
 import { updateState } from './state.js';
 
@@ -41,6 +41,9 @@ async function initializeApp() {
 
         // Attach all event listeners to the DOM
         initializeEventListeners();
+
+        // Initialize sidebar state (restore previous open/closed state)
+        initializeSidebarState();
 
         // Perform the initial render to display the default UI state
         render();

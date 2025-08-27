@@ -255,12 +255,12 @@ function generateEducationalContentHTML(categoryData) {
 }
 
 /**
- * Updates the active state of topic navigation buttons
+ * Updates the active state of topic navigation elements
  * @param {string} activeTopic - The currently active topic
  */
 function updateActiveTopicButton(activeTopic) {
+    // Update buttons (if they exist)
     const topicButtons = document.querySelectorAll('.educational-topic-btn');
-
     topicButtons.forEach(button => {
         const buttonTopic = button.dataset.topic;
         if (buttonTopic === activeTopic) {
@@ -269,6 +269,12 @@ function updateActiveTopicButton(activeTopic) {
             button.classList.remove('active');
         }
     });
+
+    // Update dropdown selector
+    const topicSelector = document.getElementById('topic-selector');
+    if (topicSelector) {
+        topicSelector.value = activeTopic || '';
+    }
 }
 
 /**
@@ -1840,10 +1846,14 @@ export function hideCustomizeModal() {
 /**
  * Renders the sidebar navigation (FASE 3)
  * Substitui a navegação por abas pela sidebar moderna
+ * Suporta dois modos: expandido (com texto) e colapsado (círculos)
  */
 function renderSidebar() {
     const navList = document.getElementById('sidebar-nav-list');
-    if (!navList) return;
+    const dotsList = document.getElementById('sidebar-dots-list');
+    const sidebar = document.getElementById('main-sidebar');
+    
+    if (!navList || !dotsList) return;
     
     const calculatorNames = {
         ferias: 'Cálculo de Férias',
@@ -1861,7 +1871,9 @@ function renderSidebar() {
 
     const activeTab = state.activeTab;
     const visibleCalculators = state.visibleCalculators;
+    const isCollapsed = sidebar && sidebar.classList.contains('collapsed');
 
+    // Render expanded mode (normal links with text)
     navList.innerHTML = visibleCalculators.map(calc => `
         <li>
             <button class="sidebar-link w-full text-left ${activeTab === calc ? 'active' : ''}" 
@@ -1870,6 +1882,32 @@ function renderSidebar() {
                 ${calculatorNames[calc]}
             </button>
         </li>
+    `).join('');
+
+    // Render collapsed mode (dots/circles with Material Icons)
+    const iconMap = {
+        ferias: 'beach_access',
+        rescisao: 'work_off',
+        decimoTerceiro: 'card_giftcard',
+        salarioLiquido: 'payments',
+        fgts: 'account_balance',
+        pisPasep: 'verified_user',
+        seguroDesemprego: 'security',
+        horasExtras: 'schedule',
+        inss: 'local_hospital',
+        valeTransporte: 'commute',
+        irpf: 'receipt_long'
+    };
+    
+    dotsList.innerHTML = visibleCalculators.map(calc => `
+        <div class="sidebar-dot ${activeTab === calc ? 'active' : ''}" 
+             data-calculator="${calc}"
+             title="${calculatorNames[calc]}"
+             role="button"
+             tabindex="0"
+             aria-label="Abrir ${calculatorNames[calc]}">
+            <span class="material-icons text-xs">${iconMap[calc] || 'calculate'}</span>
+        </div>
     `).join('');
 
     // Também precisa renderizar os panels

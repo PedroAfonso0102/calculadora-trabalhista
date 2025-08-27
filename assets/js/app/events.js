@@ -265,20 +265,28 @@ function handleInputChange(event) {
 /**
  * Handles sidebar navigation clicks (FASE 3).
  * Substitui o handleTabClick para usar a nova navegação por sidebar.
+ * Suporta cliques em links (expandido) e dots/círculos (colapsado).
  * @param {Event} event - The click event object.
  */
 function handleSidebarClick(event) {
+    // Check for both sidebar links and sidebar dots
     const button = event.target.closest('.sidebar-link');
-    if (!button) return;
+    const dot = event.target.closest('.sidebar-dot');
     
-    const newTab = button.dataset.calculator;
+    const clickedElement = button || dot;
+    if (!clickedElement) return;
+    
+    const newTab = clickedElement.dataset.calculator;
     if (newTab && newTab !== state.activeTab) {
         updateState('activeTab', newTab);
         render();
         
         // Fechar sidebar no mobile após seleção
         if (window.innerWidth < 1024) {
-            toggleMobileSidebar(false);
+            const sidebar = document.getElementById('main-sidebar');
+            if (sidebar && sidebar.classList.contains('open')) {
+                toggleSidebar();
+            }
         }
     }
 }
@@ -303,6 +311,154 @@ function toggleMobileSidebar(isOpen) {
         overlay.classList.add('hidden');
         // Restaurar scroll do body
         document.body.style.overflow = '';
+    }
+}
+
+/**
+ * Toggles the sidebar visibility and state (Brave-like functionality)
+ * Three states: hidden, expanded, collapsed
+ * - Mobile: toggle between hidden/expanded
+ * - Desktop: toggle between expanded/collapsed (never fully hidden)
+ */
+function toggleSidebar() {
+    const sidebar = document.getElementById('main-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const toggleBtn = document.getElementById('mobile-menu-btn');
+    
+    if (!sidebar || !overlay) return;
+    
+    const isCurrentlyOpen = sidebar.classList.contains('open');
+    const isCurrentlyCollapsed = sidebar.classList.contains('collapsed');
+    const isMobile = window.innerWidth < 1024;
+    
+    if (isMobile) {
+        // Mobile behavior: toggle between hidden/expanded
+        if (isCurrentlyOpen) {
+            // Hide sidebar
+            sidebar.classList.remove('open', 'collapsed');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+            localStorage.setItem('sidebar-state', 'hidden');
+            updateSidebarToggleIcon(toggleBtn, 'hidden');
+        } else {
+            // Show sidebar (expanded)
+            sidebar.classList.add('open');
+            sidebar.classList.remove('collapsed');
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            localStorage.setItem('sidebar-state', 'expanded');
+            updateSidebarToggleIcon(toggleBtn, 'expanded');
+        }
+    } else {
+        // Desktop behavior: toggle between expanded/collapsed
+        if (isCurrentlyOpen && !isCurrentlyCollapsed) {
+            // Collapse sidebar
+            sidebar.classList.add('collapsed');
+            localStorage.setItem('sidebar-state', 'collapsed');
+            updateSidebarToggleIcon(toggleBtn, 'collapsed');
+        } else if (isCurrentlyOpen && isCurrentlyCollapsed) {
+            // Expand sidebar
+            sidebar.classList.remove('collapsed');
+            localStorage.setItem('sidebar-state', 'expanded');
+            updateSidebarToggleIcon(toggleBtn, 'expanded');
+        } else {
+            // Show and expand sidebar (from hidden state)
+            sidebar.classList.add('open');
+            sidebar.classList.remove('collapsed');
+            overlay.classList.add('hidden'); // Desktop doesn't need overlay
+            localStorage.setItem('sidebar-state', 'expanded');
+            updateSidebarToggleIcon(toggleBtn, 'expanded');
+        }
+    }
+    
+    // Re-render sidebar content for the new state
+    import('./ui.js').then(module => {
+        if (module.renderSidebar) {
+            module.renderSidebar();
+        }
+    });
+}
+
+/**
+ * Updates the sidebar toggle button icon based on current state
+ * @param {HTMLElement} button - The toggle button element
+ * @param {string} state - Current state: 'hidden', 'expanded', 'collapsed'
+ */
+function updateSidebarToggleIcon(button, state) {
+    if (!button) return;
+    
+    const iconElement = button.querySelector('.material-icons');
+    if (!iconElement) return;
+    
+    switch (state) {
+        case 'expanded':
+            iconElement.textContent = 'menu_open';
+            button.setAttribute('title', 'Recolher calculadoras');
+            button.setAttribute('aria-label', 'Recolher painel de calculadoras');
+            break;
+        case 'collapsed':
+            iconElement.textContent = 'apps';
+            button.setAttribute('title', 'Expandir calculadoras');
+            button.setAttribute('aria-label', 'Expandir painel de calculadoras');
+            break;
+        case 'hidden':
+        default:
+            iconElement.textContent = 'menu';
+            button.setAttribute('title', 'Abrir calculadoras');
+            button.setAttribute('aria-label', 'Abrir painel de calculadoras');
+            break;
+    }
+}
+
+/**
+ * Initializes sidebar state from localStorage (Brave-like behavior)
+ * This restores the previous sidebar state: hidden, expanded, or collapsed
+ */
+function initializeSidebarState() {
+    const sidebar = document.getElementById('main-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const toggleBtn = document.getElementById('mobile-menu-btn');
+    
+    if (!sidebar || !overlay) return;
+    
+    // Get saved state from localStorage (default to hidden for mobile, expanded for desktop)
+    const savedState = localStorage.getItem('sidebar-state');
+    const isMobile = window.innerWidth < 1024;
+    const defaultState = isMobile ? 'hidden' : 'expanded';
+    const currentState = savedState || defaultState;
+    
+    // Apply the appropriate state
+    switch (currentState) {
+        case 'expanded':
+            sidebar.classList.add('open');
+            sidebar.classList.remove('collapsed');
+            if (isMobile) {
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                overlay.classList.add('hidden');
+            }
+            updateSidebarToggleIcon(toggleBtn, 'expanded');
+            break;
+        case 'collapsed':
+            if (!isMobile) { // Only allow collapsed state on desktop
+                sidebar.classList.add('open', 'collapsed');
+                overlay.classList.add('hidden');
+                updateSidebarToggleIcon(toggleBtn, 'collapsed');
+            } else {
+                // On mobile, default to hidden instead of collapsed
+                sidebar.classList.remove('open', 'collapsed');
+                overlay.classList.add('hidden');
+                updateSidebarToggleIcon(toggleBtn, 'hidden');
+            }
+            break;
+        case 'hidden':
+        default:
+            sidebar.classList.remove('open', 'collapsed');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+            updateSidebarToggleIcon(toggleBtn, 'hidden');
+            break;
     }
 }
 
@@ -611,6 +767,17 @@ function initializeEducationalPanelEvents() {
         });
     });
 
+    // Topic selector (dropdown) change to load content
+    const topicSelector = document.getElementById('topic-selector');
+    if (topicSelector) {
+        topicSelector.addEventListener('change', (event) => {
+            const topic = event.target.value;
+            if (topic) {
+                loadEducationalContent(topic);
+            }
+        });
+    }
+
     // Keyboard navigation for accessibility
     document.addEventListener('keydown', (event) => {
         const panel = document.getElementById('educational-panel');
@@ -778,18 +945,33 @@ function initializeSidebarEvents() {
     const sidebar = document.getElementById('main-sidebar');
     if (sidebar) {
         sidebar.addEventListener('click', handleSidebarClick);
+        
+        // Add keyboard support for sidebar dots
+        sidebar.addEventListener('keydown', (event) => {
+            const dot = event.target.closest('.sidebar-dot');
+            if (dot && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault();
+                handleSidebarClick(event);
+            }
+        });
     }
     
-    // Botão hambúrguer mobile
+    // Botão de toggle da sidebar (ícone de abas/pastas)
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', () => toggleMobileSidebar(true));
+        mobileMenuBtn.addEventListener('click', () => toggleSidebar());
     }
     
     // Overlay da sidebar mobile
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', () => toggleMobileSidebar(false));
+        sidebarOverlay.addEventListener('click', () => {
+            // Close sidebar when clicking overlay
+            const sidebar = document.getElementById('main-sidebar');
+            if (sidebar && sidebar.classList.contains('open')) {
+                toggleSidebar();
+            }
+        });
     }
     
     // Botão de limpar dados
@@ -800,15 +982,25 @@ function initializeSidebarEvents() {
     
     // Fechar sidebar com ESC em mobile
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && window.innerWidth < 1024) {
-            toggleMobileSidebar(false);
+        if (e.key === 'Escape') {
+            const sidebar = document.getElementById('main-sidebar');
+            if (sidebar && sidebar.classList.contains('open')) {
+                toggleSidebar();
+            }
         }
     });
     
     // Fechar sidebar automaticamente quando redimensionar para desktop
     window.addEventListener('resize', () => {
+        const sidebar = document.getElementById('main-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        
         if (window.innerWidth >= 1024) {
-            toggleMobileSidebar(false);
+            // Em desktop, restaurar o scroll do body se estava bloqueado
+            document.body.style.overflow = '';
+        } else if (sidebar && sidebar.classList.contains('open')) {
+            // Em mobile, manter o comportamento de bloqueio do scroll se sidebar estiver aberta
+            document.body.style.overflow = 'hidden';
         }
     });
 }
@@ -862,3 +1054,6 @@ function showNotification(message, type = 'info') {
         }, 300);
     }, 3000);
 }
+
+// Export the sidebar initialization function
+export { initializeSidebarState };

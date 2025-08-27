@@ -3,7 +3,7 @@ applyTo: '**'
 ---
 # Contexto do Projeto e Diretrizes de Codificação para a IA
 
-Este documento consolida o contexto do projeto "Calculadora Trabalhista" e estabelece as diretrizes que a IA (Google Jules) deve seguir ao gerar código, responder a perguntas ou revisar alterações.
+Este documento consolida o contexto do projeto "Calculadora Trabalhista" e estabelece as diretrizes que a IA deve seguir ao gerar código, responder a perguntas ou revisar alterações.
 
 ## 1. Contexto Geral do Projeto
 
@@ -30,7 +30,7 @@ Este documento consolida o contexto do projeto "Calculadora Trabalhista" e estab
 
 ## 4. Diretrizes de Codificação e Comportamento da IA
 
-A IA (Google Jules) deve aderir estritamente às seguintes diretrizes:
+A IA deve aderir estritamente às seguintes diretrizes:
 
 *   **Tecnologia:** Estritamente JavaScript Vanilla, HTML e TailwindCSS.
 *   **Modificações de Código:**
