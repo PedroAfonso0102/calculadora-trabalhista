@@ -161,6 +161,42 @@ export function calculateSalarioFamilia(salarioBruto, numFilhos) {
 }
 
 /**
+ * Calculates a proportional value based on months.
+ * @param {number} valorBase - The base value for a full 12-month period.
+ * @param {number} meses - The number of months to calculate the proportion for.
+ * @returns {number} - The proportional value.
+ */
+export function calcularProporcional(valorBase, meses) {
+  if (!valorBase || valorBase <= 0 || !meses || meses <= 0) return 0;
+  return (valorBase / 12) * meses;
+}
+
+/**
+ * Calculates hazard and insalubrity bonuses.
+ * Returns the individual values and the total effective bonus (higher of the two).
+ * @param {number} salarioBruto - The gross salary.
+ * @param {boolean} periculosidade - If hazard pay is applicable.
+ * @param {string|number} insalubridadeGrau - The insalubrity level (0, 10, 20, 40).
+ * @param {string} insalubridadeBase - The base for insalubrity calculation ('salario_minimo' or 'salario_bruto').
+ * @returns {{periculosidade: number, insalubridade: number, total: number}}
+ */
+export function calcularAdicionaisRisco(salarioBruto, periculosidade, insalubridadeGrau, insalubridadeBase) {
+    const valorPericulosidade = periculosidade ? salarioBruto * 0.30 : 0;
+
+    let valorInsalubridade = 0;
+    if (insalubridadeGrau > 0) {
+        const baseCalculo = insalubridadeBase === 'salario_minimo' ? SALARIO_MINIMO_2025 : salarioBruto;
+        valorInsalubridade = baseCalculo * (parseFloat(insalubridadeGrau) / 100);
+    }
+
+    return {
+        periculosidade: valorPericulosidade,
+        insalubridade: valorInsalubridade,
+        total: Math.max(valorPericulosidade, valorInsalubridade)
+    };
+}
+
+/**
  * Calculates detailed discounts based on the calculator state.
  * @param {object} state - The specific calculator's slice of the application state.
  * @param {number} salarioBruto - The gross salary to use as a base for percentage calculations.
@@ -209,15 +245,7 @@ export function calculateFerias(feriasState) {
         adiantarDecimo
     } = feriasState;
 
-    const adicionalPericulosidade = periculosidade ? salarioBruto * 0.30 : 0;
-    let adicionalInsalubridade = 0;
-    if (insalubridadeGrau > 0) {
-        const baseCalculoInsalubridade = insalubridadeBase === 'salario_minimo' ? SALARIO_MINIMO_2025 : salarioBruto;
-        adicionalInsalubridade = baseCalculoInsalubridade * (insalubridadeGrau / 100);
-    }
-
-    const adicionalRisco = Math.max(adicionalPericulosidade, adicionalInsalubridade);
-
+    const adicionalRisco = calcularAdicionaisRisco(salarioBruto, periculosidade, insalubridadeGrau, insalubridadeBase).total;
     const baseDeCalculo = salarioBruto + mediaHorasExtras + mediaAdicionalNoturno + adicionalRisco;
     const valorFerias = (baseDeCalculo / 30) * diasFerias;
     const tercoConstitucional = valorFerias / 3;
@@ -230,7 +258,7 @@ export function calculateFerias(feriasState) {
         tercoAbono = valorAbono / 3;
     }
 
-    const adiantamento13 = adiantarDecimo ? salarioBruto / 2 : 0;
+    const adiantamento13 = adiantarDecimo ? calcularProporcional(salarioBruto, 6) : 0;
     const totalProventos = valorFerias + tercoConstitucional + valorAbono + tercoAbono + adiantamento13;
 
     const baseINSS = valorFerias + tercoConstitucional;
@@ -281,16 +309,9 @@ export function calculateDecimoTerceiro(decimoState) {
         insalubridadeBase
     } = decimoState;
 
-    const adicionalPericulosidade = periculosidade ? salarioBruto * 0.30 : 0;
-    let adicionalInsalubridade = 0;
-    if (insalubridadeGrau > 0) {
-        const baseCalculoInsalubridade = insalubridadeBase === 'salario_minimo' ? SALARIO_MINIMO_2025 : salarioBruto;
-        adicionalInsalubridade = baseCalculoInsalubridade * (insalubridadeGrau / 100);
-    }
-    const adicionalRisco = Math.max(adicionalPericulosidade, adicionalInsalubridade);
-
+    const adicionalRisco = calcularAdicionaisRisco(salarioBruto, periculosidade, insalubridadeGrau, insalubridadeBase).total;
     const baseDeCalculo = salarioBruto + mediaHorasExtras + mediaAdicionalNoturno + adicionalRisco;
-    const valorBrutoDecimo = (baseDeCalculo / 12) * mesesTrabalhados;
+    const valorBrutoDecimo = calcularProporcional(baseDeCalculo, mesesTrabalhados);
 
     const inssResult = calculateINSS(valorBrutoDecimo);
     const descontoINSS = inssResult.value;
@@ -335,13 +356,8 @@ export function calculateSalarioLiquido(liquidoState) {
         filhosSalarioFamilia
     } = liquidoState;
 
-    const valorAdicionalPericulosidade = periculosidade ? salarioBruto * 0.30 : 0;
-    let valorAdicionalInsalubridade = 0;
-    if (insalubridadeGrau > 0) {
-        const baseCalculoInsalubridade = insalubridadeBase === 'salario_minimo' ? SALARIO_MINIMO_2025 : salarioBruto;
-        valorAdicionalInsalubridade = baseCalculoInsalubridade * (insalubridadeGrau / 100);
-    }
-    const adicionalRisco = Math.max(valorAdicionalPericulosidade, valorAdicionalInsalubridade);
+    const adicionaisRisco = calcularAdicionaisRisco(salarioBruto, periculosidade, insalubridadeGrau, insalubridadeBase);
+    const adicionalRisco = adicionaisRisco.total;
 
     const salarioBaseParaVariaveis = salarioBruto + adicionalRisco;
     let adicionalNoturno = 0;
@@ -369,8 +385,8 @@ export function calculateSalarioLiquido(liquidoState) {
     return {
         salarioBruto: roundMonetary(salarioBruto),
         horasExtras: roundMonetary(horasExtras),
-        adicionalPericulosidade: roundMonetary(valorAdicionalPericulosidade),
-        adicionalInsalubridade: roundMonetary(valorAdicionalInsalubridade),
+        adicionalPericulosidade: roundMonetary(adicionaisRisco.periculosidade),
+        adicionalInsalubridade: roundMonetary(adicionaisRisco.insalubridade),
         adicionalNoturno: roundMonetary(adicionalNoturno),
         salarioBrutoTotal: roundMonetary(salarioBrutoTotal),
         salarioFamilia: roundMonetary(salarioFamilia),
@@ -726,18 +742,15 @@ export function calculateRescisao(rescisaoState) {
     } = rescisaoState;
 
     if (!dataAdmissao || !dataDemissao || new Date(dataAdmissao) >= new Date(dataDemissao)) {
-        return { proventos: {}, descontos: {}, totalProventos: 0, totalDescontos: 0, valorLiquido: 0 };
+        return { proventos: {}, descontos: {}, totalProventos: 0, totalDescontos: 0, valorLiquido: 0, memoriaDeCalculo: {} };
     }
 
+    const memoriaDeCalculo = {};
+
     // 1. Correct Base Calculation (Remuneração)
-    const adicionalPericulosidade = periculosidade ? salarioBruto * 0.30 : 0;
-    let adicionalInsalubridade = 0;
-    if (insalubridadeGrau > 0) {
-        const baseInsalubridade = insalubridadeBase === 'salario_minimo' ? SALARIO_MINIMO_2025 : salarioBruto;
-        adicionalInsalubridade = baseInsalubridade * (insalubridadeGrau / 100);
-    }
-    const adicionalRisco = Math.max(adicionalPericulosidade, adicionalInsalubridade);
+    const adicionalRisco = calcularAdicionaisRisco(salarioBruto, periculosidade, insalubridadeGrau, insalubridadeBase).total;
     const remuneracao = salarioBruto + (mediaHorasExtras || 0) + (mediaAdicionalNoturno || 0) + adicionalRisco;
+    memoriaDeCalculo.remuneracao = `Salário Bruto (${formatCurrency(salarioBruto)}) + Médias/Adicionais (${formatCurrency(remuneracao - salarioBruto)})`;
 
     // 2. Calculate Notice Period
     const dtAdmissao = new Date(dataAdmissao + 'T00:00:00');
@@ -750,32 +763,34 @@ export function calculateRescisao(rescisaoState) {
     dtFinalProjetada.setDate(dtFinalProjetada.getDate() + diasAvisoPrevio);
 
     // 4. Calculate Severance Payments based on new logic
-    // Saldo de Salário
     const diasNoMesDemissao = new Date(dtDemissao.getFullYear(), dtDemissao.getMonth() + 1, 0).getDate();
     const saldoDeSalario = (remuneracao / diasNoMesDemissao) * dtDemissao.getDate();
+    memoriaDeCalculo['Saldo de Salário'] = `(${formatCurrency(remuneracao)} / ${diasNoMesDemissao} dias) * ${dtDemissao.getDate()} dias trabalhados`;
 
-    // Aviso Prévio Indenizado
     const avisoPrevioIndenizado = (remuneracao / 30) * diasAvisoPrevio;
+     memoriaDeCalculo['Aviso Prévio Indenizado'] = `(${formatCurrency(remuneracao)} / 30) * ${diasAvisoPrevio} dias`;
 
-    // 13º Salário Proporcional (based on projected end date)
     const mesesTrabalhadosNoAno = dtFinalProjetada.getMonth() + 1;
-    const decimoTerceiroProporcional = (remuneracao / 12) * mesesTrabalhadosNoAno;
+    const decimoTerceiroProporcional = calcularProporcional(remuneracao, mesesTrabalhadosNoAno);
+    memoriaDeCalculo['13º Salário Proporcional'] = `(${formatCurrency(remuneracao)} / 12) * ${mesesTrabalhadosNoAno} meses`;
 
-    // Férias Proporcionais + 1/3 (based on projected end date)
-    let mesesPeriodoAquisitivo = (dtFinalProjetada.getMonth() - dtAdmissao.getMonth()) % 12;
-    if (dtFinalProjetada.getDate() > dtAdmissao.getDate()) {
+    let mesesPeriodoAquisitivo = (dtFinalProjetada.getMonth() - dtAdmissao.getMonth());
+    if (dtFinalProjetada.getDate() >= dtAdmissao.getDate()) {
         mesesPeriodoAquisitivo += 1;
     }
-    mesesPeriodoAquisitivo = mesesPeriodoAquisitivo <= 0 ? mesesPeriodoAquisitivo + 12 : mesesPeriodoAquisitivo;
-    const feriasProporcionais = (remuneracao / 12) * mesesPeriodoAquisitivo;
+     mesesPeriodoAquisitivo = mesesPeriodoAquisitivo <= 0 ? mesesPeriodoAquisitivo + 12 : mesesPeriodoAquisitivo;
+    const feriasProporcionais = calcularProporcional(remuneracao, mesesPeriodoAquisitivo);
     const tercoFeriasProporcionais = feriasProporcionais / 3;
+     memoriaDeCalculo['Férias Proporcionais + 1/3'] = `((${formatCurrency(remuneracao)} / 12) * ${mesesPeriodoAquisitivo} meses) + 1/3`;
 
-    // Férias Vencidas
     const valorFeriasVencidas = hasFeriasVencidas ? remuneracao : 0;
     const tercoFeriasVencidas = hasFeriasVencidas ? remuneracao / 3 : 0;
+    if (hasFeriasVencidas) {
+        memoriaDeCalculo['Férias Vencidas + 1/3'] = `Remuneração integral (${formatCurrency(remuneracao)}) + 1/3`;
+    }
 
-    // Multa FGTS
     const multaFgts = saldoFgts * 0.40;
+    memoriaDeCalculo['Multa de 40% do FGTS'] = `40% de ${formatCurrency(saldoFgts)}`;
 
     let proventos = {};
     let descontos = {};
@@ -791,12 +806,8 @@ export function calculateRescisao(rescisaoState) {
                 'Multa de 40% do FGTS': multaFgts,
             };
             break;
-        // Other cases can be updated later, focus on the main one.
         default:
-             proventos = {
-                'Saldo de Salário': saldoDeSalario,
-                'Multa de 40% do FGTS': multaFgts
-             };
+             proventos = { 'Saldo de Salário': saldoDeSalario };
             break;
     }
 
@@ -818,5 +829,16 @@ export function calculateRescisao(rescisaoState) {
     const totalDescontos = Object.values(descontos).reduce((sum, val) => sum + (val.value || 0), 0);
     const valorLiquido = totalProventos - totalDescontos;
 
-    return { proventos, descontos, totalProventos, totalDescontos, valorLiquido };
+    // Transform proventos into the detailed structure
+    const proventosDetalhados = Object.keys(proventos).reduce((acc, key) => {
+        if (proventos[key] > 0) {
+            acc[key] = {
+                valor: proventos[key],
+                explicacao: memoriaDeCalculo[key] || 'Cálculo direto.'
+            };
+        }
+        return acc;
+    }, {});
+
+    return { proventos: proventosDetalhados, descontos, totalProventos, totalDescontos, valorLiquido };
 }

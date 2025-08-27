@@ -1,0 +1,37 @@
+.calculation-details-item > summary {
+    list-style: none; /* Remove default marker */
+}
+.calculation-details-item > summary::-webkit-details-marker {
+    display: none; /* Remove default marker for Safari */
+}
+.calculation-details-item[open] > summary {
+    margin-bottom: 0.5rem;
+}
+.calculation-details-item > summary {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    border-radius: 0.25rem;
+}
+.calculation-details-item > summary:hover {
+    cursor: pointer;
+    background-color: #f9fafb; /* gray-50 */
+}
+.calculation-details-item > summary::after {
+    content: ' (ver detalhes)';
+    font-size: 0.7rem;
+    color: #6b7280; /* gray-500 */
+    font-weight: 400;
+    font-style: italic;
+    margin-left: 4px;
+}
+.calculation-details-item[open] > summary::after {
+    content: ' (ocultar detalhes)';
+}
+.calculation-details-content {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background-color: #f9fafb; /* gray-50 */
+    border-left: 3px solid #3b82f6; /* blue-500 */
+    border-radius: 0 0.25rem 0.25rem 0;
+    font-size: 0.8rem;
+}

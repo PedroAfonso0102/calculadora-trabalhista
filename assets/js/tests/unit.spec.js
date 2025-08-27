@@ -139,6 +139,61 @@ export async function runUnitTests() {
         });
     });
 
+    await describe('Unit Test: calcularProporcional', () => {
+        it('should calculate the proportion correctly', () => {
+            const result = calculations.calcularProporcional(1200, 6);
+            expect(result).toBe(600);
+        });
+
+        it('should return 0 if months are zero or negative', () => {
+            const result = calculations.calcularProporcional(1200, 0);
+            expect(result).toBe(0);
+        });
+
+        it('should return 0 if base value is zero or negative', () => {
+            const result = calculations.calcularProporcional(0, 6);
+            expect(result).toBe(0);
+        });
+    });
+
+    await describe('Unit Test: calcularAdicionaisRisco', () => {
+        it('should calculate only periculosidade when it is active', () => {
+            const result = calculations.calcularAdicionaisRisco(2000, true, '0', 'salario_bruto');
+            expect(result.periculosidade).toBe(600); // 30% of 2000
+            expect(result.insalubridade).toBe(0);
+            expect(result.total).toBe(600);
+        });
+
+        it('should calculate only insalubridade when it is active (on minimum wage)', () => {
+            const result = calculations.calcularAdicionaisRisco(2000, false, '40', 'salario_minimo');
+            const expectedInsalubridade = SALARIO_MINIMO_2025 * 0.40;
+            expect(result.periculosidade).toBe(0);
+            expect(result.insalubridade).toBe(expectedInsalubridade);
+            expect(result.total).toBe(expectedInsalubridade);
+        });
+
+        it('should return the higher value when both are applicable (periculosidade is higher)', () => {
+            const result = calculations.calcularAdicionaisRisco(5000, true, '20', 'salario_minimo');
+            const expectedPericulosidade = 5000 * 0.30; // 1500
+            const expectedInsalubridade = SALARIO_MINIMO_2025 * 0.20; // ~303.6
+            expect(result.total).toBe(expectedPericulosidade);
+        });
+
+        it('should return the higher value when both are applicable (insalubridade is higher)', () => {
+            const result = calculations.calcularAdicionaisRisco(1500, true, '40', 'salario_bruto');
+            const expectedPericulosidade = 1500 * 0.30; // 450
+            const expectedInsalubridade = 1500 * 0.40; // 600
+            expect(result.total).toBe(expectedInsalubridade);
+        });
+
+        it('should return 0 for all values when none are applicable', () => {
+            const result = calculations.calcularAdicionaisRisco(2000, false, '0', 'salario_bruto');
+            expect(result.periculosidade).toBe(0);
+            expect(result.insalubridade).toBe(0);
+            expect(result.total).toBe(0);
+        });
+    });
+
     await describe('Integration Test: calculateSalarioLiquido', () => {
         const baseState = {
             horasExtras: 0,

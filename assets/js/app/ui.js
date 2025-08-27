@@ -662,16 +662,21 @@ function generateRescisaoModalContent(results, inputState) {
     let html = `
         <div class="mt-4">
             <h4 class="font-semibold text-gray-800">Verbas Rescisórias (Ganhos)</h4>
-            <div class="mt-2 space-y-1 text-sm">`;
+            <div class="mt-2 space-y-2 text-sm">`;
 
     // Add provento items
-    Object.entries(proventos).forEach(([key, value]) => {
-        if (value > 0) {
+    Object.entries(proventos).forEach(([key, data]) => {
+        if (data.valor > 0) {
             html += `
-                <div class="flex justify-between">
-                    <span>${key}:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(value)}</span>
-                </div>`;
+                <details class="calculation-details-item border-b border-gray-200 pb-2">
+                    <summary class="flex justify-between items-center cursor-pointer py-1">
+                        <span>${key}</span>
+                        <strong class="text-green-600 font-medium">${formatCurrency(data.valor)}</strong>
+                    </summary>
+                    <div class="calculation-details-content mt-2 p-2 bg-gray-50 rounded-md border-l-4 border-blue-500">
+                        <p class="text-xs text-gray-600">${data.explicacao}</p>
+                    </div>
+                </details>`;
         }
     });
 
@@ -689,10 +694,10 @@ function generateRescisaoModalContent(results, inputState) {
 
     // Add desconto items
     Object.entries(descontos).forEach(([key, result]) => {
-        if (result && (result.hasOwnProperty('value') ? result.value > 0 : result > 0)) {
-            const value = result.value || result;
+        const value = result.value || 0;
+        if (value > 0) {
             html += `
-                <div class="flex justify-between">
+                <div class="flex justify-between py-1">
                     <span>${key}:</span>
                     <span class="font-medium text-red-600">-${formatCurrency(value)}</span>
                 </div>`;
