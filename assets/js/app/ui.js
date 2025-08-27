@@ -864,6 +864,97 @@ function createINSSResultHTML(results) {
     </div>`;
 }
 
+function createHorasExtrasResultHTML(results) {
+    if (!results) return '';
+    const { totalValorHE50, totalValorHE100, totalValorAdicionalNoturno, totalGeralAdicionais, mensagem } = results;
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Cálculo de Horas Extras</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-2">
+                <div class="flex justify-between result-row py-2">
+                    <span>Total de Horas Extras 50%:</span>
+                    <span class="font-mono text-green-600">${formatCurrency(totalValorHE50)}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>Total de Horas Extras 100%:</span>
+                    <span class="font-mono text-green-600">${formatCurrency(totalValorHE100)}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>Total de Adicional Noturno:</span>
+                    <span class="font-mono text-green-600">${formatCurrency(totalValorAdicionalNoturno)}</span>
+                </div>
+                <div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2">
+                    <span>Total Geral de Adicionais:</span>
+                    <span class="font-mono text-blue-600">${formatCurrency(totalGeralAdicionais)}</span>
+                </div>
+                <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+            </div>
+        </div>
+    </div>`;
+}
+
+function createValeTransporteResultHTML(results) {
+    if (!results) return '';
+    const { custoMensalTotal, descontoMaximoSalario, descontoRealEmpregado, valorBeneficioEmpregador, mensagem } = results;
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Cálculo de Vale-Transporte</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-2">
+                <div class="flex justify-between result-row py-2">
+                    <span>Custo Mensal Total do Transporte:</span>
+                    <span class="font-mono">${formatCurrency(custoMensalTotal)}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>Desconto Máximo (6% do Salário):</span>
+                    <span class="font-mono">${formatCurrency(descontoMaximoSalario)}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>Desconto Real do Empregado:</span>
+                    <span class="font-mono text-red-600">${formatCurrency(descontoRealEmpregado)}</span>
+                </div>
+                <div class="flex justify-between result-row py-2">
+                    <span>Valor Fornecido pelo Empregador:</span>
+                    <span class="font-mono text-green-600">${formatCurrency(valorBeneficioEmpregador)}</span>
+                </div>
+                <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+            </div>
+        </div>
+    </div>`;
+}
+
+function createIRPFResultHTML(results) {
+    if (!results) return '';
+    const { impostoDevido, ajusteFinal, tipoAjuste, mensagem } = results;
+
+    const ajusteLabel = tipoAjuste === 'pagar' ? 'Imposto a Pagar' : 'Imposto a Restituir';
+    const ajusteColorClass = tipoAjuste === 'pagar' ? 'text-red-600' : 'text-green-600';
+
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado da Simulação de IRPF Anual</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="space-y-2">
+                <div class="flex justify-between result-row py-2">
+                    <span>Total de Imposto Devido no Ano:</span>
+                    <span class="font-mono">${formatCurrency(impostoDevido)}</span>
+                </div>
+                <div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2">
+                    <span>${ajusteLabel}:</span>
+                    <span class="font-mono ${ajusteColorClass}">${formatCurrency(Math.abs(ajusteFinal))}</span>
+                </div>
+                <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+            </div>
+        </div>
+    </div>`;
+}
+
 function createFeriasResultHTML(results) {
     if (Object.keys(state.ferias.errors).some(k => state.ferias.errors[k])) {
         return '<p class="text-center text-red-500 font-semibold">Por favor, corrija os campos destacados acima para ver o seu cálculo.</p>';
