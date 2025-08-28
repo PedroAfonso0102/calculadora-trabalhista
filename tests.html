@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados dos Testes - Calculadora Trabalhista</title>
+    <link rel="stylesheet" href="assets/css/output.css">
+    <style>
+        body { font-family: sans-serif; padding: 2rem; }
+        #test-results h1 { font-size: 1.5rem; }
+        #test-results h2 { font-size: 1.2rem; margin-top: 1.5rem; }
+        #test-results ul { list-style-type: none; padding-left: 0; }
+        #test-results li { padding: 0.25rem 0; }
+        #calculator-container {
+            display: none; /* Hide the calculator by default */
+        }
+    </style>
+</head>
+<body>
+    <h1>Resultados dos Testes</h1>
+    <div id="test-results">
+        <p>Running tests...</p>
+    </div>
+
+    <!-- The calculator's DOM, needed for E2E tests -->
+    <div id="calculator-container">
+    </div>
+
+    <script type="module">
+        // Load the calculator's HTML for the tests to run against
+        fetch('index.html')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const calculatorBody = doc.querySelector('.container'); // Assuming the main content is in a .container
+                if (calculatorBody) {
+                    document.getElementById('calculator-container').appendChild(calculatorBody);
+                } else {
+                    console.error("Could not find the .container element in index.html");
+                }
+            })
+            .catch(err => console.error("Failed to load index.html for tests:", err))
+            .finally(() => {
+                // Now, run the tests
+                import('./assets/js/tests/main.spec.js');
+            });
+    </script>
+</body>
+</html>

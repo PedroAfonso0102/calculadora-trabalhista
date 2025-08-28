@@ -761,6 +761,46 @@ export function initializeEventListeners() {
             hideTooltip();
         }
 
+        // Custom component logic (checkbox, radio, switch)
+        const customControl = target.closest('button[role="checkbox"], button[role="radio"], button[role="switch"]');
+        if (customControl) {
+            const currentState = customControl.getAttribute('data-state');
+            const newState = (currentState === 'checked' || currentState === 'active') ? 'unchecked' : 'checked';
+            customControl.setAttribute('data-state', newState);
+            customControl.setAttribute('aria-checked', newState === 'checked');
+
+            // Find the real input and update it
+            const inputId = customControl.id.replace('-switch', ''); // for switches
+            const realInput = document.getElementById(inputId) || customControl.previousElementSibling;
+
+            if (realInput && realInput.type === 'checkbox') {
+                realInput.checked = (newState === 'checked');
+                // Dispatch a change event so the main handler picks it up
+                realInput.dispatchEvent(new Event('change', { bubbles: true }));
+            } else if (realInput && realInput.type === 'radio') {
+                // For radios, we need to uncheck others in the group
+                const groupName = realInput.name;
+                document.querySelectorAll(`input[name="${groupName}"]`).forEach(radio => {
+                    const button = radio.nextElementSibling;
+                    if (radio === realInput) {
+                        radio.checked = true;
+                        if (button && button.role === 'radio') {
+                            button.setAttribute('data-state', 'checked');
+                            button.setAttribute('aria-checked', 'true');
+                        }
+                    } else {
+                        radio.checked = false;
+                        if (button && button.role === 'radio') {
+                            button.setAttribute('data-state', 'unchecked');
+                            button.setAttribute('aria-checked', 'false');
+                        }
+                    }
+                });
+                // Dispatch a change event so the main handler picks it up
+                realInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+
         // Modal logic
         if (target.classList.contains('js-show-memory-modal')) {
             const results = getActiveCalculatorResults();

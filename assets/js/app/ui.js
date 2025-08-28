@@ -955,6 +955,25 @@ function createResultRow(label, value, valueColorClass = 'text-gray-800') {
         </div>`;
 }
 
+function createAlertHTML(title, description, type = 'info') {
+    const iconMap = {
+        info: 'info',
+        success: 'check_circle',
+        error: 'error'
+    };
+    const icon = iconMap[type] || 'info';
+
+    return `
+        <div class="alert alert-${type} mt-4" role="alert">
+            <span class="material-icons alert-icon">${icon}</span>
+            <div class="alert-content">
+                <h5 class="alert-title">${title}</h5>
+                <p class="alert-description">${description}</p>
+            </div>
+        </div>
+    `;
+}
+
 /**
  * Cria uma linha de exibição de valor com layout flexível e tamanho de texto personalizável
  * @param {string} label - Rótulo da linha
@@ -1108,9 +1127,9 @@ function createIRPFResultHTML(results) {
 
 function createFeriasResultHTML(results) {
     if (Object.keys(state.ferias.errors).some(k => state.ferias.errors[k])) {
-        return '<p class="text-center text-red-500 font-semibold">Por favor, corrija os campos destacados acima para ver o seu cálculo.</p>';
+        return createAlertHTML('Formulário Inválido', 'Por favor, corrija os campos destacados acima para ver o seu cálculo.', 'error');
     }
-    if (!results || !results.salarioBruto) return '<p class="text-center text-muted-foreground">Preencha os campos para calcular.</p>';
+    if (!results || !results.salarioBruto) return createAlertHTML('Preencha os campos', 'Preencha os campos da calculadora para ver o resultado.', 'info');
 
     const { baseDeCalculo, valorFerias, tercoConstitucional, valorAbono, tercoAbono, adiantamento13, descontoINSS, descontoIRRF, valorLiquido, venderFerias, adiantarDecimo, diasFerias } = results;
     const inssDetailsHTML = descontoINSS.details.map(d => `<p class="text-xs">${d.range}: ${d.base} x ${d.rate} = <strong>${d.value}</strong></p>`).join('');
