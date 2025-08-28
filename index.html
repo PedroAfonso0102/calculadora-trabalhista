@@ -1443,7 +1443,7 @@
             cursor: pointer;
             list-style: none; /* Remove o marcador padrão */
             border-radius: var(--details-border-radius);
-            transition: background-color 0.2s ease-in-out;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             outline: none; /* Remove o outline padrão */
         }
 
@@ -1460,6 +1460,7 @@
         /* Efeito de hover para indicar interatividade */
         .calculation-details-item > summary:hover {
             background-color: var(--details-bg-hover-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         /* Ícone de Chevron (SVG) */
@@ -1480,7 +1481,10 @@
         .calculation-details-content {
             overflow: hidden;
             max-height: 0;
-            transition: max-height var(--details-transition-duration) ease-in-out, padding var(--details-transition-duration) ease-in-out;
+            opacity: 0;
+            transition: max-height var(--details-transition-duration) ease-in-out,
+                        padding var(--details-transition-duration) ease-in-out,
+                        opacity var(--details-transition-duration) ease-in-out;
             padding: 0 1rem; /* Padding horizontal aplicado, vertical será animado */
             background-color: var(--details-content-bg-color);
             border-left: 3px solid var(--details-accent-color);
@@ -1493,6 +1497,7 @@
         /* Expande o conteúdo quando o "details" está aberto */
         .calculation-details-item[open] > .calculation-details-content {
             max-height: 500px; /* Um valor alto o suficiente para o conteúdo */
+            opacity: 1;
             padding: 1rem; /* Adiciona o padding vertical ao abrir */
             margin-top: 0.5rem;
         }
@@ -1500,6 +1505,34 @@
     <style>
         .dark .sun-icon { display: none; }
         .dark .moon-icon { display: block !important; }
+
+        /* Modal Transitions */
+        .modal-open {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-open .modal-content {
+            transform: scale(1) !important;
+        }
+
+        #calculation-memory-modal, #knowledge-base-modal, #customize-modal, #faq-modal {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease-in-out, backdrop-filter 0.2s ease-in-out;
+        }
+
+        #calculation-memory-modal-content, #knowledge-base-modal .modal-content, #customize-modal-content, #faq-modal .modal-content {
+            transform: scale(0.95);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #mobile-menu-btn:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
     </style>
 </head>
 <body class="antialiased">

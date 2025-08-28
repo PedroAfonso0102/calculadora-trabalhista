@@ -892,8 +892,8 @@ export function showCalculationMemoryModal() {
     if (modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        setTimeout(() => modal.classList.add('modal-open'), 10);
         modal.setAttribute('data-state', 'open');
-        // Prevent body scroll when modal is open
         document.body.style.overflow = 'hidden';
     }
 }
@@ -901,11 +901,13 @@ export function showCalculationMemoryModal() {
 export function hideCalculationMemoryModal() {
     const modal = document.getElementById('calculation-memory-modal');
     if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
+        modal.classList.remove('modal-open');
         modal.setAttribute('data-state', 'closed');
-        // Restore body scroll when modal is closed
         document.body.style.overflow = '';
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 200);
     }
 }
 
@@ -1811,13 +1813,19 @@ export function showCustomizeModal() {
     if (modal) {
         renderCustomizationModal();
         modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => modal.classList.add('modal-open'), 10);
     }
 }
 
 export function hideCustomizeModal() {
     const modal = document.getElementById('customize-modal');
     if (modal) {
-        modal.classList.add('hidden');
+        modal.classList.remove('modal-open');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 200);
     }
 }
 
@@ -2582,6 +2590,7 @@ function showFaqModal() {
     const modal = document.getElementById('faq-modal');
     if (modal) {
         modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.add('modal-open'), 10);
         // Carrega a base de conhecimento se ainda não foi carregada
         loadKnowledgeBase().then(() => {
             loadFaqCategories();
@@ -2595,7 +2604,10 @@ function showFaqModal() {
 function hideFaqModal() {
     const modal = document.getElementById('faq-modal');
     if (modal) {
-        modal.classList.add('hidden');
+        modal.classList.remove('modal-open');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 200);
     }
 }
 
