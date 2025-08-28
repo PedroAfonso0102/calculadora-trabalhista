@@ -1443,7 +1443,7 @@
             cursor: pointer;
             list-style: none; /* Remove o marcador padrão */
             border-radius: var(--details-border-radius);
-            transition: background-color 0.2s ease-in-out;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             outline: none; /* Remove o outline padrão */
         }
 
@@ -1460,6 +1460,7 @@
         /* Efeito de hover para indicar interatividade */
         .calculation-details-item > summary:hover {
             background-color: var(--details-bg-hover-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         /* Ícone de Chevron (SVG) */
@@ -1480,7 +1481,10 @@
         .calculation-details-content {
             overflow: hidden;
             max-height: 0;
-            transition: max-height var(--details-transition-duration) ease-in-out, padding var(--details-transition-duration) ease-in-out;
+            opacity: 0;
+            transition: max-height var(--details-transition-duration) ease-in-out,
+                        padding var(--details-transition-duration) ease-in-out,
+                        opacity var(--details-transition-duration) ease-in-out;
             padding: 0 1rem; /* Padding horizontal aplicado, vertical será animado */
             background-color: var(--details-content-bg-color);
             border-left: 3px solid var(--details-accent-color);
@@ -1493,6 +1497,7 @@
         /* Expande o conteúdo quando o "details" está aberto */
         .calculation-details-item[open] > .calculation-details-content {
             max-height: 500px; /* Um valor alto o suficiente para o conteúdo */
+            opacity: 1;
             padding: 1rem; /* Adiciona o padding vertical ao abrir */
             margin-top: 0.5rem;
         }
@@ -1500,6 +1505,38 @@
     <style>
         .dark .sun-icon { display: none; }
         .dark .moon-icon { display: block !important; }
+
+        /* Modal Transitions */
+        .modal-open {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-open .modal-content {
+            transform: scale(1) !important;
+        }
+
+        .details-content-animated {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease-in-out;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        #calculation-memory-modal, #knowledge-base-modal, #customize-modal, #faq-modal {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease-in-out, backdrop-filter 0.2s ease-in-out;
+        }
+
+        #calculation-memory-modal-content, #knowledge-base-modal .modal-content, #customize-modal-content, #faq-modal .modal-content {
+            transform: scale(0.95);
+            transition: transform 0.2s ease-in-out;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -1659,12 +1696,10 @@
                                   </div>
                               </div>
                               <!-- Acordeão: Verbas Variáveis -->
-                              <details class="space-y-2">
-                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                      Proventos Adicionais (Horas Extras, Insalubridade...)
-                                  </summary>
-                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                              <details class="calculation-details-item">
+                                  <summary>Proventos Adicionais (Horas Extras, Insalubridade...)</summary>
+                                  <div class="calculation-details-content">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                       <div class="space-y-2">
                                           <label for="media-horas-extras-ferias" class="label">Média Mensal de Horas Extras</label>
                                           <input type="text" id="media-horas-extras-ferias" name="media-horas-extras-ferias" data-state="ferias.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
@@ -1702,6 +1737,8 @@
                                               <label for="base-salario-bruto-ferias" class="label">Salário Base</label>
                                           </div>
                                       </fieldset>
+                                        </div>
+                                    </div>
                                   </div>
                               </details>
                               <!-- Opções de Férias -->
@@ -1777,13 +1814,11 @@
                                   </div>
                               </div>
                               <!-- Acordeão: Verbas Variáveis -->
-                              <details class="space-y-2">
-                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                      Proventos Adicionais (Horas Extras, Insalubridade...)
-                                  </summary>
-                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
-                                      <div class="space-y-2">
+                              <details class="calculation-details-item">
+                                  <summary>Proventos Adicionais (Horas Extras, Insalubridade...)</summary>
+                                  <div class="calculation-details-content">
+                                      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                                        <div class="space-y-2">
                                           <label for="media-horas-extras-rescisao" class="label">Média Mensal de Horas Extras</label>
                                           <input type="text" id="media-horas-extras-rescisao" name="media-horas-extras-rescisao" data-state="rescisao.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
                                       </div>
@@ -1820,15 +1855,14 @@
                                               <label for="base-salario-bruto-rescisao" class="label">Salário Base</label>
                                           </div>
                                       </fieldset>
+                                    </div>
                                   </div>
                               </details>
                               <!-- Acordeão: Outros Descontos -->
-                              <details class="space-y-2">
-                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                      Outros Descontos
-                                  </summary>
-                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                              <details class="calculation-details-item">
+                                  <summary>Outros Descontos</summary>
+                                  <div class="calculation-details-content">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                       <div class="space-y-2">
                                           <label for="desconto-vt-rescisao" class="text-sm font-medium flex items-center space-x-2">
                                               <span>Desconto de Vale-Transporte</span>
@@ -1848,6 +1882,8 @@
                                           <label for="desconto-adiantamentos-rescisao" class="label">Adiantamentos (Vale)</label>
                                           <input type="text" id="desconto-adiantamentos-rescisao" name="desconto-adiantamentos-rescisao" data-state="rescisao.descontoAdiantamentos" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 400.00">
                                       </div>
+                                    </div>
+                                    </div>
                                   </div>
                               </details>
                           </div>
@@ -1882,12 +1918,10 @@
                                   </div>
                               </div>
                               <!-- Acordeão: Verbas Variáveis -->
-                              <details class="space-y-2">
-                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                      Proventos Adicionais (Horas Extras, Insalubridade...)
-                                  </summary>
-                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                              <details class="calculation-details-item">
+                                  <summary>Proventos Adicionais (Horas Extras, Insalubridade...)</summary>
+                                  <div class="calculation-details-content">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                       <div class="space-y-2">
                                           <label for="media-horas-extras-decimo-terceiro" class="label">Média Mensal de Horas Extras</label>
                                           <input type="text" id="media-horas-extras-decimo-terceiro" name="media-horas-extras-decimo-terceiro"  data-state="decimoTerceiro.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
@@ -1925,6 +1959,7 @@
                                               <label for="base-salario-bruto-decimo-terceiro" class="label">Salário Base</label>
                                           </div>
                                       </fieldset>
+                                    </div>
                                   </div>
                               </details>
                           </div>
@@ -1956,13 +1991,11 @@
                               </div>
 
                               <!-- Acordeão: Proventos Adicionais -->
-                              <details class="space-y-2">
-                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                      Proventos Adicionais (Periculosidade, Insalubridade...)
-                                  </summary>
-                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
-                                      <div class="flex items-center space-x-2 md:col-span-2">
+                              <details class="calculation-details-item">
+                                  <summary>Proventos Adicionais (Periculosidade, Insalubridade...)</summary>
+                                  <div class="calculation-details-content">
+                                      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                                        <div class="flex items-center space-x-2 md:col-span-2">
                                           <input type="checkbox" id="periculosidade-salario-liquido" name="periculosidade-salario-liquido" data-state="salarioLiquido.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
                                           <label for="periculosidade-salario-liquido" class="label">Adicional de Periculosidade (30%)</label>
                                           <span class="help-icon" data-topic="periculosidade" data-tooltip="O que é Adicional de Periculosidade?">(?)</span>
@@ -2010,12 +2043,10 @@
                               </details>
 
                               <!-- Acordeão: Outros Descontos -->
-                              <details class="space-y-2">
-                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                      Outros Descontos
-                                  </summary>
-                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                              <details class="calculation-details-item">
+                                  <summary>Outros Descontos</summary>
+                                  <div class="calculation-details-content">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                       <div class="space-y-2">
                                           <label for="desconto-vt-salario-liquido" class="text-sm font-medium flex items-center space-x-2">
                                               <span>Desconto de Vale-Transporte</span>
@@ -2039,12 +2070,10 @@
                               </details>
 
                               <!-- Acordeão: Benefícios -->
-                              <details class="space-y-2" open>
-                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                      Benefícios (Salário Família)
-                                  </summary>
-                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                              <details class="calculation-details-item" open>
+                                  <summary>Benefícios (Salário Família)</summary>
+                                  <div class="calculation-details-content">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                       <div class="space-y-4 md:col-span-2">
                                           <div class="flex items-center space-x-2">
                                               <input type="checkbox" id="recebe-salario-familia-salario-liquido" name="recebe-salario-familia" data-state="salarioLiquido.recebeSalarioFamilia" class="h-4 w-4 border-input text-primary focus:ring-primary">
@@ -2055,6 +2084,7 @@
                                               <input type="number" id="filhos-salario-familia-salario-liquido" name="filhos-salario-familia"  min="0" data-state="salarioLiquido.filhosSalarioFamilia" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                           </div>
                                       </div>
+                                    </div>
                                   </div>
                               </details>
                           </div>

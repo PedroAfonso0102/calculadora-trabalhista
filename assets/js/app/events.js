@@ -801,6 +801,30 @@ export function initializeEventListeners() {
             }
         }
 
+        // Details button logic for smooth accordion
+        const detailsBtn = target.closest('.details-btn');
+        if (detailsBtn) {
+            const detailsForId = detailsBtn.dataset.detailsFor;
+            const detailsContent = document.getElementById(detailsForId);
+            if (detailsContent) {
+                if (detailsContent.style.maxHeight) {
+                    detailsContent.style.maxHeight = null;
+                    detailsContent.style.opacity = "0";
+                    detailsContent.style.paddingTop = "0";
+                    detailsContent.style.paddingBottom = "0";
+                    detailsContent.style.marginTop = "0";
+                    detailsContent.style.marginBottom = "0";
+                } else {
+                    detailsContent.style.opacity = "1";
+                    detailsContent.style.paddingTop = "0.5rem";
+                    detailsContent.style.paddingBottom = "0.5rem";
+                    detailsContent.style.marginTop = "0.5rem";
+                    detailsContent.style.marginBottom = "0.5rem";
+                    detailsContent.style.maxHeight = detailsContent.scrollHeight + "px";
+                }
+            }
+        }
+
         // Modal logic
         if (target.classList.contains('js-show-memory-modal')) {
             const results = getActiveCalculatorResults();
