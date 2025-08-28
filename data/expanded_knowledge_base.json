@@ -6,19 +6,20 @@
       {
         "id": "geral",
         "title": "Questões Gerais",
-        "icon": "💼",
+        "icon": "info",
+        "materialIcon": "info",
         "questions": [
           {
             "id": "calc_estimativo",
             "question": "Os cálculos desta ferramenta são oficiais?",
-            "answer": "<p>Não. Esta ferramenta realiza <strong>cálculos estimativos</strong> baseados na legislação trabalhista vigente. Os valores apresentados servem como orientação e não substituem:</p><ul class='mt-2 space-y-1'><li>• Consulta profissional (advogado trabalhista, contador)</li><li>• Cálculos oficiais do Ministério do Trabalho</li><li>• Homologação sindical</li></ul><p class='mt-2'><strong>Importante:</strong> Sempre verifique os cálculos com um profissional especializado antes de tomar decisões importantes.</p>",
+            "answer": "<p>Não. Esta ferramenta realiza <strong>cálculos estimativos</strong> baseados na legislação trabalhista vigente. Os valores apresentados servem como orientação e não substituem:</p><ul class='mt-2 space-y-1'><li>• Consulta profissional (advogado trabalhista, contador)</li><li>• Cálculos oficiais do Ministério do Trabalho</li><li>• Homologação sindical</li></ul><p class='mt-2'><strong>⚠️ Importante:</strong> Sempre verifique os cálculos com um profissional especializado antes de tomar decisões importantes.</p>",
             "tags": ["cálculo", "estimativo", "oficial", "responsabilidade"],
             "related_calculators": ["todas"]
           },
           {
             "id": "dados_salvos",
             "question": "Meus dados ficam salvos?",
-            "answer": "<p>Por padrão, <strong>não salvamos seus dados</strong>. Todas as informações ficam apenas no seu navegador (localStorage) e podem ser apagadas a qualquer momento.</p><p class='mt-2'>Você pode ativar o salvamento automático nas configurações, mas mesmo assim os dados permanecem apenas no seu dispositivo - nunca são enviados para servidores externos.</p><p class='mt-2'><strong>Privacidade garantida:</strong> Seus dados pessoais e valores salariais ficam 100% privados.</p>",
+            "answer": "<p>Por padrão, <strong>não salvamos seus dados</strong>. Todas as informações ficam apenas no seu navegador (localStorage) e podem ser apagadas a qualquer momento.</p><p class='mt-2'>Você pode ativar o salvamento automático nas configurações, mas mesmo assim os dados permanecem apenas no seu dispositivo - nunca são enviados para servidores externos.</p><p class='mt-2'><strong>🔒 Privacidade garantida:</strong> Seus dados pessoais e valores salariais ficam 100% privados.</p>",
             "tags": ["privacidade", "dados", "localStorage", "segurança"],
             "related_calculators": ["todas"]
           },
@@ -34,26 +35,27 @@
       {
         "id": "ferias",
         "title": "Férias",
-        "icon": "🏖️",
+        "icon": "beach_access",
+        "materialIcon": "beach_access",
         "questions": [
           {
             "id": "ferias_periodo",
             "question": "Posso dividir minhas férias?",
-            "answer": "<p>Sim! Desde 2017, é possível dividir as férias em até <strong>3 períodos</strong>, com as seguintes regras:</p><ul class='mt-2 space-y-1'><li>• Um período não pode ser inferior a 14 dias corridos</li><li>• Os demais não podem ser inferiores a 5 dias corridos cada</li><li>• Não pode iniciar no período de dois dias que antecede feriado ou dia de repouso semanal remunerado</li></ul><p class='mt-2'><strong>Exemplo:</strong> 30 dias podem ser divididos em 14 + 10 + 6 dias.</p>",
+            "answer": "<p>Sim! Desde 2017, é possível dividir as férias em até <strong>3 períodos</strong>, com as seguintes regras:</p><ul class='mt-2 space-y-1'><li>• Um período não pode ser inferior a 14 dias corridos</li><li>• Os demais não podem ser inferiores a 5 dias corridos cada</li><li>• Não pode iniciar no período de dois dias que antecede feriado ou dia de repouso semanal remunerado</li></ul><p class='mt-2'><strong>✅ Exemplo:</strong> 30 dias podem ser divididos em 14 + 10 + 6 dias.</p>",
             "tags": ["férias divididas", "período", "regras", "CLT"],
             "related_calculators": ["ferias"]
           },
           {
             "id": "ferias_venda",
             "question": "Posso vender parte das férias?",
-            "answer": "<p>Sim, você pode converter até <strong>1/3 das férias</strong> em dinheiro (abono pecuniário). Isso significa vender até 10 dias dos seus 30 dias de direito.</p><p class='mt-2'><strong>Como solicitar:</strong></p><ul class='mt-2 space-y-1'><li>• O pedido deve ser feito por escrito</li><li>• Deve ser solicitado até 15 dias antes do término do período aquisitivo</li><li>• O empregador não pode recusar</li></ul><p class='mt-2'><strong>Vantagem:</strong> Você recebe o valor das férias + 1/3 constitucional sobre os dias vendidos.</p>",
+            "answer": "<p>Sim, você pode converter até <strong>1/3 das férias</strong> em dinheiro (abono pecuniário). Isso significa vender até 10 dias dos seus 30 dias de direito.</p><p class='mt-2'><strong>📝 Como solicitar:</strong></p><ul class='mt-2 space-y-1'><li>• O pedido deve ser feito por escrito</li><li>• Deve ser solicitado até 15 dias antes do término do período aquisitivo</li><li>• O empregador não pode recusar</li></ul><p class='mt-2'><strong>💰 Vantagem:</strong> Você recebe o valor das férias + 1/3 constitucional sobre os dias vendidos.</p>",
             "tags": ["abono pecuniário", "venda férias", "1/3", "solicitação"],
             "related_calculators": ["ferias"]
           },
           {
             "id": "ferias_demissao",
             "question": "E as férias quando sou demitido?",
-            "answer": "<p>Depende da modalidade de demissão:</p><p class='mt-2'><strong>Demissão sem justa causa ou pedido de demissão:</strong></p><ul class='mt-2 space-y-1'><li>• Férias vencidas: período completo + 1/3</li><li>• Férias proporcionais: dias trabalhados no período aquisitivo atual + 1/3</li></ul><p class='mt-2'><strong>Demissão por justa causa:</strong></p><ul class='mt-2 space-y-1'><li>• Apenas férias vencidas (se houver) + 1/3</li><li>• Não tem direito às férias proporcionais</li></ul><p class='mt-2'><strong>Dica:</strong> Use nossa calculadora de rescisão para ver o cálculo completo.</p>",
+            "answer": "<p>Depende da modalidade de demissão:</p><p class='mt-2'><strong>✅ Demissão sem justa causa ou pedido de demissão:</strong></p><ul class='mt-2 space-y-1'><li>• Férias vencidas: período completo + 1/3</li><li>• Férias proporcionais: dias trabalhados no período aquisitivo atual + 1/3</li></ul><p class='mt-2'><strong>❌ Demissão por justa causa:</strong></p><ul class='mt-2 space-y-1'><li>• Apenas férias vencidas (se houver) + 1/3</li><li>• Não tem direito às férias proporcionais</li></ul><p class='mt-2'><strong>💡 Dica:</strong> Use nossa calculadora de rescisão para ver o cálculo completo.</p>",
             "tags": ["férias rescisão", "demissão", "justa causa", "proporcionais"],
             "related_calculators": ["ferias", "rescisao"]
           }
@@ -62,12 +64,13 @@
       {
         "id": "decimo_terceiro",
         "title": "13º Salário",
-        "icon": "🎄",
+        "icon": "card_giftcard",
+        "materialIcon": "card_giftcard",
         "questions": [
           {
             "id": "decimo_quando",
             "question": "Quando tenho direito ao 13º salário?",
-            "answer": "<p>Você adquire direito ao 13º após trabalhar pelo menos <strong>15 dias</strong> em qualquer mês do ano. O valor é proporcional ao tempo trabalhado.</p><p class='mt-2'><strong>Exemplos:</strong></p><ul class='mt-2 space-y-1'><li>• Trabalhou o ano todo: 13º integral</li><li>• Trabalhou 6 meses completos: 6/12 do salário</li><li>• Trabalhou 14 dias em janeiro: não conta esse mês</li><li>• Trabalhou 16 dias em janeiro: conta o mês completo</li></ul><p class='mt-2'><strong>Base de cálculo:</strong> Maior salário recebido no ano ou salário de dezembro (se for variável).</p>",
+            "answer": "<p>Você adquire direito ao 13º após trabalhar pelo menos <strong>15 dias</strong> em qualquer mês do ano. O valor é proporcional ao tempo trabalhado.</p><p class='mt-2'><strong>📊 Exemplos:</strong></p><ul class='mt-2 space-y-1'><li>• Trabalhou o ano todo: 13º integral</li><li>• Trabalhou 6 meses completos: 6/12 do salário</li><li>• Trabalhou 14 dias em janeiro: não conta esse mês</li><li>• Trabalhou 16 dias em janeiro: conta o mês completo</li></ul><p class='mt-2'><strong>💼 Base de cálculo:</strong> Maior salário recebido no ano ou salário de dezembro (se for variável).</p>",
             "tags": ["direito 13º", "15 dias", "proporcional", "base cálculo"],
             "related_calculators": ["decimoTerceiro"]
           },
@@ -81,7 +84,7 @@
           {
             "id": "decimo_demissao",
             "question": "Recebo 13º mesmo sendo demitido?",
-            "answer": "<p><strong>Na maioria dos casos, sim!</strong> O direito ao 13º proporcional independe do tipo de demissão:</p><p class='mt-2'><strong>Demissão sem justa causa:</strong> ✅ 13º proporcional</p><p class='mt-2'><strong>Pedido de demissão:</strong> ✅ 13º proporcional</p><p class='mt-2'><strong>Acordo mútuo:</strong> ✅ 13º proporcional</p><p class='mt-2'><strong>Demissão por justa causa:</strong> ✅ 13º proporcional (mas perde outros direitos)</p><p class='mt-2'><strong>Cálculo:</strong> Número de meses trabalhados ÷ 12 × salário de referência</p><p class='mt-2'><em>Lembre-se: 15 dias trabalhados = 1 mês completo para efeito de cálculo.</em></p>",
+            "answer": "<p><strong>✅ Na maioria dos casos, sim!</strong> O direito ao 13º proporcional independe do tipo de demissão:</p><p class='mt-2'><strong>Demissão sem justa causa:</strong> Tem direito ao 13º proporcional</p><p class='mt-2'><strong>Pedido de demissão:</strong> Tem direito ao 13º proporcional</p><p class='mt-2'><strong>Acordo mútuo:</strong> Tem direito ao 13º proporcional</p><p class='mt-2'><strong>Demissão por justa causa:</strong> Tem direito ao 13º proporcional (mas perde outros direitos)</p><p class='mt-2'><strong>🧮 Cálculo:</strong> Número de meses trabalhados ÷ 12 × salário de referência</p><p class='mt-2'><em>💡 Lembre-se: 15 dias trabalhados = 1 mês completo para efeito de cálculo.</em></p>",
             "tags": ["13º demissão", "proporcional", "justa causa", "cálculo"],
             "related_calculators": ["decimoTerceiro", "rescisao"]
           }
@@ -90,12 +93,13 @@
       {
         "id": "rescisao",
         "title": "Rescisão de Contrato",
-        "icon": "📋",
+        "icon": "description",
+        "materialIcon": "description",
         "questions": [
           {
             "id": "rescisao_tipos",
             "question": "Quais são os tipos de rescisão e meus direitos?",
-            "answer": "<p>Cada tipo de rescisão gera direitos diferentes:</p><p class='mt-2'><strong>🟢 Demissão sem justa causa (melhor cenário):</strong></p><ul class='mt-2 space-y-1'><li>• Saldo de salário + Aviso prévio</li><li>• 13º proporcional + Férias proporcionais + 1/3</li><li>• FGTS + Multa 40% + Seguro-desemprego</li></ul><p class='mt-2'><strong>🟡 Pedido de demissão:</strong></p><ul class='mt-2 space-y-1'><li>• Saldo de salário + 13º proporcional</li><li>• Férias proporcionais + 1/3</li><li>• ❌ Sem FGTS, multa ou seguro-desemprego</li></ul><p class='mt-2'><strong>🔴 Demissão por justa causa (pior cenário):</strong></p><ul class='mt-2 space-y-1'><li>• Apenas saldo de salário</li><li>• Férias vencidas (se houver) + 1/3</li><li>• ❌ Perde quase todos os direitos</li></ul>",
+            "answer": "<p>Cada tipo de rescisão gera direitos diferentes:</p><p class='mt-2'><strong>✅ Demissão sem justa causa (melhor cenário):</strong></p><ul class='mt-2 space-y-1'><li>• Saldo de salário + Aviso prévio</li><li>• 13º proporcional + Férias proporcionais + 1/3</li><li>• FGTS + Multa 40% + Seguro-desemprego</li></ul><p class='mt-2'><strong>➖ Pedido de demissão:</strong></p><ul class='mt-2 space-y-1'><li>• Saldo de salário + 13º proporcional</li><li>• Férias proporcionais + 1/3</li><li>• Sem FGTS, multa ou seguro-desemprego</li></ul><p class='mt-2'><strong>❌ Demissão por justa causa (pior cenário):</strong></p><ul class='mt-2 space-y-1'><li>• Apenas saldo de salário</li><li>• Férias vencidas (se houver) + 1/3</li><li>• Perde quase todos os direitos</li></ul>",
             "tags": ["tipos rescisão", "direitos", "sem justa causa", "justa causa"],
             "related_calculators": ["rescisao"]
           },
@@ -109,7 +113,7 @@
           {
             "id": "acordo_mutuo",
             "question": "O que é acordo mútuo?",
-            "answer": "<p>Acordo mútuo é quando empregado e empresa decidem juntos encerrar o contrato. É uma opção intermediária:</p><p class='mt-2'><strong>Vantagens:</strong></p><ul class='mt-2 space-y-1'><li>• Saque de 80% do FGTS (vs. 100% na demissão)</li><li>• Multa de 20% sobre FGTS (vs. 40% na demissão)</li><li>• Mantém direito a 13º e férias proporcionais</li><li>• Metade do aviso prévio (se indenizado)</li></ul><p class='mt-2'><strong>Desvantagem:</strong></p><ul class='mt-2 space-y-1'><li>• ❌ Não dá direito ao seguro-desemprego</li></ul><p class='mt-2'><strong>Quando vale a pena:</strong> Ideal quando você já tem outro emprego ou quer empreender.</p>",
+            "answer": "<p>Acordo mútuo é quando empregado e empresa decidem juntos encerrar o contrato. É uma opção intermediária:</p><p class='mt-2'><strong>✅ Vantagens:</strong></p><ul class='mt-2 space-y-1'><li>• Saque de 80% do FGTS (vs. 100% na demissão)</li><li>• Multa de 20% sobre FGTS (vs. 40% na demissão)</li><li>• Mantém direito a 13º e férias proporcionais</li><li>• Metade do aviso prévio (se indenizado)</li></ul><p class='mt-2'><strong>❌ Desvantagem:</strong></p><ul class='mt-2 space-y-1'><li>• Não dá direito ao seguro-desemprego</li></ul><p class='mt-2'><strong>💡 Quando vale a pena:</strong> Ideal quando você já tem outro emprego ou quer empreender.</p>",
             "tags": ["acordo mútuo", "FGTS 80%", "multa 20%", "seguro desemprego"],
             "related_calculators": ["rescisao", "fgts"]
           }
@@ -118,12 +122,13 @@
       {
         "id": "fgts",
         "title": "FGTS",
-        "icon": "🏦",
+        "icon": "savings",
+        "materialIcon": "savings",
         "questions": [
           {
             "id": "fgts_saque",
             "question": "Quando posso sacar meu FGTS?",
-            "answer": "<p>Existem várias modalidades de saque do FGTS:</p><p class='mt-2'><strong>🔴 Saque Total (saldo integral):</strong></p><ul class='mt-2 space-y-1'><li>• Demissão sem justa causa</li><li>• Aposentadoria</li><li>• Compra da casa própria (1ª vez)</li><li>• Doenças graves</li></ul><p class='mt-2'><strong>🟡 Saque Parcial:</strong></p><ul class='mt-2 space-y-1'><li>• Saque-aniversário (todo ano)</li><li>• Acordo mútuo (80% do saldo)</li><li>• Calamidade pública</li></ul><p class='mt-2'><strong>❌ Não pode sacar:</strong></p><ul class='mt-2 space-y-1'><li>• Pedido de demissão</li><li>• Demissão por justa causa</li><li>• Estando empregado (exceto saque-aniversário)</li></ul>",
+            "answer": "<p>Existem várias modalidades de saque do FGTS:</p><p class='mt-2'><strong>💰 Saque Total (saldo integral):</strong></p><ul class='mt-2 space-y-1'><li>• Demissão sem justa causa</li><li>• Aposentadoria</li><li>• Compra da casa própria (1ª vez)</li><li>• Doenças graves</li></ul><p class='mt-2'><strong>📅 Saque Parcial:</strong></p><ul class='mt-2 space-y-1'><li>• Saque-aniversário (todo ano)</li><li>• Acordo mútuo (80% do saldo)</li><li>• Calamidade pública</li></ul><p class='mt-2'><strong>❌ Não pode sacar:</strong></p><ul class='mt-2 space-y-1'><li>• Pedido de demissão</li><li>• Demissão por justa causa</li><li>• Estando empregado (exceto saque-aniversário)</li></ul>",
             "tags": ["saque FGTS", "modalidades", "total", "parcial"],
             "related_calculators": ["fgts", "rescisao"]
           },
@@ -139,19 +144,20 @@
       {
         "id": "inss",
         "title": "INSS",
-        "icon": "🛡️",
+        "icon": "security",
+        "materialIcon": "security",
         "questions": [
           {
             "id": "inss_desconto",
             "question": "Como é calculado o desconto do INSS?",
-            "answer": "<p>O INSS usa um sistema <strong>progressivo</strong>, similar ao Imposto de Renda. Não é uma alíquota única sobre todo o salário!</p><p class='mt-2'><strong>Como funciona:</strong></p><ul class='mt-2 space-y-1'><li>• Seu salário é 'fatiado' em faixas</li><li>• Cada faixa paga uma alíquota diferente</li><li>• O total é a soma de todas as faixas</li></ul><p class='mt-2'><strong>Exemplo prático (salário R$ 3.000):</strong></p><ul class='mt-2 space-y-1'><li>• R$ 1.518,00 × 7,5% = R$ 113,85</li><li>• R$ 1.482,00 × 9% = R$ 133,38</li><li>• Total INSS = R$ 247,23</li></ul><p class='mt-2'><strong>Alíquota efetiva:</strong> 8,24% (não 9%!)</p>",
+            "answer": "<p>O INSS usa um sistema <strong>progressivo</strong>, similar ao Imposto de Renda. Não é uma alíquota única sobre todo o salário!</p><p class='mt-2'><strong>⚙️ Como funciona:</strong></p><ul class='mt-2 space-y-1'><li>• Seu salário é 'fatiado' em faixas</li><li>• Cada faixa paga uma alíquota diferente</li><li>• O total é a soma de todas as faixas</li></ul><p class='mt-2'><strong>📊 Exemplo prático (salário R$ 3.000):</strong></p><ul class='mt-2 space-y-1'><li>• R$ 1.518,00 × 7,5% = R$ 113,85</li><li>• R$ 1.482,00 × 9% = R$ 133,38</li><li>• Total INSS = R$ 247,23</li></ul><p class='mt-2'><strong>💡 Alíquota efetiva:</strong> 8,24% (não 9%!)</p>",
             "tags": ["INSS progressivo", "faixas", "alíquota efetiva", "cálculo"],
             "related_calculators": ["inss", "salarioLiquido"]
           },
           {
             "id": "inss_teto",
             "question": "Existe um valor máximo de desconto do INSS?",
-            "answer": "<p>Sim! Existe um <strong>teto de contribuição</strong> para o INSS.</p><p class='mt-2'><strong>Valor máximo em 2025:</strong> R$ 908,85</p><p class='mt-2'><strong>Isso significa:</strong></p><ul class='mt-2 space-y-1'><li>• Se você ganha R$ 10.000, desconta apenas R$ 908,85</li><li>• Se você ganha R$ 20.000, desconta apenas R$ 908,85</li><li>• O desconto nunca passa desse valor</li></ul><p class='mt-2'><strong>Benefício x Contribuição:</strong></p><ul class='mt-2 space-y-1'><li>• Quem ganha mais contribui proporcionalmente menos</li><li>• Mas também tem benefícios limitados ao teto</li><li>• Aposentadoria máxima = teto do INSS na época</li></ul>",
+            "answer": "<p>Sim! Existe um <strong>teto de contribuição</strong> para o INSS.</p><p class='mt-2'><strong>💰 Valor máximo em 2025:</strong> R$ 908,85</p><p class='mt-2'><strong>🔄 Isso significa:</strong></p><ul class='mt-2 space-y-1'><li>• Se você ganha R$ 10.000, desconta apenas R$ 908,85</li><li>• Se você ganha R$ 20.000, desconta apenas R$ 908,85</li><li>• O desconto nunca passa desse valor</li></ul><p class='mt-2'><strong>⚖️ Benefício x Contribuição:</strong></p><ul class='mt-2 space-y-1'><li>• Quem ganha mais contribui proporcionalmente menos</li><li>• Mas também tem benefícios limitados ao teto</li><li>• Aposentadoria máxima = teto do INSS na época</li></ul>",
             "tags": ["teto INSS", "valor máximo", "R$ 908,85", "benefícios"],
             "related_calculators": ["inss", "salarioLiquido"]
           }
@@ -160,7 +166,8 @@
       {
         "id": "irrf",
         "title": "Imposto de Renda",
-        "icon": "💰",
+        "icon": "receipt",
+        "materialIcon": "receipt",
         "questions": [
           {
             "id": "irrf_calculo",

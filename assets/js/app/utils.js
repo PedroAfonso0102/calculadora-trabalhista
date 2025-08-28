@@ -92,6 +92,133 @@ export function formatCurrencyFromInput(value) {
     });
 }
 
+/**
+ * Formats a date string or Date object to Brazilian format (dd/mm/yyyy).
+ * @param {string|Date} value - The date value to format.
+ * @returns {string} - The formatted date string (e.g., "10/10/2024") or empty string if invalid.
+ */
+export function formatDateBR(value) {
+    if (!value) return '';
+    
+    let date;
+    if (typeof value === 'string') {
+        // Handle both YYYY-MM-DD and DD/MM/YYYY formats
+        if (value.includes('-')) {
+            // ISO format YYYY-MM-DD
+            date = new Date(value + 'T00:00:00.000Z');
+        } else if (value.includes('/')) {
+            // Brazilian format DD/MM/YYYY
+            const parts = value.split('/');
+            if (parts.length === 3) {
+                date = new Date(parts[2], parts[1] - 1, parts[0]);
+            }
+        } else {
+            date = new Date(value);
+        }
+    } else if (value instanceof Date) {
+        date = value;
+    } else {
+        return '';
+    }
+    
+    if (isNaN(date.getTime())) return '';
+    
+    return date.toLocaleDateString('pt-BR', {
+        timeZone: 'UTC'
+    });
+}
+
+/**
+ * Formats a date string or Date object to Brazilian datetime format (dd/mm/yyyy hh:mm:ss).
+ * @param {string|Date} value - The date value to format.
+ * @returns {string} - The formatted datetime string (e.g., "10/10/2024 14:30:00") or empty string if invalid.
+ */
+export function formatDateTimeBR(value) {
+    if (!value) return '';
+    
+    let date;
+    if (typeof value === 'string') {
+        date = new Date(value);
+    } else if (value instanceof Date) {
+        date = value;
+    } else {
+        return '';
+    }
+    
+    if (isNaN(date.getTime())) return '';
+    
+    return date.toLocaleString('pt-BR');
+}
+
+/**
+ * Validates if a date string is valid. Supports both YYYY-MM-DD (HTML date input) and DD/MM/YYYY formats.
+ * @param {string} dateString - The date string to validate.
+ * @returns {boolean} - True if the date is valid, false otherwise.
+ */
+export function isValidDate(dateString) {
+    if (!dateString || typeof dateString !== 'string') return false;
+    
+    let date;
+    
+    // Check if it's in YYYY-MM-DD format (HTML date input)
+    if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        date = new Date(dateString + 'T00:00:00.000Z');
+    }
+    // Check if it's in DD/MM/YYYY format (Brazilian format)
+    else if (dateString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+        const parts = dateString.split('/');
+        if (parts.length === 3) {
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; // JavaScript months are 0-indexed
+            const year = parseInt(parts[2], 10);
+            date = new Date(year, month, day);
+            
+            // Verify the date components match (to catch invalid dates like 31/02/2024)
+            if (date.getDate() !== day || date.getMonth() !== month || date.getFullYear() !== year) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+    
+    return !isNaN(date.getTime());
+}
+
+/**
+ * Validates if the admission date is before the dismissal date.
+ * @param {string} admissionDate - The admission date string.
+ * @param {string} dismissalDate - The dismissal date string.
+ * @returns {boolean} - True if admission date is before dismissal date, false otherwise.
+ */
+export function isValidDateRange(admissionDate, dismissalDate) {
+    if (!admissionDate || !dismissalDate) return true; // Allow empty dates for partial validation
+    
+    if (!isValidDate(admissionDate) || !isValidDate(dismissalDate)) return false;
+    
+    let admDate, dismDate;
+    
+    // Parse admission date
+    if (admissionDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        admDate = new Date(admissionDate + 'T00:00:00.000Z');
+    } else {
+        const parts = admissionDate.split('/');
+        admDate = new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+    
+    // Parse dismissal date
+    if (dismissalDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        dismDate = new Date(dismissalDate + 'T00:00:00.000Z');
+    } else {
+        const parts = dismissalDate.split('/');
+        dismDate = new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+    
+    return admDate < dismDate;
+}
+
 
 /**
  * Initializes a real-time currency mask for an input field by attaching event listeners.

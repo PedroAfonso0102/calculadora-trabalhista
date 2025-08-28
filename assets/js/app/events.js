@@ -8,7 +8,7 @@
 import { state, updateState, initialState } from './state.js';
 import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal, renderSidebar, openFaqModal } from './ui.js';
 import { calculatorFunctions, calculateNetSalary } from './calculations.js';
-import { debounce, unmaskCurrency, formatCurrency, initializeCurrencyMask } from './utils.js';
+import { debounce, unmaskCurrency, formatCurrency, initializeCurrencyMask, isValidDate, isValidDateRange } from './utils.js';
 import { 
     saveState, 
     getSavePreference, 
@@ -28,12 +28,30 @@ const validationRules = {
     salarioBruto: [(v) => v > 0 || 'Salário deve ser maior que zero.'],
     diasFerias: [(v) => (v >= 1 && v <= 30) || 'Deve estar entre 1 e 30 dias.'],
     dataAdmissao: [
-        (v) => v || 'Data é obrigatória.',
-        (v) => !isNaN(new Date(v).getTime()) || 'Data inválida.'
+        (v) => v ? true : 'Data é obrigatória.',
+        (v) => {
+            // HTML date inputs return YYYY-MM-DD format, always valid if not empty
+            if (v && /^\d{4}-\d{2}-\d{2}$/.test(v)) return true;
+            // Also accept Brazilian format DD/MM/YYYY
+            return isValidDate(v) || 'Data inválida. Use o formato correto.';
+        },
+        (v, allValues) => {
+            if (!allValues || !allValues.dataDemissao) return true;
+            return isValidDateRange(v, allValues.dataDemissao) || 'Data de admissão deve ser anterior à demissão.';
+        }
     ],
     dataDemissao: [
-        (v) => v || 'Data é obrigatória.',
-        (v) => !isNaN(new Date(v).getTime()) || 'Data inválida.'
+        (v) => v ? true : 'Data é obrigatória.',
+        (v) => {
+            // HTML date inputs return YYYY-MM-DD format, always valid if not empty
+            if (v && /^\d{4}-\d{2}-\d{2}$/.test(v)) return true;
+            // Also accept Brazilian format DD/MM/YYYY
+            return isValidDate(v) || 'Data inválida. Use o formato correto.';
+        },
+        (v, allValues) => {
+            if (!allValues || !allValues.dataAdmissao) return true;
+            return isValidDateRange(allValues.dataAdmissao, v) || 'Data de demissão deve ser posterior à admissão.';
+        }
     ],
     dependentes: [(v) => v >= 0 || 'Número de dependentes não pode ser negativo.'],
     mesesTrabalhados: [(v) => (v >= 1 && v <= 12) || 'Deve estar entre 1 e 12 meses.'],
@@ -297,10 +315,11 @@ function handleClearForm(calculatorName) {
  * Validates a field using the scalable validation rules schema.
  * @param {string} path - The field path (e.g., 'ferias.salarioBruto')
  * @param {any} value - The value to validate
+ * @param {object} allValues - All values from the current calculator state (for cross-field validation)
  * @returns {object} - Validation result with isValid boolean and message string
  */
-function validateField(path, value) {
-    const [, field] = path.split('.');
+function validateField(path, value, allValues = null) {
+    const [calculatorName, field] = path.split('.');
     const rules = validationRules[field] || [];
     
     // Skip validation for empty optional fields (except required fields)
@@ -309,8 +328,11 @@ function validateField(path, value) {
         return { isValid: true };
     }
     
+    // Get current calculator state for cross-field validation
+    const currentState = allValues || (state[calculatorName] || {});
+    
     for (const rule of rules) {
-        const result = rule(value);
+        const result = rule(value, currentState);
         if (typeof result === 'string') { // Validation failed
             return { isValid: false, message: result };
         }
@@ -325,10 +347,12 @@ function validateField(path, value) {
  */
 function validateFieldWithFeedback(element, path) {
     const value = getFieldValue(element);
+    const [calculatorName] = path.split('.');
+    const currentState = state[calculatorName] || {};
     
     clearFieldValidation(element);
     
-    const validation = validateField(path, value);
+    const validation = validateField(path, value, currentState);
     if (validation.isValid && value) {
         showFieldSuccess(element);
     } else if (!validation.isValid) {
@@ -377,13 +401,30 @@ function showFieldError(element, message) {
     element.classList.add('input-error', 'border-red-500', 'bg-red-50');
     element.classList.remove('input-success', 'border-green-500', 'bg-green-50');
     
+    // Format the error message to show dates in Brazilian format if needed
+    let formattedMessage = message;
+    
+    // If the element is a date input and the message contains the raw ISO date
+    if (element.type === 'date' && element.value) {
+        const isoDateRegex = /\d{4}-\d{2}-\d{2}/g;
+        formattedMessage = message.replace(isoDateRegex, (match) => {
+            // Convert ISO date to Brazilian format for display
+            try {
+                const date = new Date(match + 'T00:00:00');
+                return date.toLocaleDateString('pt-BR');
+            } catch (e) {
+                return match;
+            }
+        });
+    }
+    
     const errorDiv = document.createElement('div');
     errorDiv.className = 'field-validation text-red-600';
     errorDiv.innerHTML = `
         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
         </svg>
-        ${message}
+        ${formattedMessage}
     `;
     element.parentNode.appendChild(errorDiv);
 }
@@ -453,6 +494,16 @@ function handleInputChange(event) {
     }
 
     updateState(path, value);
+
+    // Se for um campo de data, também validar o outro campo de data para validação cruzada
+    const [calculatorName, fieldName] = path.split('.');
+    if (fieldName === 'dataAdmissao' || fieldName === 'dataDemissao') {
+        const otherFieldName = fieldName === 'dataAdmissao' ? 'dataDemissao' : 'dataAdmissao';
+        const otherElement = document.querySelector(`[data-state="${calculatorName}.${otherFieldName}"]`);
+        if (otherElement && otherElement.closest('.space-y-2').dataset.hasBlurred === 'true') {
+            validateFieldWithFeedback(otherElement, `${calculatorName}.${otherFieldName}`);
+        }
+    }
 
     if (path === 'salarioLiquido.recebeSalarioFamilia' && !value) {
         updateState('salarioLiquido.filhosSalarioFamilia', 0);
@@ -1053,6 +1104,16 @@ function initializeSidebarEvents() {
     if (faqBtn) {
         faqBtn.addEventListener('click', openFaqModal);
     }
+    
+    // Event listener para o botão de fechar modal da Base de Conhecimento
+    document.addEventListener('click', (e) => {
+        if (e.target && e.target.id === 'close-kb-modal-btn') {
+            const faqModal = document.getElementById('faq-modal');
+            if (faqModal) {
+                faqModal.classList.add('hidden');
+            }
+        }
+    });
     
     // Fechar sidebar com ESC em mobile
     document.addEventListener('keydown', (e) => {

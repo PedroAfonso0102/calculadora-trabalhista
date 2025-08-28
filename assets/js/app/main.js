@@ -121,6 +121,15 @@ async function initializeApp() {
         initializeEventListeners();
         initializeSidebarState();
         render();
+        
+        // Verificar se é a primeira visita e abrir painel educacional
+        const jaVisitou = localStorage.getItem('jaVisitou');
+        if (!jaVisitou) {
+            // Importar a função do events.js
+            const { toggleEducationalPanel } = await import('./events.js');
+            toggleEducationalPanel(true);
+            localStorage.setItem('jaVisitou', 'true');
+        }
     } catch (error) {
         console.error("Failed to initialize the application:", error);
         displayErrorMessage(error);

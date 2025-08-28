@@ -7,7 +7,7 @@
 
 import { state } from './state.js';
 import * as calculations from './calculations.js';
-import { formatCurrency } from './utils.js';
+import { formatCurrency, formatDateBR, formatDateTimeBR } from './utils.js';
 import { 
     loadKnowledgeBase, 
     getEnhancedTooltip, 
@@ -879,6 +879,24 @@ function generateRescisaoModalContent(results, inputState) {
 
     let html = `
         <div class="mt-4">
+            <h4 class="font-semibold text-gray-800">Informações da Rescisão</h4>
+            <div class="mt-2 space-y-1 text-sm">
+                <div class="flex justify-between py-1">
+                    <span>Data de Admissão:</span>
+                    <span class="font-mono text-blue-600">${formatDateBR(inputState.dataAdmissao)}</span>
+                </div>
+                <div class="flex justify-between py-1">
+                    <span>Data de Demissão:</span>
+                    <span class="font-mono text-blue-600">${formatDateBR(inputState.dataDemissao)}</span>
+                </div>
+                <div class="flex justify-between py-1">
+                    <span>Último Salário Bruto:</span>
+                    <span class="font-mono text-blue-600">${formatCurrency(inputState.salarioBruto)}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
             <h4 class="font-semibold text-gray-800">Verbas Rescisórias (Ganhos)</h4>
             <div class="mt-2 space-y-2 text-sm">`;
 
@@ -1465,7 +1483,7 @@ export function generateReportHTML(data) {
     }
 
     const { type, results, state: inputState } = data;
-    const currentDate = new Date().toLocaleString('pt-BR');
+    const currentDate = formatDateTimeBR(new Date());
 
     // Get content generator and title using mappings
     const contentGenerator = reportContentMappings[type];
@@ -1739,6 +1757,20 @@ function generateRescisaoReportContent(results, inputState) {
 
     let html = `
         <div class="space-y-1">
+            <h4 class="text-lg font-semibold text-primary mt-4">Informações da Rescisão</h4>
+            <div class="flex justify-between result-row py-2">
+                <span>Data de Admissão:</span>
+                <span class="font-mono text-blue-600">${formatDateBR(inputState.dataAdmissao)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Data de Demissão:</span>
+                <span class="font-mono text-blue-600">${formatDateBR(inputState.dataDemissao)}</span>
+            </div>
+            <div class="flex justify-between result-row py-2">
+                <span>Último Salário Bruto:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(inputState.salarioBruto)}</span>
+            </div>
+
             <h4 class="text-lg font-semibold text-primary mt-4">Verbas Rescisórias (Ganhos)</h4>`;
 
     // Add provento items
@@ -2214,7 +2246,7 @@ function generatePisPasepReportContent(results, inputState) {
             </div>
             <div class="flex justify-between result-row py-2">
                 <span>Data de Inscrição:</span>
-                <span class="font-mono text-blue-600">${new Date(inputState.dataInscricao).toLocaleDateString('pt-BR')}</span>
+                <span class="font-mono text-blue-600">${formatDateBR(inputState.dataInscricao)}</span>
             </div>
             <div class="flex justify-between result-row py-2">
                 <span>Elegível ao Abono:</span>
@@ -2500,37 +2532,46 @@ function createFaqModal() {
     if (document.getElementById('faq-modal')) return;
     
     const modalHTML = `
-        <div id="faq-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div id="faq-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="bg-white rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
-                    <div class="flex items-center justify-between p-6 border-b">
-                        <h2 class="text-xl font-bold text-gray-900">📚 Base de Conhecimento</h2>
-                        <button id="close-faq-modal" class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
+                <div class="bg-white rounded-lg max-w-5xl w-full max-h-[85vh] overflow-hidden shadow-xl border border-gray-200">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-white">
+                        <div class="flex items-center space-x-3">
+                            <span class="material-icons text-primary text-2xl">library_books</span>
+                            <h2 class="text-xl font-semibold text-gray-900">Base de Conhecimento</h2>
+                        </div>
+                        <button id="close-faq-modal" class="text-gray-500 hover:text-gray-700 transition-colors p-1 rounded-md hover:bg-gray-100">
+                            <span class="material-icons">close</span>
                         </button>
                     </div>
                     
-                    <div class="flex h-96">
-                        <!-- Sidebar de navegação -->
-                        <div class="w-1/3 border-r bg-gray-50 p-4 overflow-y-auto">
-                            <div class="mb-4">
-                                <input 
-                                    type="text" 
-                                    id="faq-search" 
-                                    placeholder="🔍 Buscar na base de conhecimento..." 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                >
+                    <!-- Content Area -->
+                    <div class="flex h-[70vh]">
+                        <!-- Sidebar Navigation -->
+                        <div class="w-80 border-r border-gray-200 bg-gray-50 overflow-y-auto">
+                            <!-- Search -->
+                            <div class="p-4 border-b border-gray-200">
+                                <div class="relative">
+                                    <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">search</span>
+                                    <input 
+                                        type="text" 
+                                        id="faq-search" 
+                                        placeholder="Buscar na base de conhecimento..." 
+                                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    >
+                                </div>
                             </div>
-                            <div id="faq-navigation">
+                            
+                            <!-- Navigation Content -->
+                            <div id="faq-navigation" class="p-4">
                                 <!-- Navegação será carregada aqui -->
                             </div>
                         </div>
                         
-                        <!-- Conteúdo principal -->
-                        <div class="w-2/3 p-6 overflow-y-auto">
-                            <div id="faq-content">
+                        <!-- Main Content -->
+                        <div class="flex-1 overflow-y-auto bg-white">
+                            <div id="faq-content" class="p-6">
                                 <!-- Conteúdo será carregado aqui -->
                             </div>
                         </div>
@@ -2586,33 +2627,45 @@ async function loadFaqCategories() {
     
     if (!navigation) return;
     
-    let navHTML = '<h3 class="font-semibold text-gray-900 mb-3">📋 Categorias</h3>';
-    navHTML += '<ul class="space-y-2">';
+    let navHTML = `
+        <div class="mb-4">
+            <h3 class="font-semibold text-foreground mb-3 flex items-center">
+                <span class="material-icons text-primary mr-2 text-lg">category</span>
+                Categorias
+            </h3>
+        </div>
+    `;
+    
+    navHTML += '<div class="space-y-1">';
     
     categories.forEach(category => {
+        const iconName = category.materialIcon || category.icon || 'help';
         navHTML += `
-            <li>
-                <button 
-                    class="w-full text-left px-3 py-2 rounded-md hover:bg-blue-50 transition-colors faq-category-btn"
-                    data-category="${category.id}"
-                >
-                    <span class="text-lg">${category.icon}</span>
-                    <span class="ml-2 text-sm font-medium">${category.title}</span>
-                    <span class="ml-1 text-xs text-gray-500">(${category.questions?.length || 0})</span>
-                </button>
-            </li>
+            <button 
+                class="w-full text-left px-3 py-2.5 rounded-md hover:bg-muted transition-colors faq-category-btn group"
+                data-category="${category.id}"
+            >
+                <div class="flex items-center space-x-3">
+                    <span class="material-icons text-muted-foreground group-hover:text-primary transition-colors text-lg">${iconName}</span>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-foreground text-sm">${category.title}</div>
+                        <div class="text-xs text-muted-foreground">${category.questions?.length || 0} perguntas</div>
+                    </div>
+                </div>
+            </button>
         `;
     });
     
-    navHTML += '</ul>';
+    navHTML += '</div>';
     
     // Adicionar botão de voltar (oculto inicialmente)
     navHTML += `
         <button 
             id="faq-back-btn" 
-            class="hidden w-full mt-4 px-3 py-2 text-sm text-blue-600 hover:text-blue-800 border border-blue-200 rounded-md"
+            class="hidden w-full mt-6 px-3 py-2 text-sm text-primary hover:text-primary/80 hover:bg-primary/10 border border-primary/20 rounded-md transition-colors flex items-center justify-center space-x-2"
         >
-            ← Voltar às categorias
+            <span class="material-icons text-sm">arrow_back</span>
+            <span>Voltar às categorias</span>
         </button>
     `;
     
@@ -2643,30 +2696,50 @@ function loadWelcomeContent() {
     if (!content) return;
     
     content.innerHTML = `
-        <div class="text-center">
-            <div class="text-6xl mb-4">📚</div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-3">Base de Conhecimento</h3>
-            <p class="text-gray-600 mb-6">
-                Bem-vindo à nossa base de conhecimento! Aqui você encontra respostas detalhadas 
-                sobre direitos trabalhistas, cálculos previdenciários e muito mais.
-            </p>
+        <div class="flex flex-col items-center justify-center h-full text-center p-4 sm:p-8">
             
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="bg-blue-50 p-4 rounded-lg">
-                    <div class="text-2xl mb-2">❓</div>
-                    <h4 class="font-semibold text-blue-900">FAQ Detalhado</h4>
-                    <p class="text-sm text-blue-700">Perguntas e respostas organizadas por categoria</p>
+            <!-- Título Principal com Emoji -->
+            <div class="mb-2">
+                <span class="text-6xl mb-4 block">📚</span>
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-800">
+                    Base de Conhecimento
+                </h3>
+            </div>
+            <p class="max-w-xl text-sm sm:text-base text-gray-600 mb-8">
+                Bem-vindo à nossa base de conhecimento! Encontre respostas detalhadas sobre direitos trabalhistas, cálculos e muito mais.
+            </p>
+
+            <!-- Cards de Ação -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl mb-10">
+                
+                <!-- Card: Explorar por Categoria -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-left hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer" onclick="document.querySelector('.faq-category-btn')?.click()">
+                    <div class="flex items-start space-x-4">
+                        <span class="material-icons text-2xl text-primary">apps</span>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Explorar por Categoria</h4>
+                            <p class="text-sm text-gray-600 mt-1">Navegue pelos tópicos organizados para aprender passo a passo.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-green-50 p-4 rounded-lg">
-                    <div class="text-2xl mb-2">🔍</div>
-                    <h4 class="font-semibold text-green-900">Busca Inteligente</h4>
-                    <p class="text-sm text-green-700">Encontre rapidamente o que procura</p>
+
+                <!-- Card: Busca Inteligente -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-left hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer" onclick="document.getElementById('faq-search')?.focus()">
+                    <div class="flex items-start space-x-4">
+                        <span class="material-icons text-2xl text-primary">search</span>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Busca Inteligente</h4>
+                            <p class="text-sm text-gray-600 mt-1">Encontre rapidamente o que procura digitando um termo.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <p class="text-sm text-gray-500">
-                💡 Dica: Use a barra de busca para encontrar tópicos específicos ou navegue pelas categorias.
-            </p>
+
+            <!-- Botão de Ação Principal -->
+            <button id="close-kb-modal-btn" class="bg-primary text-primary-foreground font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-primary/90 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                USAR AS FERRAMENTAS DE CÁLCULO
+            </button>
+
         </div>
     `;
 }
@@ -2688,23 +2761,31 @@ async function loadCategoryContent(categoryId) {
     if (backBtn) backBtn.classList.remove('hidden');
     
     // Atualizar navegação para mostrar perguntas
-    let navHTML = `<h3 class="font-semibold text-gray-900 mb-3">${category.icon} ${category.title}</h3>`;
-    navHTML += '<ul class="space-y-1">';
+    const iconName = category.materialIcon || category.icon || 'help';
+    let navHTML = `
+        <div class="mb-4">
+            <h3 class="font-semibold text-foreground mb-3 flex items-center">
+                <span class="material-icons text-primary mr-2 text-lg">${iconName}</span>
+                ${category.title}
+            </h3>
+        </div>
+    `;
+    
+    navHTML += '<div class="space-y-1">';
     
     category.questions?.forEach((question, index) => {
         navHTML += `
-            <li>
-                <button 
-                    class="w-full text-left px-2 py-1 text-sm rounded hover:bg-blue-50 transition-colors faq-question-btn"
-                    data-question="${index}"
-                >
-                    ${question.question}
-                </button>
-            </li>
+            <button 
+                class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors faq-question-btn border-l-2 border-transparent hover:border-primary/30"
+                data-question="${index}"
+            >
+                <div class="text-foreground font-medium text-xs mb-1">Pergunta ${index + 1}</div>
+                <div class="text-muted-foreground text-xs leading-relaxed line-clamp-2">${question.question}</div>
+            </button>
         `;
     });
     
-    navHTML += '</ul>';
+    navHTML += '</div>';
     navigation.innerHTML = navHTML + document.getElementById('faq-back-btn').outerHTML;
     
     // Recarregar event listener do botão voltar
@@ -2722,8 +2803,18 @@ async function loadCategoryContent(categoryId) {
         btn.addEventListener('click', (e) => {
             const questionIndex = parseInt(e.currentTarget.dataset.question);
             loadQuestionContent(category, questionIndex);
+            
+            // Destacar pergunta ativa
+            document.querySelectorAll('.faq-question-btn').forEach(b => b.classList.remove('bg-muted', 'border-primary'));
+            e.currentTarget.classList.add('bg-muted', 'border-primary');
         });
     });
+    
+    // Destacar primeira pergunta como ativa
+    const firstQuestion = document.querySelector('.faq-question-btn');
+    if (firstQuestion) {
+        firstQuestion.classList.add('bg-muted', 'border-primary');
+    }
 }
 
 /**
@@ -2734,29 +2825,42 @@ function loadQuestionContent(category, questionIndex) {
     if (!question) return;
     
     const content = document.getElementById('faq-content');
+    const iconName = category.materialIcon || category.icon || 'help';
     
     let html = `
-        <div class="mb-4">
-            <span class="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full mb-2">
-                ${category.title}
-            </span>
-            <h3 class="text-xl font-bold text-gray-900 mb-3">${question.question}</h3>
-        </div>
-        
-        <div class="prose prose-sm max-w-none">
-            ${question.answer}
+        <div class="max-w-4xl">
+            <!-- Header da pergunta -->
+            <div class="mb-6">
+                <div class="flex items-center space-x-2 mb-3">
+                    <span class="material-icons text-primary text-sm">${iconName}</span>
+                    <span class="inline-block px-2 py-1 text-xs bg-primary/10 text-primary rounded-full font-medium">
+                        ${category.title}
+                    </span>
+                </div>
+                <h1 class="text-2xl font-bold text-foreground leading-tight">${question.question}</h1>
+            </div>
+            
+            <!-- Conteúdo da resposta -->
+            <div class="prose prose-sm max-w-none text-muted-foreground">
+                <div class="bg-muted/30 border border-border rounded-lg p-6">
+                    ${question.answer}
+                </div>
+            </div>
         </div>
     `;
     
     // Adicionar tags se existirem
     if (question.tags && question.tags.length > 0) {
         html += `
-            <div class="mt-4 pt-4 border-t">
-                <p class="text-sm font-medium text-gray-700 mb-2">🏷️ Tags relacionadas:</p>
+            <div class="mt-6 pt-6 border-t border-border">
+                <div class="flex items-center space-x-2 mb-3">
+                    <span class="material-icons text-muted-foreground text-sm">local_offer</span>
+                    <p class="text-sm font-medium text-foreground">Tags relacionadas</p>
+                </div>
                 <div class="flex flex-wrap gap-2">
         `;
         question.tags.forEach(tag => {
-            html += `<span class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">${tag}</span>`;
+            html += `<span class="px-2 py-1 text-xs bg-muted border border-border text-muted-foreground rounded-md">${tag}</span>`;
         });
         html += `</div></div>`;
     }
@@ -2764,13 +2868,16 @@ function loadQuestionContent(category, questionIndex) {
     // Adicionar calculadoras relacionadas
     if (question.related_calculators && question.related_calculators.length > 0) {
         html += `
-            <div class="mt-4 pt-4 border-t">
-                <p class="text-sm font-medium text-gray-700 mb-2">🧮 Calculadoras relacionadas:</p>
+            <div class="mt-6 pt-6 border-t border-border">
+                <div class="flex items-center space-x-2 mb-3">
+                    <span class="material-icons text-muted-foreground text-sm">calculate</span>
+                    <p class="text-sm font-medium text-foreground">Calculadoras relacionadas</p>
+                </div>
                 <div class="flex flex-wrap gap-2">
         `;
         question.related_calculators.forEach(calc => {
             if (calc !== 'todas') {
-                html += `<button class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors" onclick="hideFaqModal(); window.switchToCalculator && window.switchToCalculator('${calc}')">${calc}</button>`;
+                html += `<button class="px-3 py-1.5 text-xs bg-primary/10 text-primary rounded-md border border-primary/20 hover:bg-primary/20 transition-colors font-medium" onclick="hideFaqModal(); window.switchToCalculator && window.switchToCalculator('${calc}')">${calc}</button>`;
             }
         });
         html += `</div></div>`;
@@ -2797,27 +2904,39 @@ async function handleFaqSearch(e) {
     const content = document.getElementById('faq-content');
     
     // Atualizar navegação com resultados
-    let navHTML = `<h3 class="font-semibold text-gray-900 mb-3">🔍 Resultados (${results.length})</h3>`;
+    let navHTML = `
+        <div class="mb-4">
+            <h3 class="font-semibold text-foreground mb-3 flex items-center">
+                <span class="material-icons text-primary mr-2 text-lg">search</span>
+                Resultados da Busca
+            </h3>
+            <div class="text-xs text-muted-foreground mb-3">${results.length} resultados encontrados</div>
+        </div>
+    `;
     
     if (results.length === 0) {
-        navHTML += '<p class="text-sm text-gray-500">Nenhum resultado encontrado.</p>';
+        navHTML += `
+            <div class="text-center py-8">
+                <span class="material-icons text-muted-foreground text-4xl mb-3 block">search_off</span>
+                <p class="text-sm text-muted-foreground">Nenhum resultado encontrado.</p>
+                <p class="text-xs text-muted-foreground mt-1">Tente termos diferentes ou explore as categorias.</p>
+            </div>
+        `;
     } else {
-        navHTML += '<ul class="space-y-1">';
+        navHTML += '<div class="space-y-1">';
         results.forEach((result, index) => {
             const title = result.type === 'faq' ? result.question : result.title;
             navHTML += `
-                <li>
-                    <button 
-                        class="w-full text-left px-2 py-1 text-sm rounded hover:bg-blue-50 transition-colors search-result-btn"
-                        data-result="${index}"
-                    >
-                        <span class="text-xs text-gray-500">${result.type === 'faq' ? result.categoryTitle : 'Tooltip'}</span><br>
-                        ${title}
-                    </button>
-                </li>
+                <button 
+                    class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors search-result-btn border-l-2 border-transparent hover:border-primary/30"
+                    data-result="${index}"
+                >
+                    <div class="text-foreground font-medium text-xs mb-1">${result.type === 'faq' ? result.categoryTitle : 'Tooltip'}</div>
+                    <div class="text-muted-foreground text-xs leading-relaxed line-clamp-2">${title}</div>
+                </button>
             `;
         });
-        navHTML += '</ul>';
+        navHTML += '</div>';
     }
     
     navigation.innerHTML = navHTML;
@@ -2825,6 +2944,29 @@ async function handleFaqSearch(e) {
     // Mostrar primeiro resultado
     if (results.length > 0) {
         showSearchResult(results[0]);
+        // Destacar primeiro resultado
+        const firstResult = document.querySelector('.search-result-btn');
+        if (firstResult) {
+            firstResult.classList.add('bg-muted', 'border-primary');
+        }
+    } else {
+        // Mostrar mensagem de nenhum resultado
+        content.innerHTML = `
+            <div class="max-w-2xl mx-auto text-center py-12">
+                <span class="material-icons text-muted-foreground text-6xl mb-4 block">search_off</span>
+                <h3 class="text-xl font-semibold text-foreground mb-2">Nenhum resultado encontrado</h3>
+                <p class="text-muted-foreground mb-6">
+                    Não encontramos resultados para "<strong>${query}</strong>". Tente usar termos diferentes ou explore as categorias disponíveis.
+                </p>
+                <button 
+                    class="inline-flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                    onclick="document.getElementById('faq-search').value = ''; loadFaqCategories();"
+                >
+                    <span class="material-icons text-sm">arrow_back</span>
+                    <span>Voltar às categorias</span>
+                </button>
+            </div>
+        `;
     }
     
     // Event listeners para resultados
@@ -2832,6 +2974,10 @@ async function handleFaqSearch(e) {
         btn.addEventListener('click', (e) => {
             const resultIndex = parseInt(e.currentTarget.dataset.result);
             showSearchResult(results[resultIndex]);
+            
+            // Destacar resultado ativo
+            document.querySelectorAll('.search-result-btn').forEach(b => b.classList.remove('bg-muted', 'border-primary'));
+            e.currentTarget.classList.add('bg-muted', 'border-primary');
         });
     });
 }
@@ -2843,28 +2989,40 @@ function showSearchResult(result) {
     const content = document.getElementById('faq-content');
     
     let html = `
-        <div class="mb-4">
-            <span class="inline-block px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full mb-2">
-                ${result.type === 'faq' ? result.categoryTitle : 'Tooltip'}
-            </span>
-            <h3 class="text-xl font-bold text-gray-900 mb-3">
-                ${result.type === 'faq' ? result.question : result.title}
-            </h3>
-        </div>
-        
-        <div class="prose prose-sm max-w-none">
-            ${result.type === 'faq' ? result.answer : result.content}
+        <div class="max-w-4xl">
+            <!-- Header do resultado -->
+            <div class="mb-6">
+                <div class="flex items-center space-x-2 mb-3">
+                    <span class="material-icons text-primary text-sm">${result.type === 'faq' ? 'help' : 'info'}</span>
+                    <span class="inline-block px-2 py-1 text-xs bg-primary/10 text-primary rounded-full font-medium">
+                        ${result.type === 'faq' ? result.categoryTitle : 'Tooltip'}
+                    </span>
+                </div>
+                <h1 class="text-2xl font-bold text-foreground leading-tight">
+                    ${result.type === 'faq' ? result.question : result.title}
+                </h1>
+            </div>
+            
+            <!-- Conteúdo da resposta -->
+            <div class="prose prose-sm max-w-none text-muted-foreground">
+                <div class="bg-muted/30 border border-border rounded-lg p-6">
+                    ${result.type === 'faq' ? result.answer : result.content}
+                </div>
+            </div>
         </div>
     `;
     
     if (result.tags && result.tags.length > 0) {
         html += `
-            <div class="mt-4 pt-4 border-t">
-                <p class="text-sm font-medium text-gray-700 mb-2">🏷️ Tags:</p>
+            <div class="mt-6 pt-6 border-t border-border">
+                <div class="flex items-center space-x-2 mb-3">
+                    <span class="material-icons text-muted-foreground text-sm">local_offer</span>
+                    <p class="text-sm font-medium text-foreground">Tags relacionadas</p>
+                </div>
                 <div class="flex flex-wrap gap-2">
         `;
         result.tags.forEach(tag => {
-            html += `<span class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">${tag}</span>`;
+            html += `<span class="px-2 py-1 text-xs bg-muted border border-border text-muted-foreground rounded-md">${tag}</span>`;
         });
         html += `</div></div>`;
     }
