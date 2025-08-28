@@ -164,9 +164,9 @@ function forceCorrectLayout() {
     mainLayout.classList.remove('sidebar-hidden', 'sidebar-collapsed', 'sidebar-expanded');
     
     if (isDesktop) {
-        // Desktop: usar layout collapsed por padrão
-        sidebar.classList.add('open', 'collapsed');
-        mainLayout.classList.add('sidebar-collapsed');
+        // Desktop: usar layout EXPANDED por padrão (como no print)
+        sidebar.classList.add('open', 'expanded');
+        mainLayout.classList.add('sidebar-expanded');
         
         // Garantir que sidebar está visível no desktop
         sidebar.classList.remove('hidden');
