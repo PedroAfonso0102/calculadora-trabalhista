@@ -398,6 +398,84 @@ export function updateAndShowModal(data) {
     showCalculationMemoryModal();
 }
 
+// --- MODAL TEMPLATE FUNCTIONS (Private) ---
+
+/**
+ * Cria uma seção padronizada para o modal com título e conteúdo
+ * @param {string} title - Título da seção (ex: "Proventos", "Descontos")
+ * @param {string} contentHTML - Conteúdo HTML da seção
+ * @param {string} additionalClasses - Classes CSS adicionais (opcional)
+ * @returns {string} HTML da seção formatada
+ */
+function _createModalSection(title, contentHTML, additionalClasses = '') {
+    return `
+        <div class="mt-4 ${additionalClasses}">
+            <h4 class="font-semibold text-gray-800 mb-2">${title}</h4>
+            <div class="space-y-1 text-sm">
+                ${contentHTML}
+            </div>
+        </div>`;
+}
+
+/**
+ * Cria uma linha de resumo padronizada para o modal
+ * @param {string} label - Rótulo da linha
+ * @param {string} value - Valor a ser exibido
+ * @param {string} type - Tipo para aplicar cor ('provento', 'desconto', 'neutral')
+ * @returns {string} HTML da linha formatada
+ */
+function _createModalSummaryRow(label, value, type = 'neutral') {
+    const colorClasses = {
+        'provento': 'text-green-600',
+        'desconto': 'text-red-600',
+        'neutral': 'text-gray-800'
+    };
+    
+    const colorClass = colorClasses[type] || colorClasses.neutral;
+    const prefix = type === 'desconto' ? '-' : '';
+    
+    return `
+        <div class="flex justify-between py-1">
+            <span class="text-gray-600">${label}:</span>
+            <span class="font-medium ${colorClass}">${prefix}${value}</span>
+        </div>`;
+}
+
+/**
+ * Cria o bloco de resultado final com destaque visual
+ * @param {string} label - Rótulo do resultado final
+ * @param {string} value - Valor final a ser exibido
+ * @param {string} colorClass - Classe CSS para cor (opcional, padrão: text-blue-600)
+ * @returns {string} HTML do resultado final
+ */
+function _createModalFinalResult(label, value, colorClass = 'text-blue-600') {
+    return `
+        <div class="mt-4 pt-4 border-t border-gray-200">
+            <div class="flex justify-between items-center text-lg">
+                <span class="font-bold text-gray-900">${label}:</span>
+                <span class="font-bold ${colorClass}">${value}</span>
+            </div>
+        </div>`;
+}
+
+/**
+ * Cria a seção de parâmetros de entrada do cálculo
+ * @param {Object} paramsObject - Objeto com os parâmetros (chave: valor)
+ * @returns {string} HTML da seção de parâmetros
+ */
+function _createModalInputParams(paramsObject) {
+    if (!paramsObject || Object.keys(paramsObject).length === 0) return '';
+    
+    let paramsHTML = '';
+    for (const [key, value] of Object.entries(paramsObject)) {
+        if (value !== undefined && value !== null && value !== '') {
+            paramsHTML += _createModalSummaryRow(key, value, 'neutral');
+        }
+    }
+    
+    return _createModalSection('Parâmetros de Entrada', paramsHTML);
+}
+
 /**
  * Generates a generic memory calculation block based on the `memoriaCalculo` object.
  * @param {object} memoriaCalculo - The memory object from the calculation result.
@@ -496,82 +574,71 @@ function generateModalContent(data) {
 
 function generatePisPasepModalContent(results, inputState) {
     const { valorAbono, elegivel, memoriaCalculo } = results;
+    
     let html = generateMemoryStepsHTML(memoriaCalculo);
-    html += createSectionContainer(
-        createFlexValueRow('Valor do Abono', formatCurrency(valorAbono), 'text-lg', elegivel ? 'text-green-600' : 'text-red-600')
-    );
+    html += _createModalFinalResult('Valor do Abono', formatCurrency(valorAbono), elegivel ? 'text-green-600' : 'text-red-600');
+    
     return html;
 }
 
 function generateSeguroDesempregoModalContent(results, inputState) {
     const { numeroParcelas, valorPorParcela, memoriaCalculo } = results;
+    
     let html = generateMemoryStepsHTML(memoriaCalculo);
-    html += createSectionContainer(`
-        ${createFlexValueRow('Nº de Parcelas', numeroParcelas, 'text-lg', 'text-blue-600')}
-        ${createFlexValueRow('Valor por Parcela', formatCurrency(valorPorParcela), 'text-lg', 'text-green-600')}
-    `, 'space-y-2');
+    
+    let valoresHTML = '';
+    valoresHTML += _createModalSummaryRow('Nº de Parcelas', numeroParcelas, 'neutral');
+    valoresHTML += _createModalSummaryRow('Valor por Parcela', formatCurrency(valorPorParcela), 'provento');
+    
+    html += _createModalSection('Valores do Benefício', valoresHTML);
+    
     return html;
 }
 
 function generateHorasExtrasModalContent(results, inputState) {
     const { totalGeralAdicionais, memoriaCalculo } = results;
+    
     let html = generateMemoryStepsHTML(memoriaCalculo);
-    html += createSectionContainer(
-        createFlexValueRow('Total de Adicionais', formatCurrency(totalGeralAdicionais), 'text-lg', 'text-green-600')
-    );
+    html += _createModalFinalResult('Total de Adicionais', formatCurrency(totalGeralAdicionais), 'text-green-600');
+    
     return html;
 }
 
 function generateInssModalContent(results, inputState) {
     const { contribuicaoINSS, aliquotaEfetiva, memoriaCalculo } = results;
+    
     let html = generateMemoryStepsHTML(memoriaCalculo);
-    html += `
-        <div class="mt-4 pt-4 border-t border-gray-200">
-             <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Contribuição Devida:</span>
-                <span class="font-bold text-red-600">${formatCurrency(contribuicaoINSS)}</span>
-            </div>
-        </div>`;
+    html += _createModalFinalResult('Contribuição Devida', formatCurrency(contribuicaoINSS), 'text-red-600');
+    
     return html;
 }
 
 function generateValeTransporteModalContent(results, inputState) {
     const { descontoRealEmpregado, valorBeneficioEmpregador, memoriaCalculo } = results;
+    
     let html = generateMemoryStepsHTML(memoriaCalculo);
-    html += `
-        <div class="mt-4 pt-4 border-t border-gray-200 space-y-2">
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Desconto do Empregado:</span>
-                <span class="font-bold text-red-600">${formatCurrency(descontoRealEmpregado)}</span>
-            </div>
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Custeado pelo Empregador:</span>
-                <span class="font-bold text-green-600">${formatCurrency(valorBeneficioEmpregador)}</span>
-            </div>
-        </div>`;
+    
+    let valoresHTML = '';
+    valoresHTML += _createModalSummaryRow('Desconto do Empregado', formatCurrency(descontoRealEmpregado), 'desconto');
+    valoresHTML += _createModalSummaryRow('Custeado pelo Empregador', formatCurrency(valorBeneficioEmpregador), 'provento');
+    
+    html += _createModalSection('Valores do Vale-Transporte', valoresHTML);
+    
     return html;
 }
 
 function generateFgtsModalContent(results, inputState) {
     const { depositoMensal, valorSaque, memoriaCalculo } = results;
+    
     let html = generateMemoryStepsHTML(memoriaCalculo);
-    html += `
-        <div class="mt-4 pt-4 border-t border-gray-200 space-y-2">
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Depósito Mensal Estimado:</span>
-                <span class="font-bold text-blue-600">${formatCurrency(depositoMensal)}</span>
-            </div>
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Valor de Saque Estimado:</span>
-                <span class="font-bold text-green-600">${formatCurrency(valorSaque)}</span>
-            </div>
-        </div>`;
+    
+    let valoresHTML = '';
+    valoresHTML += _createModalSummaryRow('Depósito Mensal Estimado', formatCurrency(depositoMensal), 'neutral');
+    valoresHTML += _createModalSummaryRow('Valor de Saque Estimado', formatCurrency(valorSaque), 'provento');
+    
+    html += _createModalSection('Valores do FGTS', valoresHTML);
+    
     return html;
-}
-
-function generateGenericReportContent(results, inputState) {
-    const { memoriaCalculo } = results;
-    return generateMemoryStepsHTML(memoriaCalculo);
 }
 
 function generateIrpfModalContent(results, inputState) {
@@ -579,16 +646,11 @@ function generateIrpfModalContent(results, inputState) {
     const isPagar = tipoAjuste === 'pagar';
     const isRestituir = tipoAjuste === 'restituir';
     const colorClass = isPagar ? 'text-red-600' : (isRestituir ? 'text-green-600' : 'text-gray-800');
-    const label = isPagar ? 'Imposto a Pagar:' : 'Imposto a Restituir:';
+    const label = isPagar ? 'Imposto a Pagar' : 'Imposto a Restituir';
 
     let html = generateMemoryStepsHTML(memoriaCalculo);
-    html += `
-        <div class="mt-4 pt-4 border-t border-gray-200">
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">${label}</span>
-                <span class="font-bold ${colorClass}">${formatCurrency(Math.abs(ajusteFinal))}</span>
-            </div>
-        </div>`;
+    html += _createModalFinalResult(label, formatCurrency(Math.abs(ajusteFinal)), colorClass);
+    
     return html;
 }
 
@@ -599,79 +661,38 @@ function generateIrpfModalContent(results, inputState) {
 function generateFeriasModalContent(results, inputState) {
     const { baseDeCalculo, valorFerias, tercoConstitucional, valorAbono, tercoAbono, adiantamento13, descontoINSS, descontoIRRF, valorLiquido, venderFerias, adiantarDecimo, diasFerias } = results;
 
-    let html = `
-        <div class="mt-4">
-            <div class="space-y-1 text-sm">
-                <div class="flex justify-between">
-                    <span>Base de Cálculo:</span>
-                    <span class="font-medium">${formatCurrency(baseDeCalculo)}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span>Dias de Férias:</span>
-                    <span class="font-medium">${diasFerias} dias</span>
-                </div>
-            </div>
-        </div>
+    // 1. Parâmetros de Entrada
+    const inputParams = {
+        'Base de Cálculo': formatCurrency(baseDeCalculo),
+        'Dias de Férias': `${diasFerias} dias`
+    };
+    let html = _createModalInputParams(inputParams);
 
-        <div class="mt-4">
-            <h4 class="font-semibold text-gray-800">Proventos (Ganhos)</h4>
-            <div class="mt-2 space-y-1 text-sm">
-                <div class="flex justify-between">
-                    <span>Valor das Férias (${venderFerias ? (diasFerias - (diasFerias/3)) : diasFerias} dias):</span>
-                    <span class="font-medium text-green-600">${formatCurrency(valorFerias)}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span>1/3 Constitucional sobre Férias:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(tercoConstitucional)}</span>
-                </div>`;
-
+    // 2. Proventos (Ganhos)
+    let proventosHTML = '';
+    proventosHTML += _createModalSummaryRow(`Valor das Férias (${venderFerias ? (diasFerias - (diasFerias/3)) : diasFerias} dias)`, formatCurrency(valorFerias), 'provento');
+    proventosHTML += _createModalSummaryRow('1/3 Constitucional sobre Férias', formatCurrency(tercoConstitucional), 'provento');
+    
     if (venderFerias && valorAbono > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>Abono Pecuniário (Venda 1/3):</span>
-                    <span class="font-medium text-green-600">${formatCurrency(valorAbono)}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span>1/3 sobre Abono Pecuniário:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(tercoAbono)}</span>
-                </div>`;
+        proventosHTML += _createModalSummaryRow('Abono Pecuniário (Venda 1/3)', formatCurrency(valorAbono), 'provento');
+        proventosHTML += _createModalSummaryRow('1/3 sobre Abono Pecuniário', formatCurrency(tercoAbono), 'provento');
     }
-
+    
     if (adiantarDecimo && adiantamento13 > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>Adiantamento 13º Salário:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(adiantamento13)}</span>
-                </div>`;
+        proventosHTML += _createModalSummaryRow('Adiantamento 13º Salário', formatCurrency(adiantamento13), 'provento');
     }
+    
+    html += _createModalSection('Proventos (Ganhos)', proventosHTML);
 
-    html += `
-            </div>
-        </div>
+    // 3. Descontos
+    let descontosHTML = '';
+    descontosHTML += _createModalSummaryRow('INSS', formatCurrency(descontoINSS.value), 'desconto');
+    descontosHTML += _createModalSummaryRow('IRRF', formatCurrency(descontoIRRF.value), 'desconto');
+    
+    html += _createModalSection('Descontos', descontosHTML);
 
-        <div class="mt-4">
-            <h4 class="font-semibold text-gray-800">Descontos</h4>
-            <div class="mt-2 space-y-1 text-sm">
-                <div class="flex justify-between">
-                    <span>INSS:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(descontoINSS.value)}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span>IRRF:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(descontoIRRF.value)}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-4">
-            <h4 class="font-semibold text-gray-800">Valores Finais</h4>
-            <div class="mt-2 space-y-1 text-sm">
-                <div class="flex justify-between font-semibold border-t pt-2 mt-2">
-                    <span>Total Líquido a Receber:</span>
-                    <span class="font-bold text-blue-600">${formatCurrency(valorLiquido)}</span>
-                </div>
-            </div>
-        </div>`;
+    // 4. Resultado Final
+    html += _createModalFinalResult('Total Líquido a Receber', formatCurrency(valorLiquido), 'text-blue-600');
 
     return html;
 }
@@ -682,64 +703,33 @@ function generateFeriasModalContent(results, inputState) {
 function generateDecimoTerceiroModalContent(results, inputState) {
     const { baseDeCalculo, mesesTrabalhados, valorBrutoDecimo, descontoINSS, descontoIRRF, valorLiquidoDecimo, adiantamentoRecebido, valorAReceber } = results;
 
-    let html = `
-        <div class="mt-4">
-            <div class="space-y-1 text-sm">
-                <div class="flex justify-between">
-                    <span>Base de Cálculo:</span>
-                    <span class="font-medium">${formatCurrency(baseDeCalculo)}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span>Meses trabalhados:</span>
-                    <span class="font-medium">${mesesTrabalhados} meses</span>
-                </div>
-                <div class="flex justify-between font-semibold border-t pt-2 mt-2">
-                    <span>13º Salário Bruto:</span>
-                    <span class="font-medium">${formatCurrency(valorBrutoDecimo)}</span>
-                </div>
-            </div>
-        </div>
+    // 1. Parâmetros de Entrada
+    const inputParams = {
+        'Base de Cálculo': formatCurrency(baseDeCalculo),
+        'Meses trabalhados': `${mesesTrabalhados} meses`,
+        '13º Salário Bruto': formatCurrency(valorBrutoDecimo)
+    };
+    let html = _createModalInputParams(inputParams);
 
-        <div class="mt-4">
-            <h4 class="font-semibold text-gray-800">Descontos</h4>
-            <div class="mt-2 space-y-1 text-sm">
-                <div class="flex justify-between">
-                    <span>INSS:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(descontoINSS.value)}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span>IRRF:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(descontoIRRF.value)}</span>
-                </div>
-            </div>
-        </div>
+    // 2. Descontos
+    let descontosHTML = '';
+    descontosHTML += _createModalSummaryRow('INSS', formatCurrency(descontoINSS.value), 'desconto');
+    descontosHTML += _createModalSummaryRow('IRRF', formatCurrency(descontoIRRF.value), 'desconto');
+    
+    html += _createModalSection('Descontos', descontosHTML);
 
-        <div class="mt-4">
-            <h4 class="font-semibold text-gray-800">Valores Finais</h4>
-            <div class="mt-2 space-y-1 text-sm">
-                <div class="flex justify-between">
-                    <span>13º Salário Líquido:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(valorLiquidoDecimo)}</span>
-                </div>`;
-
+    // 3. Valores Finais
+    let valoresFinaisHTML = '';
+    valoresFinaisHTML += _createModalSummaryRow('13º Salário Líquido', formatCurrency(valorLiquidoDecimo), 'provento');
+    
     if (adiantamentoRecebido > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>(-) Adiantamento já recebido:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(adiantamentoRecebido)}</span>
-                </div>`;
+        valoresFinaisHTML += _createModalSummaryRow('(-) Adiantamento já recebido', formatCurrency(adiantamentoRecebido), 'desconto');
     }
+    
+    html += _createModalSection('Valores Finais', valoresFinaisHTML);
 
-    html += `
-            </div>
-        </div>
-
-        <div class="mt-4 pt-4 border-t border-gray-200">
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Valor a Receber:</span>
-                <span class="font-bold text-blue-600">${formatCurrency(valorAReceber)}</span>
-            </div>
-        </div>`;
+    // 4. Resultado Final
+    html += _createModalFinalResult('Valor a Receber', formatCurrency(valorAReceber), 'text-blue-600');
 
     return html;
 }
@@ -750,121 +740,71 @@ function generateDecimoTerceiroModalContent(results, inputState) {
 function generateSalarioLiquidoModalContent(results, inputState) {
     const { salarioBruto, horasExtras, adicionalPericulosidade, adicionalInsalubridade, adicionalNoturno, salarioFamilia, descontoINSS, descontoIRRF, descontoVT, descontoVR, descontoSaude, descontoAdiantamentos, totalProventos, totalDescontos, salarioLiquido } = results;
 
-    let html = `
-        <div class="mt-4">
-            <h4 class="font-semibold text-gray-800">Proventos (Ganhos)</h4>
-            <div class="mt-2 space-y-1 text-sm">
-                <div class="flex justify-between">
-                    <span>Salário Base:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(salarioBruto)}</span>
-                </div>`;
+    let html = '';
 
+    // 1. Proventos (Ganhos)
+    let proventosHTML = '';
+    proventosHTML += _createModalSummaryRow('Salário Base', formatCurrency(salarioBruto), 'provento');
+    
     if (horasExtras > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>Horas Extras:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(horasExtras)}</span>
-                </div>`;
+        proventosHTML += _createModalSummaryRow('Horas Extras', formatCurrency(horasExtras), 'provento');
     }
-
+    
     if (adicionalPericulosidade > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>Adicional de Periculosidade:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(adicionalPericulosidade)}</span>
-                </div>`;
+        proventosHTML += _createModalSummaryRow('Adicional de Periculosidade', formatCurrency(adicionalPericulosidade), 'provento');
     }
-
+    
     if (adicionalInsalubridade > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>Adicional de Insalubridade:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(adicionalInsalubridade)}</span>
-                </div>`;
+        proventosHTML += _createModalSummaryRow('Adicional de Insalubridade', formatCurrency(adicionalInsalubridade), 'provento');
     }
-
+    
     if (adicionalNoturno > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>Adicional Noturno:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(adicionalNoturno)}</span>
-                </div>`;
+        proventosHTML += _createModalSummaryRow('Adicional Noturno', formatCurrency(adicionalNoturno), 'provento');
     }
-
+    
     if (salarioFamilia > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>Salário Família:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(salarioFamilia)}</span>
-                </div>`;
+        proventosHTML += _createModalSummaryRow('Salário Família', formatCurrency(salarioFamilia), 'provento');
     }
-
-    html += `
-                <div class="flex justify-between font-semibold border-t pt-2 mt-2">
-                    <span>Total Bruto:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(totalProventos)}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-4">
-            <h4 class="font-semibold text-gray-800">Descontos</h4>
-            <div class="mt-2 space-y-1 text-sm">
-                <div class="flex justify-between">
-                    <span>INSS:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(descontoINSS.value)}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span>IRRF:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(descontoIRRF.value)}</span>
-                </div>`;
-
-    if (descontoVT > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>Vale-Transporte (6%):</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(descontoVT)}</span>
-                </div>`;
-    }
-
-    if (descontoVR > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>Vale-Refeição/Alimentação:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(descontoVR)}</span>
-                </div>`;
-    }
-
-    if (descontoSaude > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>Plano de Saúde / Odontológico:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(descontoSaude)}</span>
-                </div>`;
-    }
-
-    if (descontoAdiantamentos > 0) {
-        html += `
-                <div class="flex justify-between">
-                    <span>Adiantamentos (Vale):</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(descontoAdiantamentos)}</span>
-                </div>`;
-    }
-
-    html += `
-                <div class="flex justify-between font-semibold border-t pt-2 mt-2">
-                    <span>Total de Descontos:</span>
-                    <span class="font-mono text-red-600">-${formatCurrency(totalDescontos)}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-4 pt-4 border-t border-gray-200">
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Salário Líquido a Receber:</span>
-                <span class="font-bold text-blue-600">${formatCurrency(salarioLiquido)}</span>
-            </div>
+    
+    proventosHTML += `
+        <div class="flex justify-between font-semibold border-t pt-2 mt-2">
+            <span class="text-gray-600">Total Bruto:</span>
+            <span class="font-medium text-green-600">${formatCurrency(totalProventos)}</span>
         </div>`;
+    
+    html += _createModalSection('Proventos (Ganhos)', proventosHTML);
+
+    // 2. Descontos
+    let descontosHTML = '';
+    descontosHTML += _createModalSummaryRow('INSS', formatCurrency(descontoINSS.value), 'desconto');
+    descontosHTML += _createModalSummaryRow('IRRF', formatCurrency(descontoIRRF.value), 'desconto');
+    
+    if (descontoVT > 0) {
+        descontosHTML += _createModalSummaryRow('Vale-Transporte (6%)', formatCurrency(descontoVT), 'desconto');
+    }
+    
+    if (descontoVR > 0) {
+        descontosHTML += _createModalSummaryRow('Vale-Refeição/Alimentação', formatCurrency(descontoVR), 'desconto');
+    }
+    
+    if (descontoSaude > 0) {
+        descontosHTML += _createModalSummaryRow('Plano de Saúde / Odontológico', formatCurrency(descontoSaude), 'desconto');
+    }
+    
+    if (descontoAdiantamentos > 0) {
+        descontosHTML += _createModalSummaryRow('Adiantamentos (Vale)', formatCurrency(descontoAdiantamentos), 'desconto');
+    }
+    
+    descontosHTML += `
+        <div class="flex justify-between font-semibold border-t pt-2 mt-2">
+            <span class="text-gray-600">Total de Descontos:</span>
+            <span class="font-medium text-red-600">-${formatCurrency(totalDescontos)}</span>
+        </div>`;
+    
+    html += _createModalSection('Descontos', descontosHTML);
+
+    // 3. Resultado Final
+    html += _createModalFinalResult('Salário Líquido a Receber', formatCurrency(salarioLiquido), 'text-blue-600');
 
     return html;
 }
@@ -875,36 +815,24 @@ function generateSalarioLiquidoModalContent(results, inputState) {
 function generateRescisaoModalContent(results, inputState) {
     const { proventos, descontos, totalProventos, totalDescontos, valorLiquido } = results;
 
-    let html = `
-        <div class="mt-4">
-            <h4 class="font-semibold text-gray-800">Informações da Rescisão</h4>
-            <div class="mt-2 space-y-1 text-sm">
-                <div class="flex justify-between py-1">
-                    <span>Data de Admissão:</span>
-                    <span class="font-mono text-blue-600">${formatDateBR(inputState.dataAdmissao)}</span>
-                </div>
-                <div class="flex justify-between py-1">
-                    <span>Data de Demissão:</span>
-                    <span class="font-mono text-blue-600">${formatDateBR(inputState.dataDemissao)}</span>
-                </div>
-                <div class="flex justify-between py-1">
-                    <span>Último Salário Bruto:</span>
-                    <span class="font-mono text-blue-600">${formatCurrency(inputState.salarioBruto)}</span>
-                </div>
-            </div>
-        </div>
+    let html = '';
 
-        <div class="mt-4">
-            <h4 class="font-semibold text-gray-800">Verbas Rescisórias (Ganhos)</h4>
-            <div class="mt-2 space-y-2 text-sm">`;
+    // 1. Parâmetros de Entrada (Informações da Rescisão)
+    const inputParams = {
+        'Data de Admissão': formatDateBR(inputState.dataAdmissao),
+        'Data de Demissão': formatDateBR(inputState.dataDemissao),
+        'Último Salário Bruto': formatCurrency(inputState.salarioBruto)
+    };
+    html += _createModalInputParams(inputParams);
 
-    // Add provento items
+    // 2. Verbas Rescisórias (Ganhos)
+    let proventosHTML = '';
     Object.entries(proventos).forEach(([key, data]) => {
         if (data.valor > 0) {
-            html += `
+            proventosHTML += `
                 <details class="calculation-details-item border-b border-gray-200 pb-2">
                     <summary class="flex justify-between items-center cursor-pointer py-1">
-                        <span>${key}</span>
+                        <span class="text-gray-600">${key}</span>
                         <strong class="text-green-600 font-medium">${formatCurrency(data.valor)}</strong>
                     </summary>
                     <div class="calculation-details-content mt-2 p-2 bg-gray-50 rounded-md border-l-4 border-blue-500">
@@ -913,45 +841,34 @@ function generateRescisaoModalContent(results, inputState) {
                 </details>`;
         }
     });
+    
+    proventosHTML += `
+        <div class="flex justify-between font-semibold border-t pt-2 mt-2">
+            <span class="text-gray-600">Total de Proventos:</span>
+            <span class="font-medium text-green-600">${formatCurrency(totalProventos)}</span>
+        </div>`;
+    
+    html += _createModalSection('Verbas Rescisórias (Ganhos)', proventosHTML);
 
-    html += `
-                <div class="flex justify-between font-semibold border-t pt-2 mt-2">
-                    <span>Total de Proventos:</span>
-                    <span class="font-medium text-green-600">${formatCurrency(totalProventos)}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-4">
-            <h4 class="font-semibold text-gray-800">Descontos</h4>
-            <div class="mt-2 space-y-1 text-sm">`;
-
-    // Add desconto items
+    // 3. Descontos
+    let descontosHTML = '';
     Object.entries(descontos).forEach(([key, result]) => {
         const value = result.value || 0;
         if (value > 0) {
-            html += `
-                <div class="flex justify-between py-1">
-                    <span>${key}:</span>
-                    <span class="font-medium text-red-600">-${formatCurrency(value)}</span>
-                </div>`;
+            descontosHTML += _createModalSummaryRow(key, formatCurrency(value), 'desconto');
         }
     });
-
-    html += `
-                <div class="flex justify-between font-semibold border-t pt-2 mt-2">
-                    <span>Total de Descontos:</span>
-                    <span class="font-mono text-red-600">-${formatCurrency(totalDescontos)}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-4 pt-4 border-t border-gray-200">
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Total Líquido a Receber:</span>
-                <span class="font-bold text-blue-600">${formatCurrency(valorLiquido)}</span>
-            </div>
+    
+    descontosHTML += `
+        <div class="flex justify-between font-semibold border-t pt-2 mt-2">
+            <span class="text-gray-600">Total de Descontos:</span>
+            <span class="font-medium text-red-600">-${formatCurrency(totalDescontos)}</span>
         </div>`;
+    
+    html += _createModalSection('Descontos', descontosHTML);
+
+    // 4. Resultado Final
+    html += _createModalFinalResult('Total Líquido a Receber', formatCurrency(valorLiquido), 'text-blue-600');
 
     return html;
 }
