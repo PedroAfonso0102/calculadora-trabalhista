@@ -129,7 +129,11 @@ async function initializeApp() {
         await render();
         
         // Com o CSS pré-compilado e layout forçado, não há mais race condition
-        openFaqModal();
+        // Do not open FAQ modal if 'notest' URL parameter is present
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.has('notest')) {
+            openFaqModal();
+        }
         
     } catch (error) {
         console.error("Failed to initialize the application:", error);

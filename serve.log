@@ -1,1 +1,35 @@
- INFO  Accepting connections at http://0.0.0.0:33459
+
+> serve
+> serve .
+
+ INFO  Accepting connections at http://0.0.0.0:3000
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 GET /?notest=true
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 Returned 200 in 30 ms
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 GET /assets/css/output.css
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 GET /assets/js/app/main.js
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 Returned 200 in 5 ms
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 Returned 200 in 5 ms
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 GET /assets/css/print.css
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 Returned 200 in 4 ms
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 GET /assets/js/app/themeManager.js
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 GET /assets/js/app/events.js
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 GET /assets/js/app/ui.js
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 GET /assets/js/app/state.js
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 GET /assets/js/app/storage.js
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 GET /assets/js/app/knowledge.js
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 Returned 200 in 10 ms
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 Returned 200 in 10 ms
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 Returned 200 in 10 ms
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 Returned 200 in 10 ms
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 Returned 200 in 10 ms
+ HTTP  8/28/2025 9:54:57 PM 127.0.0.1 Returned 200 in 19 ms
+ HTTP  8/28/2025 9:54:58 PM 127.0.0.1 GET /assets/js/app/config.js
+ HTTP  8/28/2025 9:54:58 PM 127.0.0.1 GET /assets/js/app/calculations.js
+ HTTP  8/28/2025 9:54:58 PM 127.0.0.1 GET /assets/js/app/utils.js
+ HTTP  8/28/2025 9:54:58 PM 127.0.0.1 Returned 200 in 4 ms
+ HTTP  8/28/2025 9:54:58 PM 127.0.0.1 Returned 200 in 4 ms
+ HTTP  8/28/2025 9:54:58 PM 127.0.0.1 Returned 200 in 4 ms
+ HTTP  8/28/2025 9:54:58 PM 127.0.0.1 GET /data/legal_texts.json
+ HTTP  8/28/2025 9:54:58 PM 127.0.0.1 Returned 200 in 4 ms
+ HTTP  8/28/2025 9:54:58 PM 127.0.0.1 GET /data/expanded_knowledge_base.json
+ HTTP  8/28/2025 9:54:58 PM 127.0.0.1 Returned 200 in 3 ms
