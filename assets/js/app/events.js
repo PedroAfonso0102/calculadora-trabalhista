@@ -632,9 +632,9 @@ async function handleResize() {
     mainLayout.classList.remove('sidebar-hidden', 'sidebar-collapsed', 'sidebar-expanded');
     
     if (isDesktop) {
-        // Desktop: usar layout collapsed por padrão
-        sidebar.classList.add('open', 'collapsed');
-        mainLayout.classList.add('sidebar-collapsed');
+        // Desktop: usar layout EXPANDED por padrão (mantém consistência com inicialização)
+        sidebar.classList.add('open', 'expanded');
+        mainLayout.classList.add('sidebar-expanded');
         sidebar.classList.remove('hidden');
         sidebar.classList.add('lg:block');
     } else {
