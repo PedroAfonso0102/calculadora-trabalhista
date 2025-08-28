@@ -18,11 +18,12 @@ export function formatCurrency(value) {
 
 /**
  * Parses a currency string (e.g., "R$ 1.234,56") and returns a number.
+ * Returns 0 for empty or invalid strings (for calculations).
  * @param {string} value - The currency string to unmask.
- * @returns {number} - The parsed number (e.g., 1234.56).
+ * @returns {number} - The parsed number (e.g., 1234.56) or 0 for empty fields.
  */
 export function unmaskCurrency(value) {
-    if (typeof value !== 'string' || !value) return 0;
+    if (typeof value !== 'string' || !value || value.trim() === '') return 0;
     // Remove 'R$', thousands separators '.', and replace decimal ',' with '.'
     const numericString = value.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
     const number = parseFloat(numericString);
@@ -51,18 +52,20 @@ export function debounce(func, wait) {
 
 /**
  * A pure function that takes a string and formats it as BRL currency.
- * This function is easily testable.
+ * This function is easily testable and leaves empty fields blank.
  * @param {string} value - The raw string value from an input.
- * @returns {string} - The formatted currency string.
+ * @returns {string} - The formatted currency string or empty string.
  */
 export function formatAsCurrency(value) {
-    if (typeof value !== 'string' || !value) return '';
+    if (typeof value !== 'string' || !value || value.trim() === '') return '';
+    
     // Keep only digits
     let numStr = value.replace(/\D/g, '');
-    if (numStr === '') return '';
+    if (numStr === '' || numStr === '0') return '';
 
     // Remove leading zeros
     numStr = numStr.replace(/^0+/, '');
+    if (numStr === '') return '';
 
     // Pad with zeros if necessary to ensure at least 3 digits for cents
     while (numStr.length < 3) {
@@ -74,7 +77,7 @@ export function formatAsCurrency(value) {
 
     const number = parseFloat(formatted);
 
-    return isNaN(number) ? '' : number.toLocaleString('pt-BR', {
+    return isNaN(number) || number === 0 ? '' : number.toLocaleString('pt-BR', {
         style: 'currency',
         currency: 'BRL'
     });
@@ -82,11 +85,28 @@ export function formatAsCurrency(value) {
 
 
 /**
- * Applies a real-time currency mask to an input field by attaching an event listener.
+ * Applies a real-time currency mask to an input field by attaching event listeners.
+ * Also improves UX by selecting all text on focus for easy replacement.
  * @param {HTMLInputElement} inputElement - The input element to apply the mask to.
  */
 export function applyCurrencyMask(inputElement) {
+    // Apply mask on input
     inputElement.addEventListener('input', (e) => {
         e.target.value = formatAsCurrency(e.target.value);
+    });
+    
+    // Select all text on focus for easy replacement
+    inputElement.addEventListener('focus', (e) => {
+        // Use setTimeout to ensure selection happens after focus
+        setTimeout(() => {
+            e.target.select();
+        }, 0);
+    });
+    
+    // Handle paste events
+    inputElement.addEventListener('paste', (e) => {
+        setTimeout(() => {
+            e.target.value = formatAsCurrency(e.target.value);
+        }, 0);
     });
 }

@@ -8,7 +8,7 @@
 import { state, updateState, initialState } from './state.js';
 import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal } from './ui.js';
 import * as calculations from './calculations.js';
-import { debounce, unmaskCurrency, formatCurrency } from './utils.js';
+import { debounce, unmaskCurrency, formatCurrency, applyCurrencyMask } from './utils.js';
 
 /**
  * Updates the visual state of a segmented control based on the selected radio button.
@@ -750,6 +750,9 @@ export function initializeEventListeners() {
 
     // Customization Modal Event Listeners
     initializeCustomizeModalEvents();
+    
+    // Apply improved currency masks to all money input fields
+    initializeCurrencyMasks();
 }
 
 /**
@@ -1122,6 +1125,17 @@ function showNotification(message, type = 'info') {
             }
         }, 300);
     }, 3000);
+}
+
+/**
+ * Initializes improved currency masks for all money input fields.
+ * Applies smart masking with better UX (select all on focus, no R$ 0,00 default).
+ */
+function initializeCurrencyMasks() {
+    const moneyInputs = document.querySelectorAll('.money-mask');
+    moneyInputs.forEach(input => {
+        applyCurrencyMask(input);
+    });
 }
 
 // Export the sidebar initialization function
