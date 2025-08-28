@@ -289,24 +289,6 @@ function updateSegmentedControl(groupElement) {
 }
 
 /**
- * Enforces the business rule that a user cannot receive both periculosidade and insalubridade.
- * This function ONLY updates the state. The UI (disabling fields) is handled in the render function.
- * @param {string} calculatorName - The name of the current calculator (e.g., 'ferias').
- * @param {string} changedFieldName - The name of the field that triggered the change.
- */
-function handleInsalubridadePericulosidadeInterlock(calculatorName, changedFieldName) {
-    // If periculosidade was just checked, reset insalubridade if it was active.
-    if (changedFieldName === 'periculosidade' && state[calculatorName].periculosidade && state[calculatorName].insalubridadeGrau !== '0') {
-        updateState(`${calculatorName}.insalubridadeGrau`, '0');
-    }
-
-    // If insalubridade was just changed to be active, uncheck periculosidade.
-    if (changedFieldName === 'insalubridadeGrau' && state[calculatorName].insalubridadeGrau !== '0' && state[calculatorName].periculosidade) {
-        updateState(`${calculatorName}.periculosidade`, false);
-    }
-}
-
-/**
  * Limpa todos os campos do formulário de uma calculadora específica
  * @param {string} calculatorName - Nome da calculadora a ser limpa
  */
@@ -352,25 +334,6 @@ function validateField(path, value, allValues = null) {
 }
 
 /**
- * Validação híbrida de campos - mostra erro apenas após primeiro blur, 
- * depois valida em tempo real (FASE 3)
- */
-function validateFieldWithFeedback(element, path) {
-    const value = getFieldValue(element);
-    const [calculatorName] = path.split('.');
-    const currentState = state[calculatorName] || {};
-    
-    clearFieldValidation(element);
-    
-    const validation = validateField(path, value, currentState);
-    if (validation.isValid && value) {
-        showFieldSuccess(element);
-    } else if (!validation.isValid) {
-        showFieldError(element, validation.message);
-    }
-}
-
-/**
  * Obtém o valor do campo baseado no seu tipo
  * @param {HTMLElement} element - Elemento do formulário
  * @returns {string|number|boolean} Valor do campo conforme seu tipo
@@ -393,79 +356,6 @@ function getFieldValue(element) {
     }
 }
 
-/**
- * Remove validação anterior do campo
- * @param {HTMLElement} element - Elemento do formulário a ser limpo
- */
-function clearFieldValidation(element) {
-    element.classList.remove('input-success', 'input-error');
-    element.style.backgroundColor = ''; // Reset the background color
-    
-    // Remove mensagens de validação existentes
-    const existingValidation = element.parentNode.querySelector('.field-validation');
-    if (existingValidation) {
-        existingValidation.remove();
-    }
-}
-
-/**
- * Mostra erro de validação no campo
- * @param {HTMLElement} element - Elemento do formulário
- * @param {string} message - Mensagem de erro a ser exibida
- */
-function showFieldError(element, message) {
-    element.classList.add('input-error'); // This class applies the correct border color from the theme
-    element.classList.remove('input-success');
-    element.style.backgroundColor = 'var(--chart-error-light)'; // Use theme variable for background
-    
-    // Format the error message to show dates in Brazilian format if needed
-    let formattedMessage = message;
-    
-    // If the element is a date input and the message contains the raw ISO date
-    if (element.type === 'date' && element.value) {
-        const isoDateRegex = /\d{4}-\d{2}-\d{2}/g;
-        formattedMessage = message.replace(isoDateRegex, (match) => {
-            // Convert ISO date to Brazilian format for display
-            try {
-                const date = new Date(match + 'T00:00:00');
-                return date.toLocaleDateString('pt-BR');
-            } catch (e) {
-                return match;
-            }
-        });
-    }
-    
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'field-validation text-red-600';
-    errorDiv.innerHTML = `
-        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-        </svg>
-        ${formattedMessage}
-    `;
-    element.parentNode.appendChild(errorDiv);
-}
-
-/**
- * Mostra sucesso de validação no campo
- * @param {HTMLElement} element - Elemento do formulário validado com sucesso
- */
-function showFieldSuccess(element) {
-    element.classList.add('input-success'); // This class applies the correct border color from the theme
-    element.classList.remove('input-error');
-    element.style.backgroundColor = 'var(--chart-success-light)'; // Use theme variable for background
-    
-    const successDiv = document.createElement('div');
-    successDiv.className = 'field-validation text-green-600';
-    successDiv.innerHTML = `
-        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-        </svg>
-        Válido
-    `;
-    element.parentNode.appendChild(successDiv);
-}
-
 
 
 function handleInputChange(event) {
@@ -473,97 +363,35 @@ function handleInputChange(event) {
     const path = element.dataset.state;
     if (!path) return;
 
-    let value;
-    switch (element.type) {
-        case 'checkbox':
-            value = element.checked;
-            break;
-        case 'radio':
-            if (element.checked) {
-                value = element.value;
-            } else {
-                return;
-            }
-            break;
-        case 'number':
-            value = parseFloat(element.value) || 0;
-            break;
-        case 'text':
-            if (element.classList.contains('money-mask')) {
-                const unmaskedValue = unmaskCurrency(element.value);
-                value = unmaskedValue;
-            } else {
-                value = element.value;
-            }
-            break;
-        default:
-            value = element.value;
-    }
-
-    // FASE 3: Validação híbrida em tempo real
-    const fieldContainer = element.closest('.space-y-2') || element.parentNode;
-    const isFirstBlur = !fieldContainer.dataset.hasBlurred;
-    
-    if (event.type === 'blur' && isFirstBlur) {
-        fieldContainer.dataset.hasBlurred = 'true';
-        validateFieldWithFeedback(element, path);
-    } else if (fieldContainer.dataset.hasBlurred === 'true') {
-        // Validação em tempo real após primeiro blur
-        validateFieldWithFeedback(element, path);
-    }
-
-    updateState(path, value);
-
-    // Se for um campo de data, também validar o outro campo de data para validação cruzada
+    const value = getFieldValue(element);
     const [calculatorName, fieldName] = path.split('.');
+    
+    // Perform validation
+    const validation = validateField(path, value, state[calculatorName]);
+
+    // Update state with new value and validation result
+    updateState(path, value, validation.isValid ? null : validation.message);
+
+    // If a date field changes, we might need to re-validate the other date field
     if (fieldName === 'dataAdmissao' || fieldName === 'dataDemissao') {
         const otherFieldName = fieldName === 'dataAdmissao' ? 'dataDemissao' : 'dataAdmissao';
-        const otherElement = document.querySelector(`[data-state="${calculatorName}.${otherFieldName}"]`);
-        if (otherElement && otherElement.closest('.space-y-2').dataset.hasBlurred === 'true') {
-            validateFieldWithFeedback(otherElement, `${calculatorName}.${otherFieldName}`);
+        const otherPath = `${calculatorName}.${otherFieldName}`;
+        const otherValue = state[calculatorName][otherFieldName];
+
+        // Only re-validate if the other field has a value
+        if (otherValue) {
+            const otherValidation = validateField(otherPath, otherValue, state[calculatorName]);
+            updateState(otherPath, otherValue, otherValidation.isValid ? null : otherValidation.message);
         }
     }
 
-    if (path === 'salarioLiquido.recebeSalarioFamilia' && !value) {
-        updateState('salarioLiquido.filhosSalarioFamilia', 0);
-    }
+    // Set a flag to indicate a calculation was triggered by user input
+    state.lastInteraction = 'calculation';
 
-    render().then(() => {
-        // This block runs after the UI has been updated with the new calculation.
-        // We only show the notification if the input was valid and didn't cause an error state.
-        if (!path) return;
+    // Re-render the UI
+    render();
 
-        const [calculatorName] = path.split('.');
-
-        // This check is to prevent showing notifications for fields that don't have validation rules
-        // and for which updates might be too frequent (e.g., slider).
-        // We only want to show notifications for user-completed actions.
-        const isMeaningfulChange = event.type === 'change' || event.type === 'blur';
-
-        if (isMeaningfulChange) {
-            const errorState = state[calculatorName].errors || {};
-            const hasErrors = Object.values(errorState).some(message => message);
-
-            if (!hasErrors) {
-                const calculatorNames = {
-                    ferias: 'Cálculo de Férias',
-                    rescisao: 'Cálculo de Rescisão',
-                    decimoTerceiro: '13º Salário',
-                    salarioLiquido: 'Salário Líquido',
-                    fgts: 'FGTS',
-                    pisPasep: 'PIS/PASEP',
-                    seguroDesemprego: 'Seguro-Desemprego',
-                    horasExtras: 'Horas Extras',
-                    inss: 'INSS',
-                    valeTransporte: 'Vale-Transporte',
-                    irpf: 'IRPF'
-                };
-                const calculatorFriendlyName = calculatorNames[calculatorName] || 'Cálculo';
-                showNotification(`${calculatorFriendlyName} atualizado.`, 'success', 2500);
-            }
-        }
-    });
-
+    // Persist data if user has opted in
     if (getSavePreference()) {
         saveStateToLocalStorage();
     }
@@ -758,19 +586,10 @@ export function initializeEventListeners() {
     appContainer.addEventListener('change', (event) => {
         const target = event.target;
         if (target.type === 'checkbox' || target.type === 'radio' || target.tagName.toLowerCase() === 'select') {
-            handleInputChange(event); // Update state first
-
-            const path = target.dataset.state;
-            if (!path) return;
-
-            const [calculatorName, fieldName] = path.split('.');
+            handleInputChange(event);
 
             if (target.type === 'radio' && target.closest('[role="radiogroup"]')) {
                 updateSegmentedControl(target.closest('[role="radiogroup"]'));
-            }
-
-            if (fieldName === 'periculosidade' || fieldName === 'insalubridadeGrau') {
-                handleInsalubridadePericulosidadeInterlock(calculatorName, fieldName);
             }
         }
     });

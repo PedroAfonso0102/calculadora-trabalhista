@@ -60,6 +60,98 @@ const calculatorPanels = {
     irpf: document.getElementById('calculator-irpf')
 };
 
+// --- Validation Feedback UI Functions ---
+
+/**
+ * Removes any existing validation feedback (error or success) from a field.
+ * @param {HTMLElement} element - The form field element.
+ */
+function clearValidation(element) {
+    element.classList.remove('input-success', 'input-error');
+    element.style.backgroundColor = ''; // Reset background color
+
+    const existingValidation = element.parentNode.querySelector('.field-validation');
+    if (existingValidation) {
+        existingValidation.remove();
+    }
+}
+
+/**
+ * Displays a validation error message for a field.
+ * @param {HTMLElement} element - The form field element.
+ * @param {string} message - The error message to display.
+ */
+function showFieldError(element, message) {
+    element.classList.add('input-error');
+    element.classList.remove('input-success');
+    element.style.backgroundColor = 'var(--chart-error-light)';
+
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-validation text-red-600';
+    errorDiv.innerHTML = `
+        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+        ${message}
+    `;
+    element.parentNode.appendChild(errorDiv);
+}
+
+/**
+ * Displays a validation success state for a field.
+ * @param {HTMLElement} element - The form field element.
+ */
+function showFieldSuccess(element) {
+    element.classList.add('input-success');
+    element.classList.remove('input-error');
+    element.style.backgroundColor = 'var(--chart-success-light)';
+
+    const successDiv = document.createElement('div');
+    successDiv.className = 'field-validation text-green-600';
+    successDiv.innerHTML = `
+        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+        Válido
+    `;
+    element.parentNode.appendChild(successDiv);
+}
+
+/**
+ * Renders validation feedback for all fields in a calculator form based on the current state.
+ * @param {string} calculatorName - The name of the calculator to render feedback for.
+ */
+function renderValidationFeedback(calculatorName) {
+    const formIdName = calculatorName.replace(/([A-Z])/g, g => `-${g[0].toLowerCase()}`);
+    const form = document.getElementById(`form-${formIdName}`);
+    if (!form) return;
+
+    const calculatorState = state[calculatorName];
+    if (!calculatorState) return;
+
+    const errors = calculatorState.errors || {};
+    const touched = calculatorState.touched || {};
+
+    const fields = form.querySelectorAll('[data-state]');
+
+    fields.forEach(element => {
+        const path = element.dataset.state;
+        const fieldName = path.split('.')[1];
+
+        clearValidation(element);
+
+        const hasError = errors[fieldName];
+        const isTouched = touched[fieldName];
+
+        if (hasError) {
+            showFieldError(element, errors[fieldName]);
+        } else if (isTouched) {
+            // Only show success if the field has been touched and has no errors.
+            showFieldSuccess(element);
+        }
+    });
+}
+
 
 // --- Tooltip UI Functions ---
 let currentTooltip = null;
@@ -2160,14 +2252,39 @@ export function render() {
             renderFieldStates(activeCalculator);
         }
 
-        // 10. Display validation errors
+        // 10. Display validation feedback (errors and successes)
         if (state[activeCalculator]) {
-            renderValidationErrors(activeCalculator);
+            renderValidationFeedback(activeCalculator);
         }
         
         // Wait for DOM updates to complete
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
+                if (state.lastInteraction === 'calculation') {
+                    const calculatorName = state.activeTab;
+                    const calculatorState = state[calculatorName];
+                    const hasErrors = calculatorState && calculatorState.errors && Object.keys(calculatorState.errors).length > 0;
+
+                    if (!hasErrors) {
+                        const calculatorNames = {
+                            ferias: 'Cálculo de Férias',
+                            rescisao: 'Cálculo de Rescisão',
+                            decimoTerceiro: '13º Salário',
+                            salarioLiquido: 'Salário Líquido',
+                            fgts: 'FGTS',
+                            pisPasep: 'PIS/PASEP',
+                            seguroDesemprego: 'Seguro-Desemprego',
+                            horasExtras: 'Horas Extras',
+                            inss: 'INSS',
+                            valeTransporte: 'Vale-Transporte',
+                            irpf: 'IRPF'
+                        };
+                        const calculatorFriendlyName = calculatorNames[calculatorName] || 'Cálculo';
+                        showNotification(`${calculatorFriendlyName} atualizado.`, 'success', 2500);
+                    }
+
+                    delete state.lastInteraction; // Reset the flag
+                }
                 resolve();
             });
         });
@@ -2204,30 +2321,6 @@ function renderFieldStates(calculatorName) {
         baseInsalubridadeRadios.forEach(radio => radio.disabled = true);
     } else if (insalubridadeValue && insalubridadeValue !== "0") {
         periculosidadeCheckbox.disabled = true;
-    }
-}
-
-
-function renderValidationErrors(calculatorName) {
-    const errorState = state[calculatorName].errors;
-    const formIdName = calculatorName.replace(/([A-Z])/g, g => `-${g[0].toLowerCase()}`);
-    const form = document.getElementById(`form-${formIdName}`);
-
-    // Clear all previous errors in the form
-    form.querySelectorAll('.error-message').forEach(el => el.remove());
-    form.querySelectorAll('[data-state]').forEach(el => el.classList.remove('border-red-500'));
-
-    // Display new errors
-    for (const fieldName in errorState) {
-        const message = errorState[fieldName];
-        const element = form.querySelector(`[data-state="${calculatorName}.${fieldName}"]`);
-        if (element && message) {
-            element.classList.add('border-red-500');
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message text-red-500 text-xs mt-1';
-            errorDiv.textContent = message;
-            element.parentNode.insertBefore(errorDiv, element.nextSibling);
-        }
     }
 }
 

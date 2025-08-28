@@ -14,7 +14,8 @@ const baseCalculatorState = {
     periculosidade: false,
     insalubridadeGrau: '0',
     insalubridadeBase: BASES_DE_CALCULO.SALARIO_MINIMO,
-    errors: {}
+    errors: {},
+    touched: {}
 };
 
 // Extended base for calculators that include overtime and night shift
@@ -67,13 +68,15 @@ const initialState = {
         salarioBruto: 0,
         saldoTotal: 0,
         opcaoSaque: 'rescisao',
-        errors: {}
+        errors: {},
+        touched: {}
     },
     pisPasep: {
         salarioMedio: 0,
         mesesTrabalhados: 0,
         dataInscricao: '',
-        errors: {}
+        errors: {},
+        touched: {}
     },
     seguroDesemprego: {
         salario1: 0,
@@ -81,7 +84,8 @@ const initialState = {
         salario3: 0,
         mesesTrabalhados: 0,
         numSolicitacoes: 0,
-        errors: {}
+        errors: {},
+        touched: {}
     },
     horasExtras: {
         salarioBase: 0,
@@ -89,24 +93,28 @@ const initialState = {
         horasExtras50: 0,
         horasExtras100: 0,
         horasNoturnas: 0,
-        errors: {}
+        errors: {},
+        touched: {}
     },
     inss: {
         salarioBruto: 0,
-        errors: {}
+        errors: {},
+        touched: {}
     },
     valeTransporte: {
         salarioBruto: 0,
         custoDiario: 0,
         diasTrabalho: 22,
-        errors: {}
+        errors: {},
+        touched: {}
     },
     irpf: {
         rendaAnual: 0,
         dependentes: 0,
         outrasDeducoes: 0,
         impostoRetido: 0,
-        errors: {}
+        errors: {},
+        touched: {}
     }
 };
 
@@ -118,17 +126,58 @@ const state = {
 };
 
 /**
- * Updates a value in the application state.
+ * Updates a value in the application state and optionally its validation error.
+ * Also handles business logic related to state changes (e.g., insalubridade/periculosidade interlock).
  * @param {string} path - The path to the value to update, e.g., "ferias.salarioBruto"
  * @param {*} value - The new value.
+ * @param {string | null} [errorMessage=null] - The error message for the field, or null to clear it.
  */
-function updateState(path, value) {
+function updateState(path, value, errorMessage = null) {
     const keys = path.split('.');
+    const [calculatorName, fieldName] = path.split('.');
+
     let current = state;
     while (keys.length > 1) {
         current = current[keys.shift()];
     }
     current[keys[0]] = value;
+
+    // Handle interlock between insalubridade and periculosidade
+    const calculatorState = state[calculatorName];
+    if (calculatorState) {
+        if (fieldName === 'periculosidade' && value === true) {
+            if (calculatorState.insalubridadeGrau && calculatorState.insalubridadeGrau !== '0') {
+                calculatorState.insalubridadeGrau = '0';
+            }
+        }
+        if (fieldName === 'insalubridadeGrau' && value !== '0') {
+            if (calculatorState.periculosidade === true) {
+                calculatorState.periculosidade = false;
+            }
+        }
+
+        // Reset filhosSalarioFamilia if recebeSalarioFamilia is set to false
+        if (path === 'salarioLiquido.recebeSalarioFamilia' && value === false) {
+            if (calculatorState.filhosSalarioFamilia !== 0) {
+                calculatorState.filhosSalarioFamilia = 0;
+            }
+        }
+
+        // Mark the field as touched for validation feedback
+        if (typeof calculatorState.touched === 'object') {
+            calculatorState.touched[fieldName] = true;
+        }
+    }
+
+    // Update the error state for the field
+    if (calculatorState && typeof calculatorState.errors === 'object') {
+        if (errorMessage) {
+            calculatorState.errors[fieldName] = errorMessage;
+        } else {
+            // Clear the error if the new value is valid
+            delete calculatorState.errors[fieldName];
+        }
+    }
 }
 
 // Export the state, the update function, and the initial state so other modules can use them.
