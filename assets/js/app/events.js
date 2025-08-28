@@ -7,7 +7,7 @@
 
 import { state, updateState, initialState } from './state.js';
 import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal, renderSidebar, openFaqModal, renderMobileCalculatorSelector, toggleMobileDropdown, hideMobileDropdown } from './ui.js';
-import { calculatorFunctions, calculateNetSalary } from './calculations.js';
+import { calculatorFunctions, calcularSalarioLiquidoSimples } from './calculations.js';
 import { debounce, unmaskCurrency, formatCurrency, initializeCurrencyMask, isValidDate, isValidDateRange } from './utils.js';
 import { 
     saveState, 
@@ -1126,24 +1126,21 @@ function handleSalarySimulation(event) {
     const newGrossSalary = unmaskCurrency(simulatorInput.value);
 
     if (newGrossSalary <= 0) {
-        // If salary is zero or negative, show zero result
         updateSalaryResult({ salarioLiquido: 0 });
         return;
     }
 
-    // Get current dependents from the active salary liquid state
     const dependents = state.salarioLiquido.dependentes || 0;
 
-    // Calculate other discounts from current salary liquid state
+    // CORREÇÃO: Reintroduzindo o cálculo de "outros descontos" que foi removido.
     const otherDiscounts = (state.salarioLiquido.descontoVt || 0) +
                           (state.salarioLiquido.descontoVr || 0) +
                           (state.salarioLiquido.descontoSaude || 0) +
                           (state.salarioLiquido.descontoAdiantamentos || 0);
 
-    // Use the new calculateNetSalary function
-    const results = calculateNetSalary(newGrossSalary, dependents, otherDiscounts);
+    // Chama a função de cálculo SIMPLES com todos os parâmetros corretos.
+    const results = calcularSalarioLiquidoSimples(newGrossSalary, dependents, otherDiscounts);
 
-    // Update the UI using the new updateSalaryResult function
     updateSalaryResult(results);
 }
 

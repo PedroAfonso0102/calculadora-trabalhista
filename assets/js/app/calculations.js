@@ -1,9 +1,9 @@
 /**
- * Pure Calculation Functions
+ * Funções Puras de Cálculo
  *
- * This file contains all the business logic for the calculators.
- * These functions are pure: they take data as input and return a
- * result, without any interaction with the DOM.
+ * Este arquivo contém toda a lógica de negócio para as calculadoras.
+ * Estas funções são puras: elas recebem dados como entrada e retornam um
+ * resultado, sem qualquer interação com o DOM.
  */
 
 import {
@@ -19,86 +19,57 @@ import {
 } from './config.js';
 import { formatCurrency, formatCurrencyFromInput } from './utils.js';
 
-// Re-export formatCurrencyFromInput to make it available from calculations module
+// Re-exporta para estar disponível a partir deste módulo
 export { formatCurrencyFromInput };
 
 /**
- * Calculates net salary based on gross salary, dependents, and other discounts.
- * This is a simplified version specifically for the salary simulator.
- * @param {number} grossSalary - The gross salary amount
- * @param {number} dependents - Number of dependents for tax calculation
- * @param {number} otherDiscounts - Additional discounts to be applied
- * @returns {object} - An object with detailed net salary calculation results
+ * Calcula o salário líquido de forma simplificada para o simulador.
+ * @param {number} salarioBruto - O valor do salário bruto.
+ * @param {number} dependentes - Número de dependentes.
+ * @param {number} outrosDescontos - Valor de outros descontos.
+ * @returns {object} - Objeto com o resultado do salário líquido.
  */
-export function calculateNetSalary(grossSalary, dependents = 0, otherDiscounts = 0) {
-    if (!grossSalary || grossSalary <= 0) {
-        return {
-            salarioBruto: 0,
-            salarioLiquido: 0,
-            descontoINSS: { value: 0 },
-            descontoIRRF: { value: 0 },
-            outrosDescontos: 0,
-            totalDescontos: 0
-        };
+export function calcularSalarioLiquidoSimples(salarioBruto, dependentes = 0, outrosDescontos = 0) {
+    if (!salarioBruto || salarioBruto <= 0) {
+        return { salarioLiquido: 0 };
     }
-
-    // Calculate INSS
-    const inssResult = calculateINSS(grossSalary);
+    const inssResult = calcularContribuicaoINSS(salarioBruto);
     const descontoINSS = inssResult.value;
-
-    // Calculate IRRF (base is gross salary minus INSS)
-    const baseIRRF = grossSalary - descontoINSS;
-    const irrfResult = calculateIRRF(baseIRRF, dependents);
+    const baseIRRF = salarioBruto - descontoINSS;
+    const irrfResult = calcularContribuicaoIRRF(baseIRRF, dependentes);
     const descontoIRRF = irrfResult.value;
-
-    // Calculate total discounts
-    const totalDescontos = descontoINSS + descontoIRRF + otherDiscounts;
-    const salarioLiquido = grossSalary - totalDescontos;
-
+    const totalDescontos = descontoINSS + descontoIRRF + outrosDescontos;
+    const salarioLiquido = salarioBruto - totalDescontos;
     return {
-        salarioBruto: roundMonetary(grossSalary),
-        salarioLiquido: roundMonetary(Math.max(0, salarioLiquido)),
-        descontoINSS: inssResult,
-        descontoIRRF: irrfResult,
-        outrosDescontos: roundMonetary(otherDiscounts),
-        totalDescontos: roundMonetary(totalDescontos)
+        salarioLiquido: arredondar(Math.max(0, salarioLiquido))
     };
 }
 
 /**
- * Rounds a number to avoid floating point precision issues
- * @param {number} value - The number to round
- * @param {number} decimals - Number of decimal places (default: 2)
- * @returns {number} - The rounded number
+ * Arredonda um valor monetário para 4 casas decimais para precisão.
+ * @param {number} value - O número a ser arredondado.
+ * @returns {number} - O número arredondado.
  */
-function roundToPrecision(value, decimals = 2) {
-    return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
-}
-
-/**
- * Rounds monetary values to 4 decimal places to match test expectations
- * @param {number} value - The number to round
- * @returns {number} - The rounded number
- */
-function roundMonetary(value) {
+function arredondar(value) {
+    if (typeof value !== 'number' || isNaN(value)) return 0;
     return Math.round(value * 10000) / 10000;
 }
 
 /**
- * Calculates the base remuneration for calculations (DRY principle).
- * This centralizes the logic for calculating the total remuneration base
- * used in multiple calculators (vacation, 13th salary, severance, etc.).
- * @param {object} state - Calculator state containing salary and additional values
- * @returns {number} - The calculated base remuneration
+ * Calcula a remuneração base para cálculos (DRY principle).
+ * Centraliza a lógica para calcular o total da remuneração base
+ * usada em múltiplas calculadoras (férias, 13º, rescisão, etc.).
+ * @param {object} state - O estado da calculadora contendo salário e valores adicionais.
+ * @returns {number} - A remuneração base calculada.
  */
 export function calcularRemuneracaoBase(state) {
     const { 
-        salarioBruto, 
+        salarioBruto = 0,
         mediaHorasExtras = 0, 
         mediaAdicionalNoturno = 0, 
-        periculosidade, 
-        insalubridadeGrau, 
-        insalubridadeBase 
+        periculosidade = false,
+        insalubridadeGrau = '0',
+        insalubridadeBase = BASES_DE_CALCULO.SALARIO_MINIMO
     } = state;
 
     const adicionalRisco = calcularAdicionaisRisco(
@@ -108,105 +79,105 @@ export function calcularRemuneracaoBase(state) {
         insalubridadeBase
     ).total;
     
-    return salarioBruto + mediaHorasExtras + mediaAdicionalNoturno + adicionalRisco;
+    return arredondar(salarioBruto + mediaHorasExtras + mediaAdicionalNoturno + adicionalRisco);
 }
 
 /**
- * Calculates the INSS (social security) contribution based on a given salary.
- * The calculation is progressive, based on different tiers.
- * @param {number} base - The base salary for the calculation.
- * @returns {{value: number, details: Array<object>}} - An object containing the total INSS value and the details of the calculation.
+ * Calcula a contribuição do INSS (Previdência Social) com base em um salário.
+ * O cálculo é progressivo, baseado em diferentes faixas.
+ * @param {number} base - O salário base para o cálculo.
+ * @returns {{value: number, details: Array<object>}} - Objeto com o valor total do INSS e os detalhes do cálculo.
  */
-export function calculateINSS(base) {
+export function calcularContribuicaoINSS(base) {
     let inss = 0;
-    let remainingBase = base;
-    let previousLimit = 0;
-    const details = [];
+    let baseRestante = base;
+    let limiteAnterior = 0;
+    const detalhes = [];
 
-    for (const tier of INSS_TABLE) {
-        if (base > previousLimit) {
-            const taxableAmountInTier = Math.min(remainingBase, tier.limit - previousLimit);
-            if (taxableAmountInTier <= 0) break;
+    for (const faixa of INSS_TABLE) {
+        if (base > limiteAnterior) {
+            const valorTributavelNaFase = Math.min(baseRestante, faixa.limit - limiteAnterior);
+            if (valorTributavelNaFase <= 0) break;
 
-            const tierInss = taxableAmountInTier * tier.rate;
-            inss += tierInss;
+            const inssDaFaixa = valorTributavelNaFase * faixa.rate;
+            inss += inssDaFaixa;
 
-            details.push({
-                range: `Até ${formatCurrency(tier.limit)}`,
-                base: formatCurrency(taxableAmountInTier),
-                rate: `${(tier.rate * 100).toFixed(1)}%`,
-                value: formatCurrency(tierInss)
+            detalhes.push({
+                range: `Até ${formatCurrency(faixa.limit)}`,
+                base: formatCurrency(valorTributavelNaFase),
+                rate: `${(faixa.rate * 100).toFixed(1)}%`,
+                value: formatCurrency(inssDaFaixa)
             });
 
-            remainingBase -= taxableAmountInTier;
-            if (remainingBase <= 0) break;
+            baseRestante -= valorTributavelNaFase;
+            if (baseRestante <= 0) break;
         }
-        previousLimit = tier.limit;
+        limiteAnterior = faixa.limit;
     }
-    // The INSS contribution is capped at a ceiling.
-    return { value: roundMonetary(Math.min(inss, INSS_CEILING)), details, baseOriginal: base };
+    // A contribuição do INSS é limitada a um teto.
+    return { value: arredondar(Math.min(inss, INSS_CEILING)), details: detalhes, baseOriginal: base };
 }
 
 /**
- * Calculates the IRRF (income tax) based on a given salary.
- * @param {number} base - The base salary for the calculation (already deducted from INSS).
- * @param {number} numDependents - The number of dependents for deduction.
- * @returns {{value: number, details: object}} - An object containing the total IRRF value and the details of the calculation.
+ * Calcula o IRRF (Imposto de Renda Retido na Fonte) com base em um salário.
+ * @param {number} base - O salário base para o cálculo (já deduzido do INSS).
+ * @param {number} numDependentes - O número de dependentes para dedução.
+ * @returns {{value: number, details: object}} - Objeto com o valor total do IRRF e os detalhes do cálculo.
  */
-export function calculateIRRF(base, numDependents = 0) {
-    const dependentsDeduction = numDependents * IRRF_DEPENDENT_DEDUCTION;
-    const irrfBase = base - dependentsDeduction;
+export function calcularContribuicaoIRRF(base, numDependentes = 0) {
+    const deducaoDependentes = numDependentes * IRRF_DEPENDENT_DEDUCTION;
+    const baseIRRF = base - deducaoDependentes;
     let irrf = 0;
-    let details = {};
+    let detalhes = {};
 
-    for (const tier of IRRF_TABLE) {
-        if (irrfBase <= tier.limit) {
-            irrf = Math.max(0, (irrfBase * tier.rate) - tier.deduction);
-            details = {
+    for (const faixa of IRRF_TABLE) {
+        if (baseIRRF <= faixa.limit) {
+            irrf = Math.max(0, (baseIRRF * faixa.rate) - faixa.deduction);
+            detalhes = {
                 base: formatCurrency(base),
-                dependentsDeduction: `-${formatCurrency(dependentsDeduction)}`,
-                irrfBase: formatCurrency(irrfBase),
-                rate: `${(tier.rate * 100).toFixed(2)}%`,
-                deduction: `-${formatCurrency(tier.deduction)}`,
+                dependentsDeduction: `-${formatCurrency(deducaoDependentes)}`,
+                irrfBase: formatCurrency(baseIRRF),
+                rate: `${(faixa.rate * 100).toFixed(2)}%`,
+                deduction: `-${formatCurrency(faixa.deduction)}`,
                 value: formatCurrency(irrf)
             };
             break;
         }
     }
-    return { value: roundToPrecision(irrf, 2), details, baseOriginal: base };
+    return { value: arredondar(irrf), details: detalhes, baseOriginal: base };
 }
 
 /**
- * Calculates the "Salário Família" benefit.
- * @param {number} salarioBruto - The gross salary.
- * @param {number} numFilhos - The number of eligible children.
- * @returns {number} - The total value of the benefit.
+ * Calcula o benefício do Salário Família.
+ * @param {number} salarioBruto - O salário bruto.
+ * @param {number} numFilhos - O número de filhos elegíveis.
+ * @returns {number} - O valor total do benefício.
  */
-export function calculateSalarioFamilia(salarioBruto, numFilhos) {
+export function calcularSalarioFamilia(salarioBruto, numFilhos) {
     if (salarioBruto <= SALARIO_FAMILIA_LIMIT && numFilhos > 0) {
-        return numFilhos * SALARIO_FAMILIA_VALUE;
+        return arredondar(numFilhos * SALARIO_FAMILIA_VALUE);
     }
     return 0;
 }
 
 /**
- * Calculates a proportional value based on months.
- * @param {number} valorBase - The base value for a full 12-month period.
- * @param {number} meses - The number of months to calculate the proportion for.
- * @returns {number} - The proportional value.
+ * Calcula um valor proporcional com base nos meses.
+ * @param {number} valorBase - O valor base para um período completo de 12 meses.
+ * @param {number} meses - O número de meses para o qual calcular a proporção.
+ * @returns {number} - O valor proporcional.
  */
 export function calcularProporcional(valorBase, meses) {
   if (!valorBase || valorBase <= 0 || !meses || meses <= 0) return 0;
-  return (valorBase / 12) * meses;
+  return arredondar((valorBase / 12) * meses);
 }
 
 /**
- * Calculates hazard and insalubrity bonuses.
- * Returns the individual values and the total effective bonus (higher of the two).
- * @param {number} salarioBruto - The gross salary.
- * @param {boolean} periculosidade - If hazard pay is applicable.
- * @param {string|number} insalubridadeGrau - The insalubrity level (0, 10, 20, 40).
- * @param {string} insalubridadeBase - The base for insalubrity calculation ('salario_minimo' or 'salario_bruto').
+ * Calcula os adicionais de periculosidade e insalubridade.
+ * Retorna os valores individuais e o bônus efetivo total (o maior dos dois).
+ * @param {number} salarioBruto - O salário bruto.
+ * @param {boolean} periculosidade - Se o adicional de periculosidade é aplicável.
+ * @param {string|number} insalubridadeGrau - O nível de insalubridade (0, 10, 20, 40).
+ * @param {string} insalubridadeBase - A base para o cálculo da insalubridade ('salario_minimo' ou 'salario_bruto').
  * @returns {{periculosidade: number, insalubridade: number, total: number}}
  */
 export function calcularAdicionaisRisco(salarioBruto, periculosidade, insalubridadeGrau, insalubridadeBase) {
@@ -219,19 +190,19 @@ export function calcularAdicionaisRisco(salarioBruto, periculosidade, insalubrid
     }
 
     return {
-        periculosidade: valorPericulosidade,
-        insalubridade: valorInsalubridade,
-        total: Math.max(valorPericulosidade, valorInsalubridade)
+        periculosidade: arredondar(valorPericulosidade),
+        insalubridade: arredondar(valorInsalubridade),
+        total: arredondar(Math.max(valorPericulosidade, valorInsalubridade))
     };
 }
 
 /**
- * Calculates detailed discounts based on the calculator state.
- * @param {object} state - The specific calculator's slice of the application state.
- * @param {number} salarioBruto - The gross salary to use as a base for percentage calculations.
- * @returns {object} - An object containing all calculated discounts and their total.
+ * Calcula descontos detalhados com base no estado da calculadora.
+ * @param {object} state - A fatia do estado da aplicação para a calculadora específica.
+ * @param {number} salarioBruto - O salário bruto a ser usado como base para cálculos percentuais.
+ * @returns {object} - Um objeto contendo todos os descontos calculados e seu total.
  */
-export function calculateDetailedDiscounts(state, salarioBruto) {
+export function calcularDescontosDetalhados(state, salarioBruto) {
     const {
         descontoVt = 0,
         descontoVr = 0,
@@ -239,7 +210,7 @@ export function calculateDetailedDiscounts(state, salarioBruto) {
         descontoAdiantamentos = 0
     } = state;
 
-    // The VT discount is capped at 6% of the gross salary.
+    // O desconto do VT é limitado a 6% do salário bruto.
     const valorDescontoVT = Math.min(salarioBruto * 0.06, descontoVt);
 
     const discounts = {
@@ -251,25 +222,24 @@ export function calculateDetailedDiscounts(state, salarioBruto) {
 
     const total = Object.values(discounts).reduce((sum, val) => sum + val, 0);
 
-    return { ...discounts, total };
+    return { ...discounts, total: arredondar(total) };
 }
 
-
 /**
- * Calculates vacation pay based on the vacation state.
- * @param {object} feriasState - The vacation-specific slice of the application state.
- * @returns {object} - An object containing all calculated vacation pay details.
+ * Calcula o pagamento de férias com base no estado de férias.
+ * @param {object} estadoFerias - A fatia específica de férias do estado da aplicação.
+ * @returns {object} - Um objeto contendo todos os detalhes calculados do pagamento de férias.
  */
-export function calculateFerias(feriasState) {
+export function calcularFerias(estadoFerias) {
     const {
         salarioBruto,
         diasFerias,
         dependentes,
         abonoPecuniario,
         adiantarDecimo
-    } = feriasState;
+    } = estadoFerias;
 
-    const baseDeCalculo = calcularRemuneracaoBase(feriasState);
+    const baseDeCalculo = calcularRemuneracaoBase(estadoFerias);
     const valorFerias = (baseDeCalculo / 30) * diasFerias;
     const tercoConstitucional = valorFerias / 3;
 
@@ -285,29 +255,29 @@ export function calculateFerias(feriasState) {
     const totalProventos = valorFerias + tercoConstitucional + valorAbono + tercoAbono + adiantamento13;
 
     const baseINSS = valorFerias + tercoConstitucional;
-    const inssResult = calculateINSS(baseINSS);
+    const inssResult = calcularContribuicaoINSS(baseINSS);
     const descontoINSS = inssResult.value;
 
     const baseIRRF = baseINSS - descontoINSS;
-    const irrfResult = calculateIRRF(baseIRRF, dependentes);
+    const irrfResult = calcularContribuicaoIRRF(baseIRRF, dependentes);
     const descontoIRRF = irrfResult.value;
 
     const totalDescontos = descontoINSS + descontoIRRF;
     const valorLiquido = totalProventos - totalDescontos;
 
     return {
-        salarioBruto: roundMonetary(salarioBruto),
-        baseDeCalculo: roundMonetary(baseDeCalculo),
-        valorFerias: roundMonetary(valorFerias),
-        tercoConstitucional: roundMonetary(tercoConstitucional),
-        valorAbono: roundMonetary(valorAbono),
-        tercoAbono: roundMonetary(tercoAbono),
-        adiantamento13: roundMonetary(adiantamento13),
-        totalProventos: roundMonetary(totalProventos),
+        salarioBruto: arredondar(salarioBruto),
+        baseDeCalculo: arredondar(baseDeCalculo),
+        valorFerias: arredondar(valorFerias),
+        tercoConstitucional: arredondar(tercoConstitucional),
+        valorAbono: arredondar(valorAbono),
+        tercoAbono: arredondar(tercoAbono),
+        adiantamento13: arredondar(adiantamento13),
+        totalProventos: arredondar(totalProventos),
         descontoINSS: inssResult,
         descontoIRRF: irrfResult,
-        totalDescontos: roundMonetary(totalDescontos),
-        valorLiquido: roundMonetary(valorLiquido),
+        totalDescontos: arredondar(totalDescontos),
+        valorLiquido: arredondar(valorLiquido),
         venderFerias: abonoPecuniario,
         adiantarDecimo,
         diasFerias
@@ -315,26 +285,26 @@ export function calculateFerias(feriasState) {
 }
 
 /**
- * Calculates 13th salary based on the 13th salary state.
- * @param {object} decimoState - The 13th-salary-specific slice of the application state.
- * @returns {object} - An object containing all calculated 13th salary details.
+ * Calcula o 13º salário com base no estado do 13º salário.
+ * @param {object} estadoDecimo - A fatia específica do 13º salário do estado da aplicação.
+ * @returns {object} - Um objeto contendo todos os detalhes calculados do 13º salário.
  */
-export function calculateDecimoTerceiro(decimoState) {
+export function calcularDecimoTerceiro(estadoDecimo) {
     const {
         salarioBruto,
         mesesTrabalhados,
         dependentes,
         adiantamentoRecebido
-    } = decimoState;
+    } = estadoDecimo;
 
-    const baseDeCalculo = calcularRemuneracaoBase(decimoState);
+    const baseDeCalculo = calcularRemuneracaoBase(estadoDecimo);
     const valorBrutoDecimo = calcularProporcional(baseDeCalculo, mesesTrabalhados);
 
-    const inssResult = calculateINSS(valorBrutoDecimo);
+    const inssResult = calcularContribuicaoINSS(valorBrutoDecimo);
     const descontoINSS = inssResult.value;
 
     const baseIRRF = valorBrutoDecimo - descontoINSS;
-    const irrfResult = calculateIRRF(baseIRRF, dependentes);
+    const irrfResult = calcularContribuicaoIRRF(baseIRRF, dependentes);
     const descontoIRRF = irrfResult.value;
 
     const totalDescontos = descontoINSS + descontoIRRF;
@@ -356,11 +326,11 @@ export function calculateDecimoTerceiro(decimoState) {
 }
 
 /**
- * Calculates net monthly salary based on the net salary state.
- * @param {object} liquidoState - The net-salary-specific slice of the application state.
- * @returns {object} - An object containing all calculated net salary details.
+ * Calcula o salário líquido mensal com base no estado do salário líquido.
+ * @param {object} estadoLiquido - A fatia específica do salário líquido do estado da aplicação.
+ * @returns {object} - Um objeto contendo todos os detalhes calculados do salário líquido.
  */
-export function calculateSalarioLiquido(liquidoState) {
+export function calcularSalarioLiquido(estadoLiquido) {
     const {
         salarioBruto,
         horasExtras,
@@ -371,7 +341,7 @@ export function calculateSalarioLiquido(liquidoState) {
         horasNoturnas,
         cargaHorariaMensal,
         filhosSalarioFamilia
-    } = liquidoState;
+    } = estadoLiquido;
 
     const adicionaisRisco = calcularAdicionaisRisco(salarioBruto, periculosidade, insalubridadeGrau, insalubridadeBase);
     const adicionalRisco = adicionaisRisco.total;
@@ -384,55 +354,53 @@ export function calculateSalarioLiquido(liquidoState) {
     }
 
     const salarioBrutoTotal = salarioBruto + horasExtras + adicionalRisco + adicionalNoturno;
-    const salarioFamilia = calculateSalarioFamilia(salarioBrutoTotal, filhosSalarioFamilia);
+    const salarioFamilia = calcularSalarioFamilia(salarioBrutoTotal, filhosSalarioFamilia);
 
-    const inssResult = calculateINSS(salarioBrutoTotal);
+    const inssResult = calcularContribuicaoINSS(salarioBrutoTotal);
     const descontoINSS = inssResult.value;
 
     const baseIRRF = salarioBrutoTotal - descontoINSS;
-    const irrfResult = calculateIRRF(baseIRRF, dependentes);
+    const irrfResult = calcularContribuicaoIRRF(baseIRRF, dependentes);
     const descontoIRRF = irrfResult.value;
 
-    const detailedDiscounts = calculateDetailedDiscounts(liquidoState, salarioBruto);
+    const detailedDiscounts = calcularDescontosDetalhados(estadoLiquido, salarioBruto);
 
     const totalProventos = salarioBrutoTotal + salarioFamilia;
     const totalDescontos = descontoINSS + descontoIRRF + detailedDiscounts.total;
     const salarioLiquido = totalProventos - totalDescontos;
 
     return {
-        salarioBruto: roundMonetary(salarioBruto),
-        horasExtras: roundMonetary(horasExtras),
-        adicionalPericulosidade: roundMonetary(adicionaisRisco.periculosidade),
-        adicionalInsalubridade: roundMonetary(adicionaisRisco.insalubridade),
-        adicionalNoturno: roundMonetary(adicionalNoturno),
-        salarioBrutoTotal: roundMonetary(salarioBrutoTotal),
-        salarioFamilia: roundMonetary(salarioFamilia),
+        salarioBruto: arredondar(salarioBruto),
+        horasExtras: arredondar(horasExtras),
+        adicionalPericulosidade: arredondar(adicionaisRisco.periculosidade),
+        adicionalInsalubridade: arredondar(adicionaisRisco.insalubridade),
+        adicionalNoturno: arredondar(adicionalNoturno),
+        salarioBrutoTotal: arredondar(salarioBrutoTotal),
+        salarioFamilia: arredondar(salarioFamilia),
         descontoINSS: inssResult,
         descontoIRRF: irrfResult,
-        descontoVT: roundMonetary(detailedDiscounts.valeTransporte),
-        descontoVR: roundMonetary(detailedDiscounts.valeRefeicao),
-        descontoSaude: roundMonetary(detailedDiscounts.planoSaude),
-        descontoAdiantamentos: roundMonetary(detailedDiscounts.adiantamentos),
-        totalProventos: roundMonetary(totalProventos),
-        totalDescontos: roundMonetary(totalDescontos),
-        salarioLiquido: roundMonetary(salarioLiquido)
+        descontoVT: arredondar(detailedDiscounts.valeTransporte),
+        descontoVR: arredondar(detailedDiscounts.valeRefeicao),
+        descontoSaude: arredondar(detailedDiscounts.planoSaude),
+        descontoAdiantamentos: arredondar(detailedDiscounts.adiantamentos),
+        totalProventos: arredondar(totalProventos),
+        totalDescontos: arredondar(totalDescontos),
+        salarioLiquido: arredondar(salarioLiquido)
     };
 }
 
 /**
- * Calculates FGTS deposit and withdrawal simulations.
- * @param {object} fgtsState - The FGTS-specific slice of the application state.
- * @returns {object} - An object containing all calculated FGTS details.
+ * Calcula simulações de depósito e saque do FGTS.
+ * @param {object} estadoFgts - A fatia específica do FGTS do estado da aplicação.
+ * @returns {object} - Um objeto contendo todos os detalhes calculados do FGTS.
  */
-export function calculateFGTS(fgtsState) {
-    const { salarioBruto, saldoTotal, opcaoSaque } = fgtsState;
+export function calcularFGTS(estadoFgts) {
+    const { salarioBruto, saldoTotal, opcaoSaque } = estadoFgts;
     const memoriaCalculo = {};
 
-    // 1. Calculate Monthly Deposit
     const depositoMensal = salarioBruto * 0.08;
     memoriaCalculo['Depósito Mensal'] = `Salário Bruto (${formatCurrency(salarioBruto)}) * 8% = ${formatCurrency(depositoMensal)}`;
 
-    // 2. Simulate Withdrawal
     let valorSaque = 0;
     memoriaCalculo['Simulação de Saque'] = `Opção selecionada: ${opcaoSaque === 'rescisao' ? 'Saque-Rescisão' : 'Saque-Aniversário'}`;
     if (saldoTotal > 0 && opcaoSaque) {
@@ -469,16 +437,16 @@ export function calculateFGTS(fgtsState) {
 
     return {
         salarioBruto,
-        depositoMensal: roundMonetary(depositoMensal),
+        depositoMensal: arredondar(depositoMensal),
         saldoTotal,
         opcaoSaque,
-        valorSaque: roundMonetary(valorSaque),
+        valorSaque: arredondar(valorSaque),
         memoriaCalculo
     };
 }
 
-export function calculatePISPASEP(pisPasepState, legalTexts) {
-    const { salarioMedio, mesesTrabalhados, dataInscricao } = pisPasepState;
+export function calcularPISPASEP(estadoPisPasep, legalTexts) {
+    const { salarioMedio, mesesTrabalhados, dataInscricao } = estadoPisPasep;
 
     const pisConstants = legalTexts.pisPasep.constants;
     const SALARIO_MINIMO_VIGENTE = pisConstants.SALARIO_MINIMO_VIGENTE;
@@ -528,15 +496,15 @@ export function calculatePISPASEP(pisPasepState, legalTexts) {
     }
 
     return {
-        valorAbono: roundMonetary(valorAbono),
+        valorAbono: arredondar(valorAbono),
         elegivel,
         mensagem,
         memoriaCalculo
     };
 }
 
-export function calculateSeguroDesemprego(seguroDesempregoState, legalTexts) {
-    const { salario1, salario2, salario3, mesesTrabalhados, numSolicitacoes } = seguroDesempregoState;
+export function calcularSeguroDesemprego(estadoSeguroDesemprego, legalTexts) {
+    const { salario1, salario2, salario3, mesesTrabalhados, numSolicitacoes } = estadoSeguroDesemprego;
 
     const sdData = legalTexts.seguroDesemprego;
     const SALARIO_MINIMO_VIGENTE = sdData.constants.SALARIO_MINIMO_VIGENTE;
@@ -553,7 +521,6 @@ export function calculateSeguroDesemprego(seguroDesempregoState, legalTexts) {
     const mediaSalarial = (salario1 + salario2 + salario3) / 3;
     memoriaCalculo['Média Salarial'] = `(${formatCurrency(salario1)} + ${formatCurrency(salario2)} + ${formatCurrency(salario3)}) / 3 = ${formatCurrency(mediaSalarial)}`;
 
-    // 1. Determinar Número de Parcelas
     const solicitacaoAtual = (numSolicitacoes || 0) + 1;
     const regraParcelas = TABELA_PARCELAS.find(regra =>
         regra.solicitacao === solicitacaoAtual &&
@@ -572,7 +539,6 @@ export function calculateSeguroDesemprego(seguroDesempregoState, legalTexts) {
         return { numeroParcelas: 0, valorPorParcela: 0, elegivel, mensagem, memoriaCalculo };
     }
 
-    // 2. Calcular Valor da Parcela
     memoriaCalculo['Cálculo do Valor da Parcela'] = `Analisando a média salarial de ${formatCurrency(mediaSalarial)}...`;
     if (mediaSalarial <= TABELA_VALORES[0].faixa.max) {
         valorPorParcela = mediaSalarial * TABELA_VALORES[0].percentual;
@@ -587,14 +553,13 @@ export function calculateSeguroDesemprego(seguroDesempregoState, legalTexts) {
         memoriaCalculo['Detalhe do Cálculo'] = `Média salarial (${formatCurrency(mediaSalarial)}) acima da Faixa 2, aplicando o teto de ${formatCurrency(TETO_SEGURO_DESEMPREGO)}.`;
     }
 
-    // Ensure value is within min/max limits
     valorPorParcela = Math.max(SALARIO_MINIMO_VIGENTE, Math.min(valorPorParcela, TETO_SEGURO_DESEMPREGO));
     memoriaCalculo['Ajuste Final'] = `Valor da parcela ajustado para estar entre o salário mínimo (${formatCurrency(SALARIO_MINIMO_VIGENTE)}) e o teto (${formatCurrency(TETO_SEGURO_DESEMPREGO)}). Valor final: ${formatCurrency(valorPorParcela)}.`;
     mensagem = `Elegível. Você tem direito a ${numeroParcelas} parcelas de ${formatCurrency(valorPorParcela)}.`;
 
     return {
         numeroParcelas,
-        valorPorParcela: roundMonetary(valorPorParcela),
+        valorPorParcela: arredondar(valorPorParcela),
         mediaSalarial,
         elegivel,
         mensagem,
@@ -602,8 +567,8 @@ export function calculateSeguroDesemprego(seguroDesempregoState, legalTexts) {
     };
 }
 
-export function calculateHorasExtras(horasExtrasState, legalTexts) {
-    const { salarioBase, horasContratuais, horasExtras50, horasExtras100, horasNoturnas } = horasExtrasState;
+export function calcularHorasExtras(estadoHorasExtras, legalTexts) {
+    const { salarioBase, horasContratuais, horasExtras50, horasExtras100, horasNoturnas } = estadoHorasExtras;
 
     const heData = legalTexts.horasExtras;
     const PERCENTUAL_HE_50 = heData.constants.PERCENTUAL_HE_50;
@@ -648,18 +613,18 @@ export function calculateHorasExtras(horasExtrasState, legalTexts) {
         horasExtras50,
         horasExtras100,
         horasNoturnas,
-        valorHoraNormal: roundMonetary(valorHoraNormal),
-        totalValorHE50: roundMonetary(totalValorHE50),
-        totalValorHE100: roundMonetary(totalValorHE100),
-        totalValorAdicionalNoturno: roundMonetary(totalValorAdicionalNoturno),
-        totalGeralAdicionais: roundMonetary(totalGeralAdicionais),
+        valorHoraNormal: arredondar(valorHoraNormal),
+        totalValorHE50: arredondar(totalValorHE50),
+        totalValorHE100: arredondar(totalValorHE100),
+        totalValorAdicionalNoturno: arredondar(totalValorAdicionalNoturno),
+        totalGeralAdicionais: arredondar(totalGeralAdicionais),
         mensagem: `Cálculo de Horas Extras e Adicionais.`,
         memoriaCalculo
     };
 }
 
-export function calculateINSSCalculator(inssState, legalTexts) {
-    const { salarioBruto } = inssState;
+export function calcularAliquotaINSS(estadoInss, legalTexts) {
+    const { salarioBruto } = estadoInss;
     const inssData = legalTexts.inss;
     const TABELA_INSS = inssData.tables.aliquotas_progressivas;
     const TETO_CONTRIBUICAO_INSS_VALOR_REAL = inssData.constants.TETO_CONTRIBUICAO_INSS_VALOR_REAL;
@@ -702,15 +667,15 @@ export function calculateINSSCalculator(inssState, legalTexts) {
 
     return {
         salarioBruto,
-        contribuicaoINSS: roundMonetary(contribuicaoINSS),
+        contribuicaoINSS: arredondar(contribuicaoINSS),
         aliquotaEfetiva: aliquotaEfetiva,
         mensagem: `Contribuição INSS calculada com base no salário de ${formatCurrency(salarioBruto)}.`,
         memoriaCalculo
     };
 }
 
-export function calculateValeTransporte(valeTransporteState, legalTexts) {
-    const { salarioBruto, custoDiario, diasTrabalho } = valeTransporteState;
+export function calcularValeTransporte(estadoValeTransporte, legalTexts) {
+    const { salarioBruto, custoDiario, diasTrabalho } = estadoValeTransporte;
     const vtConstants = legalTexts.valeTransporte.constants;
     const memoriaCalculo = {};
 
@@ -735,11 +700,9 @@ export function calculateValeTransporte(valeTransporteState, legalTexts) {
     const descontoMaximoSalario = salarioBruto * vtConstants.PERCENTUAL_DESCONTO_SALARIO;
     memoriaCalculo['Limite de Desconto (6% do Salário)'] = `${formatCurrency(salarioBruto)} * 6% = ${formatCurrency(descontoMaximoSalario)}`;
 
-    // The employee discount is the lesser of the two values.
     const descontoRealEmpregado = Math.min(custoMensalTotal, descontoMaximoSalario);
     memoriaCalculo['Desconto do Empregado'] = `O menor valor entre o Custo Total (${formatCurrency(custoMensalTotal)}) e o Limite de 6% (${formatCurrency(descontoMaximoSalario)}) = ${formatCurrency(descontoRealEmpregado)}`;
 
-    // The employer pays the difference.
     const valorBeneficioEmpregador = Math.max(0, custoMensalTotal - descontoRealEmpregado);
     memoriaCalculo['Benefício (Custeado pelo Empregador)'] = `Custo Total (${formatCurrency(custoMensalTotal)}) - Desconto do Empregado (${formatCurrency(descontoRealEmpregado)}) = ${formatCurrency(valorBeneficioEmpregador)}`;
 
@@ -747,17 +710,17 @@ export function calculateValeTransporte(valeTransporteState, legalTexts) {
         salarioBruto,
         custoDiario,
         diasTrabalho: dias,
-        custoMensalTotal: roundMonetary(custoMensalTotal),
-        descontoMaximoSalario: roundMonetary(descontoMaximoSalario),
-        descontoRealEmpregado: roundMonetary(descontoRealEmpregado),
-        valorBeneficioEmpregador: roundMonetary(valorBeneficioEmpregador),
+        custoMensalTotal: arredondar(custoMensalTotal),
+        descontoMaximoSalario: arredondar(descontoMaximoSalario),
+        descontoRealEmpregado: arredondar(descontoRealEmpregado),
+        valorBeneficioEmpregador: arredondar(valorBeneficioEmpregado),
         mensagem: "Cálculo do Vale-Transporte realizado com sucesso.",
         memoriaCalculo
     };
 }
 
-export function calculateIRPF(irpfState, legalTexts) {
-    const { rendaAnual, dependentes, outrasDeducoes, impostoRetido } = irpfState;
+export function calcularIRPF(estadoIrpf, legalTexts) {
+    const { rendaAnual, dependentes, outrasDeducoes, impostoRetido } = estadoIrpf;
     const irpfData = legalTexts.irpf;
     const TABELA_IRPF = irpfData.tables.tabela_anual_2025;
     const DEDUCAO_DEPENDENTE = irpfData.constants.DEDUCAO_POR_DEPENDENTE_ANUAL;
@@ -828,14 +791,14 @@ export function calculateIRPF(irpfState, legalTexts) {
     }
 
     return {
-        rendaAnual: roundMonetary(rendaAnual),
+        rendaAnual: arredondar(rendaAnual),
         dependentes,
         outrasDeducoes,
-        totalDeducoes: roundMonetary(totalDeducoes),
-        baseDeCalculo: roundMonetary(baseDeCalculo),
-        impostoDevido: roundMonetary(impostoDevido),
-        impostoRetido: roundMonetary(impostoRetido),
-        ajusteFinal: roundMonetary(ajusteFinal),
+        totalDeducoes: arredondar(totalDeducoes),
+        baseDeCalculo: arredondar(baseDeCalculo),
+        impostoDevido: arredondar(impostoDevido),
+        impostoRetido: arredondar(impostoRetido),
+        ajusteFinal: arredondar(ajusteFinal),
         tipoAjuste,
         mensagem,
         memoriaCalculo
@@ -843,144 +806,195 @@ export function calculateIRPF(irpfState, legalTexts) {
 }
 
 /**
- * Calculates severance pay based on the severance state.
- * @param {object} rescisaoState - The severance-specific slice of the application state.
- * @returns {object} - An object containing all calculated severance pay details.
+ * Calcula as verbas rescisórias com base no motivo da rescisão.
+ * @param {object} dados - Objeto contendo todos os dados necessários para o cálculo.
+ * @returns {{proventos: object, memoriaDeCalculo: object}} - Um objeto com proventos e a memória de cálculo.
  */
-export function calculateRescisao(rescisaoState) {
-    const {
-        motivo,
-        dataAdmissao,
-        dataDemissao,
-        salarioBruto,
-        saldoFgts,
-        avisoPrevio,
-        feriasVencidas: hasFeriasVencidas,
-        dependentes
-    } = rescisaoState;
-
-    if (!dataAdmissao || !dataDemissao || new Date(dataAdmissao) >= new Date(dataDemissao)) {
-        return { proventos: {}, descontos: {}, totalProventos: 0, totalDescontos: 0, valorLiquido: 0, memoriaDeCalculo: {} };
-    }
-
+function _calcularVerbasRescisorias(dados) {
+    const { remuneracao, dtAdmissao, dtDemissao, dtFinalProjetada, hasFeriasVencidas, saldoFgts, motivo, avisoPrevio } = dados;
     const memoriaDeCalculo = {};
+    const proventos = {};
 
-    // 1. Calculate Base Remuneration using the new helper function
-    const remuneracao = calcularRemuneracaoBase(rescisaoState);
-    memoriaDeCalculo.remuneracao = `Salário Bruto (${formatCurrency(salarioBruto)}) + Médias/Adicionais (${formatCurrency(remuneracao - salarioBruto)})`;
-
-    // 2. Calculate Notice Period
-    const dtAdmissao = new Date(dataAdmissao + 'T00:00:00');
-    const dtDemissao = new Date(dataDemissao + 'T00:00:00');
-    const yearsWorked = Math.floor((dtDemissao - dtAdmissao) / (1000 * 60 * 60 * 24 * 365.25));
-    const diasAvisoPrevio = (avisoPrevio === 'indenizado') ? 30 + (Math.min(yearsWorked, 20) * 3) : 0;
-
-    // 3. Project contract end date
-    const dtFinalProjetada = new Date(dtDemissao);
-    dtFinalProjetada.setDate(dtFinalProjetada.getDate() + diasAvisoPrevio);
-
-    // 4. Calculate Severance Payments based on new logic
+    // Verbas comuns a quase todos os casos
     const diasNoMesDemissao = new Date(dtDemissao.getFullYear(), dtDemissao.getMonth() + 1, 0).getDate();
-    const saldoDeSalario = (remuneracao / diasNoMesDemissao) * dtDemissao.getDate();
+    proventos['Saldo de Salário'] = (remuneracao / diasNoMesDemissao) * dtDemissao.getDate();
     memoriaDeCalculo['Saldo de Salário'] = `(${formatCurrency(remuneracao)} / ${diasNoMesDemissao} dias) * ${dtDemissao.getDate()} dias trabalhados`;
 
-    const avisoPrevioIndenizado = (remuneracao / 30) * diasAvisoPrevio;
-     memoriaDeCalculo['Aviso Prévio Indenizado'] = `(${formatCurrency(remuneracao)} / 30) * ${diasAvisoPrevio} dias`;
-
     const mesesTrabalhadosNoAno = dtFinalProjetada.getMonth() + 1;
-    const decimoTerceiroProporcional = calcularProporcional(remuneracao, mesesTrabalhadosNoAno);
+    proventos['13º Salário Proporcional'] = calcularProporcional(remuneracao, mesesTrabalhadosNoAno);
     memoriaDeCalculo['13º Salário Proporcional'] = `(${formatCurrency(remuneracao)} / 12) * ${mesesTrabalhadosNoAno} meses`;
 
     let mesesPeriodoAquisitivo = (dtFinalProjetada.getMonth() - dtAdmissao.getMonth());
     if (dtFinalProjetada.getDate() >= dtAdmissao.getDate()) {
         mesesPeriodoAquisitivo += 1;
     }
-     mesesPeriodoAquisitivo = mesesPeriodoAquisitivo <= 0 ? mesesPeriodoAquisitivo + 12 : mesesPeriodoAquisitivo;
+    mesesPeriodoAquisitivo = mesesPeriodoAquisitivo <= 0 ? mesesPeriodoAquisitivo + 12 : mesesPeriodoAquisitivo;
     const feriasProporcionais = calcularProporcional(remuneracao, mesesPeriodoAquisitivo);
-    const tercoFeriasProporcionais = feriasProporcionais / 3;
-     memoriaDeCalculo['Férias Proporcionais + 1/3'] = `((${formatCurrency(remuneracao)} / 12) * ${mesesPeriodoAquisitivo} meses) + 1/3`;
+    proventos['Férias Proporcionais + 1/3'] = feriasProporcionais + (feriasProporcionais / 3);
+    memoriaDeCalculo['Férias Proporcionais + 1/3'] = `((${formatCurrency(remuneracao)} / 12) * ${mesesPeriodoAquisitivo} meses) + 1/3`;
 
-    const valorFeriasVencidas = hasFeriasVencidas ? remuneracao : 0;
-    const tercoFeriasVencidas = hasFeriasVencidas ? remuneracao / 3 : 0;
     if (hasFeriasVencidas) {
+        proventos['Férias Vencidas + 1/3'] = remuneracao + (remuneracao / 3);
         memoriaDeCalculo['Férias Vencidas + 1/3'] = `Remuneração integral (${formatCurrency(remuneracao)}) + 1/3`;
     }
 
-    const multaFgts = saldoFgts * 0.40;
-    memoriaDeCalculo['Multa de 40% do FGTS'] = `40% de ${formatCurrency(saldoFgts)}`;
-
-    let proventos = {};
-    let descontos = {};
-
+    // Lógica específica por motivo de rescisão
     switch (motivo) {
         case 'sem_justa_causa':
-            proventos = {
-                'Saldo de Salário': saldoDeSalario,
-                'Aviso Prévio Indenizado': avisoPrevioIndenizado,
-                '13º Salário Proporcional': decimoTerceiroProporcional,
-                'Férias Vencidas + 1/3': valorFeriasVencidas + tercoFeriasVencidas,
-                'Férias Proporcionais + 1/3': feriasProporcionais + tercoFeriasProporcionais,
-                'Multa de 40% do FGTS': multaFgts,
+            if (avisoPrevio === 'indenizado') {
+                const diasAvisoPrevio = 30 + (Math.min(dados.yearsWorked, 20) * 3);
+                proventos['Aviso Prévio Indenizado'] = (remuneracao / 30) * diasAvisoPrevio;
+                memoriaDeCalculo['Aviso Prévio Indenizado'] = `(${formatCurrency(remuneracao)} / 30) * ${diasAvisoPrevio} dias`;
+            }
+            proventos['Multa de 40% do FGTS'] = saldoFgts * 0.40;
+            memoriaDeCalculo['Multa de 40% do FGTS'] = `40% de ${formatCurrency(saldoFgts)}`;
+            break;
+
+        case 'pedido_demissao':
+            // Não tem direito a aviso prévio indenizado nem multa de 40%
+            if (avisoPrevio !== 'trabalhado') {
+                // Desconto do aviso prévio se não for cumprido
+                proventos['Desconto Aviso Prévio'] = -remuneracao;
+                memoriaDeCalculo['Desconto Aviso Prévio'] = 'Desconto do valor de um salário pela ausência de cumprimento do aviso prévio.';
+            }
+            break;
+
+        case 'com_justa_causa':
+            // Perde a maioria dos direitos
+            return {
+                proventos: { 'Saldo de Salário': proventos['Saldo de Salário'] },
+                memoriaDeCalculo: { 'Saldo de Salário': memoriaDeCalculo['Saldo de Salário'], 'Direitos': 'Em demissão por justa causa, o trabalhador tem direito apenas ao saldo de salário e férias vencidas, se houver.' }
             };
+
+        case 'acordo_mutuo':
+            if (avisoPrevio === 'indenizado') {
+                const diasAvisoPrevio = 30 + (Math.min(dados.yearsWorked, 20) * 3);
+                proventos['Aviso Prévio Indenizado (50%)'] = ((remuneracao / 30) * diasAvisoPrevio) / 2;
+                 memoriaDeCalculo['Aviso Prévio Indenizado (50%)'] = `Metade de (${formatCurrency(remuneracao)} / 30) * ${diasAvisoPrevio} dias`;
+            }
+            proventos['Multa de 20% do FGTS'] = saldoFgts * 0.20;
+            memoriaDeCalculo['Multa de 20% do FGTS'] = `20% de ${formatCurrency(saldoFgts)}`;
             break;
-        default:
-             proventos = { 'Saldo de Salário': saldoDeSalario };
+
+        case 'termino_contrato_experiencia':
+            // Sem aviso prévio e sem multa
             break;
     }
 
-    const inssSobre13Result = calculateINSS(proventos['13º Salário Proporcional'] || 0);
-    const inssSobreSaldoResult = calculateINSS(proventos['Saldo de Salário'] || 0);
-    if(inssSobre13Result.value > 0) descontos['INSS sobre 13º Salário'] = inssSobre13Result;
-    if(inssSobreSaldoResult.value > 0) descontos['INSS sobre Saldo de Salário'] = inssSobreSaldoResult;
+    return { proventos, memoriaDeCalculo };
+}
 
-    const baseIRRF = (proventos['Saldo de Salário'] || 0) + (proventos['Aviso Prévio Indenizado'] || 0) - (inssSobreSaldoResult.value || 0);
-    const irrfResult = calculateIRRF(baseIRRF, dependentes);
-    if(irrfResult.value > 0) descontos['IRRF sobre Verbas'] = irrfResult;
+/**
+ * Calcula os descontos sobre as verbas rescisórias.
+ * @param {object} proventos - Objeto com os proventos calculados.
+ * @param {object} dados - Objeto contendo todos os dados necessários para o cálculo.
+ * @returns {{descontos: object}} - Objeto com os descontos aplicáveis.
+ */
+function _calcularDescontosRescisao(proventos, dados) {
+    const descontos = {};
+    const { dependentes, remuneracao } = dados;
 
-    const detailedDiscounts = calculateDetailedDiscounts(rescisaoState, remuneracao);
-    if (detailedDiscounts.total > 0) {
-        descontos['Outros Descontos'] = { value: detailedDiscounts.total, details: detailedDiscounts };
+    const inssSobre13 = calcularContribuicaoINSS(proventos['13º Salário Proporcional'] || 0);
+    if (inssSobre13.value > 0) descontos['INSS sobre 13º Salário'] = inssSobre13;
+
+    const inssSobreSaldo = calcularContribuicaoINSS(proventos['Saldo de Salário'] || 0);
+    if (inssSobreSaldo.value > 0) descontos['INSS sobre Saldo de Salário'] = inssSobreSaldo;
+
+    // IRRF incide sobre Saldo de Salário e Aviso Prévio, deduzindo o INSS correspondente.
+    const baseIRRF = (proventos['Saldo de Salário'] || 0) + (proventos['Aviso Prévio Indenizado'] || 0) - inssSobreSaldo.value;
+    const irrf = calcularContribuicaoIRRF(baseIRRF, dependentes);
+    if (irrf.value > 0) descontos['IRRF sobre Verbas'] = irrf;
+
+    const outrosDescontos = calcularDescontosDetalhados(dados, remuneracao);
+    if (outrosDescontos.total > 0) {
+        descontos['Outros Descontos'] = { value: outrosDescontos.total, details: outrosDescontos };
     }
+
+    // Adiciona o desconto do aviso prévio (valor negativo nos proventos) aos descontos.
+    if (proventos['Desconto Aviso Prévio']) {
+        descontos['Aviso Prévio Não Cumprido'] = { value: -proventos['Desconto Aviso Prévio'], details: 'Desconto referente ao não cumprimento do aviso prévio no pedido de demissão.' };
+        delete proventos['Desconto Aviso Prévio']; // Remove dos proventos para não duplicar.
+    }
+
+    return { descontos };
+}
+
+/**
+ * Calcula o pagamento de rescisão com base no estado da rescisão.
+ * @param {object} estadoRescisao - A fatia específica da rescisão do estado da aplicação.
+ * @returns {object} - Um objeto contendo todos os detalhes calculados do pagamento de rescisão.
+ */
+export function calcularRescisao(estadoRescisao) {
+    const { motivo, dataAdmissao, dataDemissao, avisoPrevio, feriasVencidas, saldoFgts, dependentes } = estadoRescisao;
+
+    if (!dataAdmissao || !dataDemissao || new Date(dataAdmissao) >= new Date(dataDemissao)) {
+        return { proventos: {}, descontos: {}, totalProventos: 0, totalDescontos: 0, valorLiquido: 0, memoriaDeCalculo: {} };
+    }
+
+    const dtAdmissao = new Date(dataAdmissao + 'T00:00:00');
+    const dtDemissao = new Date(dataDemissao + 'T00:00:00');
+    const yearsWorked = Math.floor((dtDemissao - dtAdmissao) / (1000 * 60 * 60 * 24 * 365.25));
+
+    const remuneracao = calcularRemuneracaoBase(estadoRescisao);
+
+    // A data final projetada considera o aviso prévio indenizado para cálculo de 13º e férias.
+    const diasAvisoPrevio = (avisoPrevio === 'indenizado') ? 30 + (Math.min(yearsWorked, 20) * 3) : 0;
+    const dtFinalProjetada = new Date(dtDemissao);
+    if (avisoPrevio === 'indenizado') {
+        dtFinalProjetada.setDate(dtFinalProjetada.getDate() + diasAvisoPrevio);
+    }
+
+    const dadosBase = {
+        ...estadoRescisao,
+        remuneracao,
+        dtAdmissao,
+        dtDemissao,
+        dtFinalProjetada,
+        yearsWorked,
+        hasFeriasVencidas: feriasVencidas
+    };
+
+    const { proventos, memoriaDeCalculo } = _calcularVerbasRescisorias(dadosBase);
+    const { descontos } = _calcularDescontosRescisao(proventos, dadosBase);
 
     const totalProventos = Object.values(proventos).reduce((sum, val) => sum + val, 0);
     const totalDescontos = Object.values(descontos).reduce((sum, val) => sum + (val.value || 0), 0);
     const valorLiquido = totalProventos - totalDescontos;
 
-    // Transform proventos into the detailed structure
     const proventosDetalhados = Object.keys(proventos).reduce((acc, key) => {
         if (proventos[key] > 0) {
             acc[key] = {
-                valor: proventos[key],
+                valor: arredondar(proventos[key]),
                 explicacao: memoriaDeCalculo[key] || 'Cálculo direto.'
             };
         }
         return acc;
     }, {});
 
-    return { proventos: proventosDetalhados, descontos, totalProventos, totalDescontos, valorLiquido };
+    return {
+        proventos: proventosDetalhados,
+        descontos,
+        totalProventos: arredondar(totalProventos),
+        totalDescontos: arredondar(totalDescontos),
+        valorLiquido: arredondar(valorLiquido)
+    };
 }
 
 /**
- * Calculator functions mapping for dynamic lookup.
- * This object maps calculator names to their respective calculation functions,
- * allowing for a more scalable and maintainable approach in events.js.
- * 
- * Benefits:
- * - Eliminates the need for a large switch statement in events.js
- * - Follows the Open/Closed Principle - adding new calculators only requires 
- *   modifying this object, not the event handling code
- * - Reduces coupling between modules
+ * Mapeamento de funções da calculadora para busca dinâmica.
+ * Este objeto mapeia nomes de calculadoras para suas respectivas funções de cálculo,
+ * permitindo uma abordagem mais escalável e de fácil manutenção em events.js.
  */
 export const calculatorFunctions = {
-    ferias: calculateFerias,
-    rescisao: calculateRescisao,
-    decimoTerceiro: calculateDecimoTerceiro,
-    salarioLiquido: calculateSalarioLiquido,
-    fgts: calculateFGTS,
-    pisPasep: calculatePISPASEP,
-    seguroDesemprego: calculateSeguroDesemprego,
-    horasExtras: calculateHorasExtras,
-    inss: calculateINSSCalculator,
-    valeTransporte: calculateValeTransporte,
-    irpf: calculateIRPF
+    ferias: calcularFerias,
+    rescisao: calcularRescisao,
+    decimoTerceiro: calcularDecimoTerceiro,
+    salarioLiquido: calcularSalarioLiquido,
+    fgts: calcularFGTS,
+    pisPasep: calcularPISPASEP,
+    seguroDesemprego: calcularSeguroDesemprego,
+    horasExtras: calcularHorasExtras,
+    inss: calcularAliquotaINSS,
+    valeTransporte: calcularValeTransporte,
+    irpf: calcularIRPF
 };
