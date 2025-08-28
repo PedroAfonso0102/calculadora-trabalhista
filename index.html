@@ -173,25 +173,6 @@
             transform: scale(1);
         }
 
-        /* Show/hide checkbox indicator icon */
-        .checkbox .checkbox-indicator {
-            opacity: 0;
-            transition: opacity 150ms ease-in-out;
-            color: hsl(var(--primary-foreground));
-        }
-        .checkbox[data-state='checked'] .checkbox-indicator {
-            opacity: 1;
-        }
-
-        /* Show/hide radio button indicator icon */
-        .radio-button .radio-button-indicator {
-            opacity: 0;
-            transition: opacity 150ms ease-in-out;
-        }
-        .radio-button[data-state='checked'] .radio-button-indicator {
-            opacity: 1;
-        }
-
         /* Material Icons filled style */
         .material-icons {
             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -1566,12 +1547,12 @@
             <!-- Footer da Sidebar -->
             <div class="sidebar-footer border-t border-gray-200 p-4">
                 <!-- Botão FAQ - Base de Conhecimento -->
-                <button id="open-faq-btn" class="btn btn-ghost w-full justify-start mb-2">
+                <button id="open-faq-btn" class="w-full text-sm text-info hover:text-info/80 hover:bg-info/10 px-3 py-2 rounded-md transition-colors mb-2">
                     <span class="sidebar-title">📚 Base de Conhecimento</span>
                     <span class="sidebar-initials hidden">📚</span>
                 </button>
                 
-                <button id="clear-data-btn" class="btn btn-destructive w-full">
+                <button id="clear-data-btn" class="w-full text-sm text-error hover:text-error/80 hover:bg-error/10 px-3 py-2 rounded-md transition-colors">
                     Limpar Dados Salvos
                 </button>
             </div>
@@ -1595,7 +1576,7 @@
                     <div class="flex items-center space-x-3">
                         <!-- Sidebar Toggle Button (desktop only) -->
                         <button id="sidebar-toggle-btn" 
-                                class="btn btn-ghost btn-icon hidden lg:flex"
+                                class="hidden lg:flex items-center justify-center w-10 h-10 rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 aria-label="Expandir/Retrair calculadoras" 
                                 title="Alternar exibição da sidebar">
                             <span class="material-icons text-gray-600">apps</span>
@@ -1603,7 +1584,7 @@
                         
                         <!-- Educational Panel Menu Button -->
                         <button id="educational-panel-menu-btn" 
-                                class="btn btn-ghost btn-icon flex"
+                                class="flex items-center justify-center w-10 h-10 rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 aria-label="Abrir painel educacional"
                                 title="Informe-se - Conteúdo Educacional">
                             <span class="material-icons text-gray-600">menu_book</span>
@@ -1623,7 +1604,7 @@
                     <div class="block lg:hidden mb-6">
                         <div id="mobile-nav-dropdown" class="relative">
                             <button id="mobile-nav-trigger" type="button" aria-haspopup="true" aria-expanded="false" 
-                                    class="btn btn-secondary flex w-full justify-between">
+                                    class="flex items-center justify-between w-full px-4 py-3 text-left bg-background border border-border rounded-md shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200">
                                 <span id="mobile-nav-current-selection" class="font-medium">Cálculo de Férias</span>
                                 <svg class="w-5 h-5 text-muted-foreground transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -1652,15 +1633,15 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2">
                                           <label for="salario-bruto-ferias" class="label">Salário Bruto Mensal</label>
-                                          <input type="text" id="salario-bruto-ferias" name="salario-bruto-ferias" data-state="ferias.salarioBruto" class="input money-mask" placeholder="Ex: 2500.00">
+                                          <input type="text" id="salario-bruto-ferias" name="salario-bruto-ferias" data-state="ferias.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="dias-ferias" class="label">Dias de férias a tirar</label>
-                                          <input type="number" id="dias-ferias" name="dias-ferias" value="30" data-state="ferias.diasFerias" class="input">
+                                          <input type="number" id="dias-ferias" name="dias-ferias" value="30" data-state="ferias.diasFerias" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="dependentes-ferias" class="label">Dependentes (para IRRF)</label>
-                                          <input type="number" id="dependentes-ferias" name="dependentes-ferias"  data-state="ferias.dependentes" class="input">
+                                          <input type="number" id="dependentes-ferias" name="dependentes-ferias"  data-state="ferias.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                       </div>
                                   </div>
                               </div>
@@ -1673,58 +1654,39 @@
                                   <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
                                       <div class="space-y-2">
                                           <label for="media-horas-extras-ferias" class="label">Média Mensal de Horas Extras</label>
-                                          <input type="text" id="media-horas-extras-ferias" name="media-horas-extras-ferias" data-state="ferias.mediaHorasExtras" class="input money-mask" placeholder="Ex: 250.00">
+                                          <input type="text" id="media-horas-extras-ferias" name="media-horas-extras-ferias" data-state="ferias.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="media-adicional-noturno-ferias" class="label">Média Mensal de Adicional Noturno</label>
-                                          <input type="text" id="media-adicional-noturno-ferias" name="media-adicional-noturno-ferias" data-state="ferias.mediaAdicionalNoturno" class="input money-mask" placeholder="Ex: 150.00">
+                                          <input type="text" id="media-adicional-noturno-ferias" name="media-adicional-noturno-ferias" data-state="ferias.mediaAdicionalNoturno" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 150.00">
                                       </div>
                                       <div class="flex items-center space-x-2 md:col-span-2">
-                                          <input type="checkbox" id="periculosidade-ferias" name="periculosidade-ferias" data-state="ferias.periculosidade" class="sr-only">
-                                          <button type="button" role="checkbox" aria-checked="false" data-state="unchecked" class="checkbox">
-                                              <span class="checkbox-indicator">
-                                                  <span class="material-icons" style="font-size: 1rem;">check</span>
-                                              </span>
-                                          </button>
-                                          <label for="periculosidade-ferias" class="label cursor-pointer">Recebe Adicional de Periculosidade (fixo)?</label>
+                                          <input type="checkbox" id="periculosidade-ferias" name="periculosidade-ferias" data-state="ferias.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                          <label for="periculosidade-ferias" class="label">Recebe Adicional de Periculosidade (fixo)?</label>
                                       </div>
                                       <fieldset class="space-y-2 md:col-span-2">
                                           <legend class="label">Adicional de Insalubridade (fixo)</legend>
                                           <div id="insalubridade-grau-ferias-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
-                                              <label for="insalubridade-grau-ferias-0" class="btn btn-secondary flex-1 text-center justify-center" data-state="active">Não se aplica</label>
+                                              <label for="insalubridade-grau-ferias-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">Não se aplica</label>
                                               <input type="radio" id="insalubridade-grau-ferias-0" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau"  checked class="sr-only">
 
-                                              <label for="insalubridade-grau-ferias-10" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Mínimo (10%)</label>
+                                              <label for="insalubridade-grau-ferias-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Mínimo (10%)</label>
                                               <input type="radio" id="insalubridade-grau-ferias-10" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau" value="10" class="sr-only">
 
-                                              <label for="insalubridade-grau-ferias-20" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Médio (20%)</label>
+                                              <label for="insalubridade-grau-ferias-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Médio (20%)</label>
                                               <input type="radio" id="insalubridade-grau-ferias-20" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau" value="20" class="sr-only">
 
-                                              <label for="insalubridade-grau-ferias-40" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Máximo (40%)</label>
+                                              <label for="insalubridade-grau-ferias-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Máximo (40%)</label>
                                               <input type="radio" id="insalubridade-grau-ferias-40" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau" value="40" class="sr-only">
                                           </div>
                                       </fieldset>
                                       <fieldset class="space-y-2">
                                           <legend class="label">Base de Cálculo da Insalubridade</legend>
                                           <div class="flex items-center space-x-4">
-                                              <div class="flex items-center space-x-2">
-                                                  <input type="radio" id="base-salario-minimo-ferias" name="insalubridade-base-ferias" data-state="ferias.insalubridadeBase" value="salario_minimo" checked class="sr-only">
-                                                  <button type="button" role="radio" aria-checked="true" data-state="checked" class="radio-button">
-                                                      <span class="radio-button-indicator">
-                                                          <span class="h-2 w-2 rounded-full bg-current"></span>
-                                                      </span>
-                                                  </button>
-                                                  <label for="base-salario-minimo-ferias" class="label cursor-pointer">Salário Mínimo</label>
-                                              </div>
-                                              <div class="flex items-center space-x-2">
-                                                  <input type="radio" id="base-salario-bruto-ferias" name="insalubridade-base-ferias" data-state="ferias.insalubridadeBase" value="salario_bruto" class="sr-only">
-                                                  <button type="button" role="radio" aria-checked="false" data-state="unchecked" class="radio-button">
-                                                      <span class="radio-button-indicator">
-                                                          <span class="h-2 w-2 rounded-full bg-current"></span>
-                                                      </span>
-                                                  </button>
-                                                  <label for="base-salario-bruto-ferias" class="label cursor-pointer">Salário Base</label>
-                                              </div>
+                                              <input type="radio" id="base-salario-minimo-ferias" name="insalubridade-base-ferias" data-state="ferias.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-minimo-ferias" class="label">Salário Mínimo</label>
+                                              <input type="radio" id="base-salario-bruto-ferias" name="insalubridade-base-ferias" data-state="ferias.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-bruto-ferias" class="label">Salário Base</label>
                                           </div>
                                       </fieldset>
                                   </div>
@@ -1733,22 +1695,14 @@
                               <div class="space-y-4 pt-4 border-t">
                                   <h3 class="text-lg font-semibold text-foreground">Opções das Férias</h3>
                                   <div class="flex items-center space-x-2">
-                                      <input type="checkbox" id="abono-pecuniario" name="abono-pecuniario" data-state="ferias.abonoPecuniario" class="sr-only">
-                                      <button type="button" role="checkbox" aria-checked="false" data-state="unchecked" class="checkbox">
-                                          <span class="checkbox-indicator">
-                                              <span class="material-icons" style="font-size: 1rem;">check</span>
-                                          </span>
-                                      </button>
-                                      <label for="abono-pecuniario" class="label cursor-pointer">Vender 1/3 das férias (abono pecuniário)</label>
+                                      <input type="checkbox" id="abono-pecuniario" name="abono-pecuniario" data-state="ferias.abonoPecuniario" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                      <label for="abono-pecuniario" class="label">Vender 1/3 das férias (abono pecuniário)</label>
                                       <span class="help-icon" data-topic="abono-pecuniario" data-tooltip="Clique para ver a explicação legal">(?)</span>
                                   </div>
-                                  <div class="flex items-center space-x-3">
-                                    <input type="checkbox" id="adiantar-decimo" name="adiantar-decimo" data-state="ferias.adiantarDecimo" class="sr-only">
-                                    <button type="button" id="adiantar-decimo-switch" role="switch" aria-checked="false" data-state="unchecked" class="switch">
-                                        <span class="switch-thumb"></span>
-                                    </button>
-                                    <label for="adiantar-decimo" class="label cursor-pointer">Adiantar 1ª parcela do 13º salário</label>
-                                    <span class="help-icon" data-topic="adiantamento-13" data-tooltip="Clique para ver a explicação legal">(?)</span>
+                                  <div class="flex items-center space-x-2">
+                                      <input type="checkbox" id="adiantar-decimo" name="adiantar-decimo" data-state="ferias.adiantarDecimo" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                      <label for="adiantar-decimo" class="label">Adiantar 1ª parcela do 13º salário</label>
+                                      <span class="help-icon" data-topic="adiantamento-13" data-tooltip="Clique para ver a explicação legal">(?)</span>
                                   </div>
                               </div>
                           </div>
@@ -1766,7 +1720,7 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2 md:col-span-2">
                                           <label for="motivo-rescisao" class="label">Motivo da Rescisão</label>
-                                          <select id="motivo-rescisao" name="motivo-rescisao" data-state="rescisao.motivo" class="input appearance-none">
+                                          <select id="motivo-rescisao" name="motivo-rescisao" data-state="rescisao.motivo" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
                                               <option value="sem_justa_causa">Demissão sem Justa Causa</option>
                                               <option value="pedido_demissao">Pedido de Demissão</option>
                                               <option value="com_justa_causa">Demissão com Justa Causa</option>
@@ -1776,23 +1730,23 @@
                                       </div>
                                       <div class="space-y-2">
                                           <label for="data-admissao" class="label">Data de Admissão</label>
-                                          <input type="date" id="data-admissao" name="data-admissao" data-state="rescisao.dataAdmissao" class="input">
+                                          <input type="date" id="data-admissao" name="data-admissao" data-state="rescisao.dataAdmissao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="data-demissao" class="label">Data de Demissão</label>
-                                          <input type="date" id="data-demissao" name="data-demissao" data-state="rescisao.dataDemissao" class="input">
+                                          <input type="date" id="data-demissao" name="data-demissao" data-state="rescisao.dataDemissao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="salario-bruto-rescisao" class="label">Último Salário Bruto</label>
-                                          <input type="text" id="salario-bruto-rescisao" name="salario-bruto-rescisao" data-state="rescisao.salarioBruto" class="input money-mask" placeholder="Ex: 2500.00">
+                                          <input type="text" id="salario-bruto-rescisao" name="salario-bruto-rescisao" data-state="rescisao.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="saldo-fgts" class="label">Saldo do FGTS</label>
-                                          <input type="text" id="saldo-fgts" name="saldo-fgts" data-state="rescisao.saldoFgts" class="input money-mask" placeholder="Ex: 5000.00">
+                                          <input type="text" id="saldo-fgts" name="saldo-fgts" data-state="rescisao.saldoFgts" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 5000.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="aviso-previo" class="label">Aviso Prévio</label>
-                                          <select id="aviso-previo" name="aviso-previo" data-state="rescisao.avisoPrevio" class="input appearance-none">
+                                          <select id="aviso-previo" name="aviso-previo" data-state="rescisao.avisoPrevio" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
                                               <option value="indenizado">Indenizado</option>
                                               <option value="trabalhado">Trabalhado</option>
                                               <option value="dispensado">Dispensado / Não se aplica</option>
@@ -1800,16 +1754,11 @@
                                       </div>
                                       <div class="space-y-2">
                                           <label for="dependentes-rescisao" class="label">Dependentes (para IRRF)</label>
-                                          <input type="number" id="dependentes-rescisao" name="dependentes-rescisao"  data-state="rescisao.dependentes" class="input">
+                                          <input type="number" id="dependentes-rescisao" name="dependentes-rescisao"  data-state="rescisao.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                       </div>
                                       <div class="flex items-center space-x-2 md:col-span-2">
-                                          <input type="checkbox" id="ferias-vencidas" name="ferias-vencidas" data-state="rescisao.feriasVencidas" class="sr-only">
-                                          <button type="button" role="checkbox" aria-checked="false" data-state="unchecked" class="checkbox">
-                                              <span class="checkbox-indicator">
-                                                  <span class="material-icons" style="font-size: 1rem;">check</span>
-                                              </span>
-                                          </button>
-                                          <label for="ferias-vencidas" class="label cursor-pointer">Possui férias vencidas não gozadas?</label>
+                                          <input type="checkbox" id="ferias-vencidas" name="ferias-vencidas" data-state="rescisao.feriasVencidas" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                          <label for="ferias-vencidas" class="label">Possui férias vencidas não gozadas?</label>
                                           <span class="help-icon" data-topic="ferias-vencidas" data-tooltip="Clique para ver a explicação legal">(?)</span>
                                       </div>
                                   </div>
@@ -1823,58 +1772,39 @@
                                   <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
                                       <div class="space-y-2">
                                           <label for="media-horas-extras-rescisao" class="label">Média Mensal de Horas Extras</label>
-                                          <input type="text" id="media-horas-extras-rescisao" name="media-horas-extras-rescisao" data-state="rescisao.mediaHorasExtras" class="input money-mask" placeholder="Ex: 250.00">
+                                          <input type="text" id="media-horas-extras-rescisao" name="media-horas-extras-rescisao" data-state="rescisao.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="media-adicional-noturno-rescisao" class="label">Média Mensal de Adicional Noturno</label>
-                                          <input type="text" id="media-adicional-noturno-rescisao" name="media-adicional-noturno-rescisao" data-state="rescisao.mediaAdicionalNoturno" class="input money-mask" placeholder="Ex: 150.00">
+                                          <input type="text" id="media-adicional-noturno-rescisao" name="media-adicional-noturno-rescisao" data-state="rescisao.mediaAdicionalNoturno" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 150.00">
                                       </div>
                                       <div class="flex items-center space-x-2 md:col-span-2">
-                                          <input type="checkbox" id="periculosidade-rescisao" name="periculosidade-rescisao" data-state="rescisao.periculosidade" class="sr-only">
-                                          <button type="button" role="checkbox" aria-checked="false" data-state="unchecked" class="checkbox">
-                                              <span class="checkbox-indicator">
-                                                  <span class="material-icons" style="font-size: 1rem;">check</span>
-                                              </span>
-                                          </button>
-                                          <label for="periculosidade-rescisao" class="label cursor-pointer">Recebe Adicional de Periculosidade (fixo)?</label>
+                                          <input type="checkbox" id="periculosidade-rescisao" name="periculosidade-rescisao" data-state="rescisao.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                          <label for="periculosidade-rescisao" class="label">Recebe Adicional de Periculosidade (fixo)?</label>
                                       </div>
                                       <fieldset class="space-y-2 md:col-span-2">
                                           <legend class="label">Adicional de Insalubridade (fixo)</legend>
                                           <div id="insalubridade-grau-rescisao-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
-                                              <label for="insalubridade-grau-rescisao-0" class="btn btn-secondary flex-1 text-center justify-center" data-state="active">Não se aplica</label>
+                                              <label for="insalubridade-grau-rescisao-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">Não se aplica</label>
                                               <input type="radio" id="insalubridade-grau-rescisao-0" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau"  checked class="sr-only">
 
-                                              <label for="insalubridade-grau-rescisao-10" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Mínimo (10%)</label>
+                                              <label for="insalubridade-grau-rescisao-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Mínimo (10%)</label>
                                               <input type="radio" id="insalubridade-grau-rescisao-10" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau" value="10" class="sr-only">
 
-                                              <label for="insalubridade-grau-rescisao-20" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Médio (20%)</label>
+                                              <label for="insalubridade-grau-rescisao-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Médio (20%)</label>
                                               <input type="radio" id="insalubridade-grau-rescisao-20" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau" value="20" class="sr-only">
 
-                                              <label for="insalubridade-grau-rescisao-40" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Máximo (40%)</label>
+                                              <label for="insalubridade-grau-rescisao-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Máximo (40%)</label>
                                               <input type="radio" id="insalubridade-grau-rescisao-40" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau" value="40" class="sr-only">
                                           </div>
                                       </fieldset>
                                       <fieldset class="space-y-2">
                                           <legend class="label">Base de Cálculo da Insalubridade</legend>
                                           <div class="flex items-center space-x-4">
-                                              <div class="flex items-center space-x-2">
-                                                  <input type="radio" id="base-salario-minimo-rescisao" name="insalubridade-base-rescisao" data-state="rescisao.insalubridadeBase" value="salario_minimo" checked class="sr-only">
-                                                  <button type="button" role="radio" aria-checked="true" data-state="checked" class="radio-button">
-                                                      <span class="radio-button-indicator">
-                                                          <span class="h-2 w-2 rounded-full bg-current"></span>
-                                                      </span>
-                                                  </button>
-                                                  <label for="base-salario-minimo-rescisao" class="label cursor-pointer">Salário Mínimo</label>
-                                              </div>
-                                              <div class="flex items-center space-x-2">
-                                                  <input type="radio" id="base-salario-bruto-rescisao" name="insalubridade-base-rescisao" data-state="rescisao.insalubridadeBase" value="salario_bruto" class="sr-only">
-                                                  <button type="button" role="radio" aria-checked="false" data-state="unchecked" class="radio-button">
-                                                      <span class="radio-button-indicator">
-                                                          <span class="h-2 w-2 rounded-full bg-current"></span>
-                                                      </span>
-                                                  </button>
-                                                  <label for="base-salario-bruto-rescisao" class="label cursor-pointer">Salário Base</label>
-                                              </div>
+                                              <input type="radio" id="base-salario-minimo-rescisao" name="insalubridade-base-rescisao" data-state="rescisao.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-minimo-rescisao" class="label">Salário Mínimo</label>
+                                              <input type="radio" id="base-salario-bruto-rescisao" name="insalubridade-base-rescisao" data-state="rescisao.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-bruto-rescisao" class="label">Salário Base</label>
                                           </div>
                                       </fieldset>
                                   </div>
@@ -1891,19 +1821,19 @@
                                               <span>Desconto de Vale-Transporte</span>
                                               <span class="help-icon" data-topic="desconto_vt" data-tooltip="Como funciona o desconto de VT?">(?)</span>
                                           </label>
-                                          <input type="text" id="desconto-vt-rescisao" name="desconto-vt-rescisao" data-state="rescisao.descontoVt" class="input money-mask" placeholder="Ex: 300.00">
+                                          <input type="text" id="desconto-vt-rescisao" name="desconto-vt-rescisao" data-state="rescisao.descontoVt" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 300.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="desconto-vr-rescisao" class="label">Desconto Vale-Refeição/Alimentação</label>
-                                          <input type="text" id="desconto-vr-rescisao" name="desconto-vr-rescisao" data-state="rescisao.descontoVr" class="input money-mask" placeholder="Ex: 50.00">
+                                          <input type="text" id="desconto-vr-rescisao" name="desconto-vr-rescisao" data-state="rescisao.descontoVr" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 50.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="desconto-saude-rescisao" class="label">Desconto Plano de Saúde / Odontológico</label>
-                                          <input type="text" id="desconto-saude-rescisao" name="desconto-saude-rescisao" data-state="rescisao.descontoSaude" class="input money-mask" placeholder="Ex: 100.00">
+                                          <input type="text" id="desconto-saude-rescisao" name="desconto-saude-rescisao" data-state="rescisao.descontoSaude" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 100.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="desconto-adiantamentos-rescisao" class="label">Adiantamentos (Vale)</label>
-                                          <input type="text" id="desconto-adiantamentos-rescisao" name="desconto-adiantamentos-rescisao" data-state="rescisao.descontoAdiantamentos" class="input money-mask" placeholder="Ex: 400.00">
+                                          <input type="text" id="desconto-adiantamentos-rescisao" name="desconto-adiantamentos-rescisao" data-state="rescisao.descontoAdiantamentos" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 400.00">
                                       </div>
                                   </div>
                               </details>
@@ -1922,19 +1852,19 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2">
                                           <label for="salario-bruto-decimo-terceiro" class="label">Salário Bruto Mensal</label>
-                                          <input type="text" id="salario-bruto-decimo-terceiro" name="salario-bruto-decimo-terceiro" data-state="decimoTerceiro.salarioBruto" class="input money-mask" placeholder="Ex: 2500.00">
+                                          <input type="text" id="salario-bruto-decimo-terceiro" name="salario-bruto-decimo-terceiro" data-state="decimoTerceiro.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="meses-trabalhados-decimo-terceiro" class="label">Meses trabalhados no ano</label>
-                                          <input type="number" id="meses-trabalhados-decimo-terceiro" name="meses-trabalhados-decimo-terceiro" min="1" max="12" value="12" data-state="decimoTerceiro.mesesTrabalhados" class="input">
+                                          <input type="number" id="meses-trabalhados-decimo-terceiro" name="meses-trabalhados-decimo-terceiro" min="1" max="12" value="12" data-state="decimoTerceiro.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="dependentes-decimo-terceiro" class="label">Dependentes (para IRRF)</label>
-                                          <input type="number" id="dependentes-decimo-terceiro" name="dependentes-decimo-terceiro"  min="0" data-state="decimoTerceiro.dependentes" class="input">
+                                          <input type="number" id="dependentes-decimo-terceiro" name="dependentes-decimo-terceiro"  min="0" data-state="decimoTerceiro.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="adiantamento-recebido-decimo-terceiro" class="label">Adiantamento da 1ª parcela já recebido</label>
-                                          <input type="text" id="adiantamento-recebido-decimo-terceiro" name="adiantamento-recebido-decimo-terceiro" min="0" data-state="decimoTerceiro.adiantamentoRecebido" class="input money-mask" placeholder="Ex: 1250.00">
+                                          <input type="text" id="adiantamento-recebido-decimo-terceiro" name="adiantamento-recebido-decimo-terceiro" min="0" data-state="decimoTerceiro.adiantamentoRecebido" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 1250.00">
                                       </div>
                                   </div>
                               </div>
@@ -1947,58 +1877,39 @@
                                   <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
                                       <div class="space-y-2">
                                           <label for="media-horas-extras-decimo-terceiro" class="label">Média Mensal de Horas Extras</label>
-                                          <input type="text" id="media-horas-extras-decimo-terceiro" name="media-horas-extras-decimo-terceiro"  data-state="decimoTerceiro.mediaHorasExtras" class="input money-mask" placeholder="Ex: 250.00">
+                                          <input type="text" id="media-horas-extras-decimo-terceiro" name="media-horas-extras-decimo-terceiro"  data-state="decimoTerceiro.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="media-adicional-noturno-decimo-terceiro" class="label">Média Mensal de Adicional Noturno</label>
-                                          <input type="text" id="media-adicional-noturno-decimo-terceiro" name="media-adicional-noturno-decimo-terceiro"  data-state="decimoTerceiro.mediaAdicionalNoturno" class="input money-mask" placeholder="Ex: 150.00">
+                                          <input type="text" id="media-adicional-noturno-decimo-terceiro" name="media-adicional-noturno-decimo-terceiro"  data-state="decimoTerceiro.mediaAdicionalNoturno" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 150.00">
                                       </div>
                                       <div class="flex items-center space-x-2 md:col-span-2">
-                                          <input type="checkbox" id="periculosidade-decimo-terceiro" name="periculosidade-decimo-terceiro" data-state="decimoTerceiro.periculosidade" class="sr-only">
-                                          <button type="button" role="checkbox" aria-checked="false" data-state="unchecked" class="checkbox">
-                                              <span class="checkbox-indicator">
-                                                  <span class="material-icons" style="font-size: 1rem;">check</span>
-                                              </span>
-                                          </button>
-                                          <label for="periculosidade-decimo-terceiro" class="label cursor-pointer">Recebe Adicional de Periculosidade (fixo)?</label>
+                                          <input type="checkbox" id="periculosidade-decimo-terceiro" name="periculosidade-decimo-terceiro" data-state="decimoTerceiro.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                          <label for="periculosidade-decimo-terceiro" class="label">Recebe Adicional de Periculosidade (fixo)?</label>
                                       </div>
                                       <fieldset class="space-y-2 md:col-span-2">
                                           <legend class="label">Adicional de Insalubridade (fixo)</legend>
                                           <div id="insalubridade-grau-decimo-terceiro-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
-                                              <label for="insalubridade-grau-decimo-terceiro-0" class="btn btn-secondary flex-1 text-center justify-center" data-state="active">Não se aplica</label>
+                                              <label for="insalubridade-grau-decimo-terceiro-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">Não se aplica</label>
                                               <input type="radio" id="insalubridade-grau-decimo-terceiro-0" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau"  checked class="sr-only">
 
-                                              <label for="insalubridade-grau-decimo-terceiro-10" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Mínimo (10%)</label>
+                                              <label for="insalubridade-grau-decimo-terceiro-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Mínimo (10%)</label>
                                               <input type="radio" id="insalubridade-grau-decimo-terceiro-10" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau" value="10" class="sr-only">
 
-                                              <label for="insalubridade-grau-decimo-terceiro-20" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Médio (20%)</label>
+                                              <label for="insalubridade-grau-decimo-terceiro-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Médio (20%)</label>
                                               <input type="radio" id="insalubridade-grau-decimo-terceiro-20" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau" value="20" class="sr-only">
 
-                                              <label for="insalubridade-grau-decimo-terceiro-40" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Máximo (40%)</label>
+                                              <label for="insalubridade-grau-decimo-terceiro-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Máximo (40%)</label>
                                               <input type="radio" id="insalubridade-grau-decimo-terceiro-40" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau" value="40" class="sr-only">
                                           </div>
                                       </fieldset>
                                       <fieldset class="space-y-2">
                                           <legend class="label">Base de Cálculo da Insalubridade</legend>
                                           <div class="flex items-center space-x-4">
-                                              <div class="flex items-center space-x-2">
-                                                  <input type="radio" id="base-salario-minimo-decimo-terceiro" name="insalubridade-base-decimo-terceiro" data-state="decimoTerceiro.insalubridadeBase" value="salario_minimo" checked class="sr-only">
-                                                  <button type="button" role="radio" aria-checked="true" data-state="checked" class="radio-button">
-                                                      <span class="radio-button-indicator">
-                                                          <span class="h-2 w-2 rounded-full bg-current"></span>
-                                                      </span>
-                                                  </button>
-                                                  <label for="base-salario-minimo-decimo-terceiro" class="label cursor-pointer">Salário Mínimo</label>
-                                              </div>
-                                              <div class="flex items-center space-x-2">
-                                                  <input type="radio" id="base-salario-bruto-decimo-terceiro" name="insalubridade-base-decimo-terceiro" data-state="decimoTerceiro.insalubridadeBase" value="salario_bruto" class="sr-only">
-                                                  <button type="button" role="radio" aria-checked="false" data-state="unchecked" class="radio-button">
-                                                      <span class="radio-button-indicator">
-                                                          <span class="h-2 w-2 rounded-full bg-current"></span>
-                                                      </span>
-                                                  </button>
-                                                  <label for="base-salario-bruto-decimo-terceiro" class="label cursor-pointer">Salário Base</label>
-                                              </div>
+                                              <input type="radio" id="base-salario-minimo-decimo-terceiro" name="insalubridade-base-decimo-terceiro" data-state="decimoTerceiro.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-minimo-decimo-terceiro" class="label">Salário Mínimo</label>
+                                              <input type="radio" id="base-salario-bruto-decimo-terceiro" name="insalubridade-base-decimo-terceiro" data-state="decimoTerceiro.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-bruto-decimo-terceiro" class="label">Salário Base</label>
                                           </div>
                                       </fieldset>
                                   </div>
@@ -2018,15 +1929,15 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2">
                                           <label for="salario-bruto-salario-liquido" class="label">Salário Bruto Mensal</label>
-                                          <input type="text" id="salario-bruto-salario-liquido" name="salario-bruto-salario-liquido" data-state="salarioLiquido.salarioBruto" class="input money-mask" placeholder="Ex: 2500.00">
+                                          <input type="text" id="salario-bruto-salario-liquido" name="salario-bruto-salario-liquido" data-state="salarioLiquido.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="horas-extras-salario-liquido" class="label">Outros Proventos (ex: Horas Extras)</label>
-                                          <input type="text" id="horas-extras-salario-liquido" name="horas-extras-salario-liquido"  data-state="salarioLiquido.horasExtras" class="input money-mask" placeholder="Ex: 250.00">
+                                          <input type="text" id="horas-extras-salario-liquido" name="horas-extras-salario-liquido"  data-state="salarioLiquido.horasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="dependentes-salario-liquido" class="label">Dependentes (para IRRF)</label>
-                                          <input type="number" id="dependentes-salario-liquido" name="dependentes-salario-liquido"  min="0" data-state="salarioLiquido.dependentes" class="input">
+                                          <input type="number" id="dependentes-salario-liquido" name="dependentes-salario-liquido"  min="0" data-state="salarioLiquido.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                       </div>
                                   </div>
                               </div>
@@ -2039,13 +1950,8 @@
                                   </summary>
                                   <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
                                       <div class="flex items-center space-x-2 md:col-span-2">
-                                          <input type="checkbox" id="periculosidade-salario-liquido" name="periculosidade-salario-liquido" data-state="salarioLiquido.periculosidade" class="sr-only">
-                                          <button type="button" role="checkbox" aria-checked="false" data-state="unchecked" class="checkbox">
-                                              <span class="checkbox-indicator">
-                                                  <span class="material-icons" style="font-size: 1rem;">check</span>
-                                              </span>
-                                          </button>
-                                          <label for="periculosidade-salario-liquido" class="label cursor-pointer">Adicional de Periculosidade (30%)</label>
+                                          <input type="checkbox" id="periculosidade-salario-liquido" name="periculosidade-salario-liquido" data-state="salarioLiquido.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                          <label for="periculosidade-salario-liquido" class="label">Adicional de Periculosidade (30%)</label>
                                           <span class="help-icon" data-topic="periculosidade" data-tooltip="O que é Adicional de Periculosidade?">(?)</span>
                                       </div>
                                       <fieldset class="space-y-2 md:col-span-2">
@@ -2054,40 +1960,26 @@
                                               <span class="help-icon" data-topic="insalubridade" data-tooltip="O que é Adicional de Insalubridade?">(?)</span>
                                           </legend>
                                           <div id="insalubridade-grau-salario-liquido-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
-                                              <label for="insalubridade-grau-salario-liquido-0" class="btn btn-secondary flex-1 text-center justify-center" data-state="active">Não se aplica</label>
+                                              <label for="insalubridade-grau-salario-liquido-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">Não se aplica</label>
                                               <input type="radio" id="insalubridade-grau-salario-liquido-0" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau"  checked class="sr-only">
 
-                                              <label for="insalubridade-grau-salario-liquido-10" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Mínimo (10%)</label>
+                                              <label for="insalubridade-grau-salario-liquido-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Mínimo (10%)</label>
                                               <input type="radio" id="insalubridade-grau-salario-liquido-10" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau" value="10" class="sr-only">
 
-                                              <label for="insalubridade-grau-salario-liquido-20" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Médio (20%)</label>
+                                              <label for="insalubridade-grau-salario-liquido-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Médio (20%)</label>
                                               <input type="radio" id="insalubridade-grau-salario-liquido-20" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau" value="20" class="sr-only">
 
-                                              <label for="insalubridade-grau-salario-liquido-40" class="btn btn-secondary flex-1 text-center justify-center" data-state="inactive">Máximo (40%)</label>
+                                              <label for="insalubridade-grau-salario-liquido-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Máximo (40%)</label>
                                               <input type="radio" id="insalubridade-grau-salario-liquido-40" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau" value="40" class="sr-only">
                                           </div>
                                       </fieldset>
                                       <fieldset class="space-y-2">
                                           <legend class="label">Base de Cálculo da Insalubridade</legend>
                                           <div class="flex items-center space-x-4">
-                                              <div class="flex items-center space-x-2">
-                                                  <input type="radio" id="base-salario-minimo-salario-liquido" name="insalubridade-base-salario-liquido" data-state="salarioLiquido.insalubridadeBase" value="salario_minimo" checked class="sr-only">
-                                                  <button type="button" role="radio" aria-checked="true" data-state="checked" class="radio-button">
-                                                      <span class="radio-button-indicator">
-                                                          <span class="h-2 w-2 rounded-full bg-current"></span>
-                                                      </span>
-                                                  </button>
-                                                  <label for="base-salario-minimo-salario-liquido" class="label cursor-pointer">Salário Mínimo</label>
-                                              </div>
-                                              <div class="flex items-center space-x-2">
-                                                  <input type="radio" id="base-salario-bruto-salario-liquido" name="insalubridade-base-salario-liquido" data-state="salarioLiquido.insalubridadeBase" value="salario_bruto" class="sr-only">
-                                                  <button type="button" role="radio" aria-checked="false" data-state="unchecked" class="radio-button">
-                                                      <span class="radio-button-indicator">
-                                                          <span class="h-2 w-2 rounded-full bg-current"></span>
-                                                      </span>
-                                                  </button>
-                                                  <label for="base-salario-bruto-salario-liquido" class="label cursor-pointer">Salário Base</label>
-                                              </div>
+                                              <input type="radio" id="base-salario-minimo-salario-liquido" name="insalubridade-base-salario-liquido" data-state="salarioLiquido.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-minimo-salario-liquido" class="label">Salário Mínimo</label>
+                                              <input type="radio" id="base-salario-bruto-salario-liquido" name="insalubridade-base-salario-liquido" data-state="salarioLiquido.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-bruto-salario-liquido" class="label">Salário Base</label>
                                           </div>
                                       </fieldset>
                                       <div class="space-y-2">
@@ -2095,11 +1987,11 @@
                                               <span>Horas Noturnas no Mês</span>
                                               <span class="help-icon" data-topic="adicional_noturno" data-tooltip="O que é Adicional Noturno?">(?)</span>
                                           </label>
-                                          <input type="number" id="horas-noturnas-salario-liquido" name="horas-noturnas-salario-liquido"  data-state="salarioLiquido.horasNoturnas" class="input" placeholder="Ex: 40">
+                                          <input type="number" id="horas-noturnas-salario-liquido" name="horas-noturnas-salario-liquido"  data-state="salarioLiquido.horasNoturnas" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 40">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="carga-horaria-mensal-salario-liquido" class="label">Carga Horária Mensal</label>
-                                          <input type="number" id="carga-horaria-mensal-salario-liquido" name="carga-horaria-mensal-salario-liquido" value="220" data-state="salarioLiquido.cargaHorariaMensal" class="input" placeholder="Ex: 220">
+                                          <input type="number" id="carga-horaria-mensal-salario-liquido" name="carga-horaria-mensal-salario-liquido" value="220" data-state="salarioLiquido.cargaHorariaMensal" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 220">
                                       </div>
                                   </div>
                               </details>
@@ -2116,19 +2008,19 @@
                                               <span>Desconto de Vale-Transporte</span>
                                               <span class="help-icon" data-topic="desconto_vt" data-tooltip="Como funciona o desconto de VT?">(?)</span>
                                           </label>
-                                          <input type="text" id="desconto-vt-salario-liquido" name="desconto-vt-salario-liquido"  data-state="salarioLiquido.descontoVt" class="input money-mask" placeholder="Ex: 300.00">
+                                          <input type="text" id="desconto-vt-salario-liquido" name="desconto-vt-salario-liquido"  data-state="salarioLiquido.descontoVt" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 300.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="desconto-vr-salario-liquido" class="label">Desconto Vale-Refeição/Alimentação</label>
-                                          <input type="text" id="desconto-vr-salario-liquido" name="desconto-vr-salario-liquido"  data-state="salarioLiquido.descontoVr" class="input money-mask" placeholder="Ex: 50.00">
+                                          <input type="text" id="desconto-vr-salario-liquido" name="desconto-vr-salario-liquido"  data-state="salarioLiquido.descontoVr" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 50.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="desconto-saude-salario-liquido" class="label">Desconto Plano de Saúde / Odontológico</label>
-                                          <input type="text" id="desconto-saude-salario-liquido" name="desconto-saude-salario-liquido"  data-state="salarioLiquido.descontoSaude" class="input money-mask" placeholder="Ex: 100.00">
+                                          <input type="text" id="desconto-saude-salario-liquido" name="desconto-saude-salario-liquido"  data-state="salarioLiquido.descontoSaude" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 100.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="desconto-adiantamentos-salario-liquido" class="label">Adiantamentos (Vale)</label>
-                                          <input type="text" id="desconto-adiantamentos-salario-liquido" name="desconto-adiantamentos-salario-liquido"  data-state="salarioLiquido.descontoAdiantamentos" class="input money-mask" placeholder="Ex: 400.00">
+                                          <input type="text" id="desconto-adiantamentos-salario-liquido" name="desconto-adiantamentos-salario-liquido"  data-state="salarioLiquido.descontoAdiantamentos" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 400.00">
                                       </div>
                                   </div>
                               </details>
@@ -2142,17 +2034,12 @@
                                   <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
                                       <div class="space-y-4 md:col-span-2">
                                           <div class="flex items-center space-x-2">
-                                              <input type="checkbox" id="recebe-salario-familia-salario-liquido" name="recebe-salario-familia" data-state="salarioLiquido.recebeSalarioFamilia" class="sr-only">
-                                              <button type="button" role="checkbox" aria-checked="false" data-state="unchecked" class="checkbox">
-                                                  <span class="checkbox-indicator">
-                                                      <span class="material-icons" style="font-size: 1rem;">check</span>
-                                                  </span>
-                                              </button>
-                                              <label for="recebe-salario-familia-salario-liquido" class="label cursor-pointer">Recebe Salário Família?</label>
+                                              <input type="checkbox" id="recebe-salario-familia-salario-liquido" name="recebe-salario-familia" data-state="salarioLiquido.recebeSalarioFamilia" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="recebe-salario-familia-salario-liquido" class="label">Recebe Salário Família?</label>
                                           </div>
                                           <div id="filhos-salario-familia-container-salario-liquido" class="space-y-2 hidden pl-6">
                                               <label for="filhos-salario-familia-salario-liquido" class="label">Nº de filhos elegíveis (até 14 anos ou inválidos)</label>
-                                              <input type="number" id="filhos-salario-familia-salario-liquido" name="filhos-salario-familia"  min="0" data-state="salarioLiquido.filhosSalarioFamilia" class="input">
+                                              <input type="number" id="filhos-salario-familia-salario-liquido" name="filhos-salario-familia"  min="0" data-state="salarioLiquido.filhosSalarioFamilia" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                           </div>
                                       </div>
                                   </div>
@@ -2166,7 +2053,7 @@
                           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 items-end">
                               <div class="space-y-2">
                                   <label for="simular-salario-bruto" class="label">Se o salário bruto fosse...</label>
-                                  <input type="text" id="simular-salario-bruto" name="simular-salario-bruto" class="input money-mask" placeholder="Digite um valor bruto">
+                                  <input type="text" id="simular-salario-bruto" name="simular-salario-bruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Digite um valor bruto">
                               </div>
                               <div class="space-y-2">
                                   <p class="label">O salário líquido seria:</p>
@@ -2188,7 +2075,7 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2">
                                           <label for="salario-bruto-fgts" class="label">Salário Bruto Mensal</label>
-                                          <input type="text" id="salario-bruto-fgts" name="salario-bruto-fgts" data-state="fgts.salarioBruto" class="input money-mask" placeholder="Ex: 2500.00">
+                                          <input type="text" id="salario-bruto-fgts" name="salario-bruto-fgts" data-state="fgts.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
                                       </div>
                                   </div>
                               </div>
@@ -2199,11 +2086,11 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2">
                                           <label for="saldo-total-fgts" class="label">Saldo Total do FGTS</label>
-                                          <input type="text" id="saldo-total-fgts" name="saldo-total-fgts" data-state="fgts.saldoTotal" class="input money-mask" placeholder="Ex: 8000.00">
+                                          <input type="text" id="saldo-total-fgts" name="saldo-total-fgts" data-state="fgts.saldoTotal" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 8000.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="opcao-saque-fgts" class="label">Opção de Saque</label>
-                                          <select id="opcao-saque-fgts" name="opcao-saque-fgts" data-state="fgts.opcaoSaque" class="input appearance-none">
+                                          <select id="opcao-saque-fgts" name="opcao-saque-fgts" data-state="fgts.opcaoSaque" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
                                               <option value="rescisao">Saque-Rescisão (Demissão sem Justa Causa)</option>
                                               <option value="aniversario">Saque-Aniversário</option>
                                           </select>
@@ -2224,15 +2111,15 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2">
                                           <label for="salario-medio-pis" class="label">Salário Médio Mensal no Ano-Base</label>
-                                          <input type="text" id="salario-medio-pis" name="salario-medio-pis" data-state="pisPasep.salarioMedio" class="input money-mask" placeholder="Ex: 1800.00">
+                                          <input type="text" id="salario-medio-pis" name="salario-medio-pis" data-state="pisPasep.salarioMedio" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 1800.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="meses-trabalhados-pis" class="label">Meses Trabalhados no Ano-Base</label>
-                                          <input type="number" id="meses-trabalhados-pis" name="meses-trabalhados-pis" data-state="pisPasep.mesesTrabalhados" class="input" placeholder="Ex: 12" min="0" max="12">
+                                          <input type="number" id="meses-trabalhados-pis" name="meses-trabalhados-pis" data-state="pisPasep.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 12" min="0" max="12">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="data-inscricao-pis" class="label">Data de Inscrição no PIS/PASEP</label>
-                                          <input type="date" id="data-inscricao-pis" name="data-inscricao-pis" data-state="pisPasep.dataInscricao" class="input">
+                                          <input type="date" id="data-inscricao-pis" name="data-inscricao-pis" data-state="pisPasep.dataInscricao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                       </div>
                                   </div>
                               </div>
@@ -2250,23 +2137,23 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2">
                                           <label for="sd-salario-1" class="label">Último Salário</label>
-                                          <input type="text" id="sd-salario-1" name="sd-salario-1" data-state="seguroDesemprego.salario1" class="input money-mask" placeholder="Ex: 2600.00">
+                                          <input type="text" id="sd-salario-1" name="sd-salario-1" data-state="seguroDesemprego.salario1" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2600.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="sd-salario-2" class="label">Penúltimo Salário</label>
-                                          <input type="text" id="sd-salario-2" name="sd-salario-2" data-state="seguroDesemprego.salario2" class="input money-mask" placeholder="Ex: 2500.00">
+                                          <input type="text" id="sd-salario-2" name="sd-salario-2" data-state="seguroDesemprego.salario2" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="sd-salario-3" class="label">Antepenúltimo Salário</label>
-                                          <input type="text" id="sd-salario-3" name="sd-salario-3" data-state="seguroDesemprego.salario3" class="input money-mask" placeholder="Ex: 2400.00">
+                                          <input type="text" id="sd-salario-3" name="sd-salario-3" data-state="seguroDesemprego.salario3" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2400.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="sd-meses-trabalhados" class="label">Meses Trabalhados (últimos 36 meses)</label>
-                                          <input type="number" id="sd-meses-trabalhados" name="sd-meses-trabalhados" data-state="seguroDesemprego.mesesTrabalhados" class="input" placeholder="Ex: 24">
+                                          <input type="number" id="sd-meses-trabalhados" name="sd-meses-trabalhados" data-state="seguroDesemprego.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 24">
                                       </div>
                                       <div class="space-y-2 md:col-span-2">
                                           <label for="sd-solicitacoes-anteriores" class="label">É a primeira vez que solicita o Seguro-Desemprego?</label>
-                                          <select id="sd-solicitacoes-anteriores" name="sd-solicitacoes-anteriores" data-state="seguroDesemprego.numSolicitacoes" class="input appearance-none">
+                                          <select id="sd-solicitacoes-anteriores" name="sd-solicitacoes-anteriores" data-state="seguroDesemprego.numSolicitacoes" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
                                               <option value="0">Sim, é a primeira vez</option>
                                               <option value="1">Não, é a segunda vez</option>
                                               <option value="2">Não, é a terceira vez ou mais</option>
@@ -2288,23 +2175,23 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2">
                                           <label for="salario-base-he" class="label">Salário Base</label>
-                                          <input type="text" id="salario-base-he" name="salario-base-he" data-state="horasExtras.salarioBase" class="input money-mask" placeholder="Ex: 2200.00">
+                                          <input type="text" id="salario-base-he" name="salario-base-he" data-state="horasExtras.salarioBase" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="horas-contratuais-he" class="label">Horas Contratuais Mensais</label>
-                                          <input type="number" id="horas-contratuais-he" name="horas-contratuais-he" data-state="horasExtras.horasContratuais" class="input" value="220" placeholder="Ex: 220">
+                                          <input type="number" id="horas-contratuais-he" name="horas-contratuais-he" data-state="horasExtras.horasContratuais" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value="220" placeholder="Ex: 220">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="horas-extras-50" class="label">Nº de Horas Extras 50%</label>
-                                          <input type="number" id="horas-extras-50" name="horas-extras-50" data-state="horasExtras.horasExtras50" class="input" placeholder="Ex: 10">
+                                          <input type="number" id="horas-extras-50" name="horas-extras-50" data-state="horasExtras.horasExtras50" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 10">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="horas-extras-100" class="label">Nº de Horas Extras 100%</label>
-                                          <input type="number" id="horas-extras-100" name="horas-extras-100" data-state="horasExtras.horasExtras100" class="input" placeholder="Ex: 4">
+                                          <input type="number" id="horas-extras-100" name="horas-extras-100" data-state="horasExtras.horasExtras100" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 4">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="horas-noturnas" class="label">Nº de Horas Noturnas</label>
-                                          <input type="number" id="horas-noturnas" name="horas-noturnas" data-state="horasExtras.horasNoturnas" class="input" placeholder="Ex: 20">
+                                          <input type="number" id="horas-noturnas" name="horas-noturnas" data-state="horasExtras.horasNoturnas" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 20">
                                       </div>
                                   </div>
                               </div>
@@ -2322,7 +2209,7 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2">
                                           <label for="salario-bruto-inss" class="label">Salário Bruto</label>
-                                          <input type="text" id="salario-bruto-inss" name="salario-bruto-inss" data-state="inss.salarioBruto" class="input money-mask" placeholder="Ex: 3000.00">
+                                          <input type="text" id="salario-bruto-inss" name="salario-bruto-inss" data-state="inss.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 3000.00">
                                       </div>
                                   </div>
                               </div>
@@ -2340,15 +2227,15 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2">
                                           <label for="salario-bruto-vt" class="label">Salário Bruto</label>
-                                          <input type="text" id="salario-bruto-vt" name="salario-bruto-vt" data-state="valeTransporte.salarioBruto" class="input money-mask" placeholder="Ex: 2200.00">
+                                          <input type="text" id="salario-bruto-vt" name="salario-bruto-vt" data-state="valeTransporte.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="custo-diario-vt" class="label">Custo Diário com Transporte (ida e volta)</label>
-                                          <input type="text" id="custo-diario-vt" name="custo-diario-vt" data-state="valeTransporte.custoDiario" class="input money-mask" placeholder="Ex: 9.00">
+                                          <input type="text" id="custo-diario-vt" name="custo-diario-vt" data-state="valeTransporte.custoDiario" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 9.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="dias-trabalho-vt" class="label">Dias de Trabalho no Mês</label>
-                                          <input type="number" id="dias-trabalho-vt" name="dias-trabalho-vt" data-state="valeTransporte.diasTrabalho" class="input" placeholder="Ex: 22">
+                                          <input type="number" id="dias-trabalho-vt" name="dias-trabalho-vt" data-state="valeTransporte.diasTrabalho" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 22">
                                       </div>
                                   </div>
                               </div>
@@ -2366,19 +2253,19 @@
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
                                       <div class="space-y-2">
                                           <label for="renda-anual-irpf" class="label">Renda Tributável Anual</label>
-                                          <input type="text" id="renda-anual-irpf" name="renda-anual-irpf" data-state="irpf.rendaAnual" class="input money-mask" placeholder="Ex: 45000.00">
+                                          <input type="text" id="renda-anual-irpf" name="renda-anual-irpf" data-state="irpf.rendaAnual" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 45000.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="dependentes-irpf" class="label">Número de Dependentes</label>
-                                          <input type="number" id="dependentes-irpf" name="dependentes-irpf" data-state="irpf.dependentes" class="input" placeholder="Ex: 2" >
+                                          <input type="number" id="dependentes-irpf" name="dependentes-irpf" data-state="irpf.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2" >
                                       </div>
                                       <div class="space-y-2">
                                           <label for="deducoes-irpf" class="label">Outras Deduções (Educação, Saúde, etc)</label>
-                                          <input type="text" id="deducoes-irpf" name="deducoes-irpf" data-state="irpf.outrasDeducoes" class="input money-mask" placeholder="Ex: 5000.00">
+                                          <input type="text" id="deducoes-irpf" name="deducoes-irpf" data-state="irpf.outrasDeducoes" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 5000.00">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="imposto-retido-irpf" class="label">Imposto Retido na Fonte (anual)</label>
-                                          <input type="text" id="imposto-retido-irpf" name="imposto-retido-irpf" data-state="irpf.impostoRetido" class="input money-mask" placeholder="Ex: 2000.00">
+                                          <input type="text" id="imposto-retido-irpf" name="imposto-retido-irpf" data-state="irpf.impostoRetido" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2000.00">
                                       </div>
                                   </div>
                               </div>
@@ -2405,10 +2292,10 @@
                         </div>
                     </div>
                     <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-4">
-                        <button id="calculation-memory-modal-close-btn" type="button" class="btn btn-secondary">
+                        <button id="calculation-memory-modal-close-btn" type="button" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 bg-white hover:bg-gray-100 text-gray-900 h-10 px-4 py-2">
                             Fechar
                         </button>
-                        <button id="calculation-memory-modal-print-btn" type="button" class="btn btn-primary">
+                        <button id="calculation-memory-modal-print-btn" type="button" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2" style="color: var(--white) !important;">
                             Gerar PDF
                         </button>
                     </div>
@@ -2422,7 +2309,7 @@
                     <!-- Modal Header -->
                     <div class="flex items-center justify-between p-6 border-b border-gray-200">
                         <h2 class="text-2xl font-semibold leading-none tracking-tight text-gray-900">Base de Conhecimento</h2>
-                        <button id="close-kb-modal-btn" type="button" class="btn btn-ghost btn-icon">
+                        <button id="close-kb-modal-btn" type="button" class="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
                             <span class="material-icons">close</span>
                             <span class="sr-only">Fechar</span>
                         </button>
@@ -2452,18 +2339,18 @@
     <footer class="text-center py-6 mt-8 sm:mt-12 text-sm text-muted-foreground">
         <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 mb-4">
             <div class="flex items-center space-x-2">
-                <input type="checkbox" id="save-data-checkbox" name="save-data" class="sr-only">
-                <button type="button" role="checkbox" aria-checked="false" data-state="unchecked" class="checkbox">
-                    <span class="checkbox-indicator">
-                        <span class="material-icons" style="font-size: 1rem;">check</span>
+                <input type="checkbox" id="save-data-checkbox" name="save-data" class="sr-only peer">
+                <label for="save-data-checkbox" class="label flex items-center space-x-2 cursor-pointer group">
+                    <span class="flex items-center justify-center h-4 w-4 shrink-0 rounded-sm border border-primary text-primary-foreground ring-offset-background group-hover:bg-accent/50 peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 peer-checked:bg-primary">
+                        <span class="material-icons text-xs hidden peer-checked:block">check</span>
                     </span>
-                </button>
-                <label for="save-data-checkbox" class="label cursor-pointer">Lembrar meus dados</label>
+                    <span class="peer-disabled:opacity-70">Lembrar meus dados</span>
+                </label>
             </div>
             <span class="text-xs text-gray-500">
                 💡 Seus dados são salvos localmente para sua conveniência
             </span>
-            <button id="customize-calculators-btn" class="btn btn-link">Personalizar Calculadoras</button>
+            <button id="customize-calculators-btn" class="text-primary hover:underline">Personalizar Calculadoras</button>
         </div>
         <p>&copy; 2025 Calculadora Trabalhista. Uma ferramenta para o trabalhador.</p>
         <p class="mt-4 max-w-2xl mx-auto text-xs text-gray-500">
@@ -2487,7 +2374,7 @@
                 Informe-se
             </h2>
             <button id="educational-panel-close-btn" 
-                    class="btn btn-ghost btn-icon"
+                    class="flex items-center justify-center w-8 h-8 rounded-md hover:bg-primary-foreground hover:text-primary transition-colors"
                     aria-label="Fechar painel educacional">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" x2="6" y1="6" y2="18"/>
@@ -2506,7 +2393,7 @@
                     </label>
                     <div class="relative">
                         <button id="topic-selector-trigger" type="button" aria-haspopup="true" aria-expanded="false" 
-                                class="btn btn-secondary flex w-full justify-between">
+                                class="flex items-center justify-between w-full px-4 py-3 text-left bg-background border border-border rounded-md shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200">
                             <span id="topic-selector-current-selection" class="font-medium">Escolha um tópico...</span>
                             <svg class="w-5 h-5 text-muted-foreground transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -2518,13 +2405,13 @@
                                 <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-gray-50">
                                     Calculadoras Básicas
                                 </div>
-                                <button data-value="ferias" class="btn btn-ghost w-full justify-start">
+                                <button data-value="ferias" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     Férias
                                 </button>
-                                <button data-value="decimo-terceiro" class="btn btn-ghost w-full justify-start">
+                                <button data-value="decimo-terceiro" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     13º Salário
                                 </button>
-                                <button data-value="rescisao" class="btn btn-ghost w-full justify-start">
+                                <button data-value="rescisao" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     Rescisão
                                 </button>
                                 
@@ -2532,13 +2419,13 @@
                                 <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-gray-50 mt-2">
                                     Descontos e Adicionais
                                 </div>
-                                <button data-value="descontos" class="btn btn-ghost w-full justify-start">
+                                <button data-value="descontos" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     Descontos
                                 </button>
-                                <button data-value="adicionais" class="btn btn-ghost w-full justify-start">
+                                <button data-value="adicionais" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     Adicionais
                                 </button>
-                                <button data-value="beneficios" class="btn btn-ghost w-full justify-start">
+                                <button data-value="beneficios" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     Benefícios
                                 </button>
                                 
@@ -2546,25 +2433,25 @@
                                 <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-gray-50 mt-2">
                                     Novas Calculadoras
                                 </div>
-                                <button data-value="fgts" class="btn btn-ghost w-full justify-start">
+                                <button data-value="fgts" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     FGTS
                                 </button>
-                                <button data-value="pisPasep" class="btn btn-ghost w-full justify-start">
+                                <button data-value="pisPasep" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     PIS/PASEP
                                 </button>
-                                <button data-value="seguroDesemprego" class="btn btn-ghost w-full justify-start">
+                                <button data-value="seguroDesemprego" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     Seguro-Desemprego
                                 </button>
-                                <button data-value="horasExtras" class="btn btn-ghost w-full justify-start">
+                                <button data-value="horasExtras" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     Horas Extras
                                 </button>
-                                <button data-value="inss" class="btn btn-ghost w-full justify-start">
+                                <button data-value="inss" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     INSS
                                 </button>
-                                <button data-value="valeTransporte" class="btn btn-ghost w-full justify-start">
+                                <button data-value="valeTransporte" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     Vale-Transporte
                                 </button>
-                                <button data-value="irrf" class="btn btn-ghost w-full justify-start">
+                                <button data-value="irrf" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
                                     IRPF
                                 </button>
                             </div>
@@ -2616,8 +2503,8 @@
                 <!-- Checkboxes will be populated by JS -->
             </div>
             <div class="flex justify-end space-x-3 mt-6">
-                <button id="customize-modal-cancel-btn" type="button" class="btn btn-secondary">Cancelar</button>
-                <button id="customize-modal-save-btn" type="button" class="btn btn-primary">Salvar e Fechar</button>
+                <button id="customize-modal-cancel-btn" type="button" class="px-4 py-2 rounded-md border hover:bg-gray-100">Cancelar</button>
+                <button id="customize-modal-save-btn" type="button" class="px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/90">Salvar e Fechar</button>
             </div>
         </div>
     </div>

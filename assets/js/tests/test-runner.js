@@ -126,4 +126,22 @@ export function summarize() {
         });
         resultsEl.innerHTML = html;
     }
+
+    // Send results to our test server
+    fetch('http://localhost:4567/test-results', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(testSuites, (key, value) => {
+            // A custom replacer to handle circular references and errors
+            if (value instanceof Error) {
+                return {
+                    message: value.message,
+                    stack: value.stack,
+                };
+            }
+            return value;
+        }),
+    }).catch(err => console.error('Error sending test results to server:', err));
 }
