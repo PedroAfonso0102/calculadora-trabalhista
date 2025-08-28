@@ -199,13 +199,6 @@ const SidebarManager = {
      * Internal method to apply a specific state
      */
     _applyState(state) {
-        console.log('SidebarManager._applyState:', {
-            state,
-            isMobile: this.isMobile,
-            windowWidth: window.innerWidth,
-            sidebarElement: !!this.sidebar,
-            mainLayoutElement: !!this.mainLayout
-        });
         
         switch (state) {
             case 'expanded':
@@ -611,10 +604,6 @@ async function initializeSidebarState() {
  * Esta função é chamada durante o redimensionamento da janela para garantir layout responsivo.
  */
 async function handleResize() {
-    console.log('handleResize: Iniciando reavaliação do layout', {
-        windowWidth: window.innerWidth,
-        isMobile: window.innerWidth < 1024
-    });
     
     // Usar a mesma lógica direta do forceCorrectLayout
     const sidebar = document.getElementById('main-sidebar');
@@ -647,7 +636,6 @@ async function handleResize() {
     const { render } = await import('./ui.js');
     await render();
     
-    console.log('handleResize: Layout reavaliado com sucesso');
 }
 
 /**
@@ -804,6 +792,7 @@ export function initializeEventListeners() {
         // Details button logic for smooth accordion
         const detailsBtn = target.closest('.details-btn');
         if (detailsBtn) {
+            detailsBtn.classList.toggle('active');
             const detailsForId = detailsBtn.dataset.detailsFor;
             const detailsContent = document.getElementById(detailsForId);
             if (detailsContent) {
@@ -1270,19 +1259,16 @@ function createAndPrintReport(reportHTML) {
  */
 function initializeSidebarEvents() {
     // Event delegation para os links da sidebar (que são gerados dinamicamente)
-    const sidebar = document.getElementById('main-sidebar');
-    if (sidebar) {
-        sidebar.addEventListener('click', handleSidebarClick);
-        
-        // Add keyboard support for sidebar dots
-        sidebar.addEventListener('keydown', (event) => {
-            const dot = event.target.closest('.sidebar-dot');
-            if (dot && (event.key === 'Enter' || event.key === ' ')) {
-                event.preventDefault();
-                handleSidebarClick(event);
-            }
-        });
-    }
+    document.addEventListener('click', handleSidebarClick);
+
+    // Add keyboard support for sidebar dots
+    document.addEventListener('keydown', (event) => {
+        const dot = event.target.closest('.sidebar-dot');
+        if (dot && (event.key === 'Enter' || event.key === ' ')) {
+            event.preventDefault();
+            handleSidebarClick(event);
+        }
+    });
     
     // Desktop Sidebar Toggle Button
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
