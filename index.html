@@ -1443,7 +1443,7 @@
             cursor: pointer;
             list-style: none; /* Remove o marcador padrão */
             border-radius: var(--details-border-radius);
-            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            transition: background-color 0.2s ease-in-out;
             outline: none; /* Remove o outline padrão */
         }
 
@@ -1460,7 +1460,6 @@
         /* Efeito de hover para indicar interatividade */
         .calculation-details-item > summary:hover {
             background-color: var(--details-bg-hover-color);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         /* Ícone de Chevron (SVG) */
@@ -1481,10 +1480,7 @@
         .calculation-details-content {
             overflow: hidden;
             max-height: 0;
-            opacity: 0;
-            transition: max-height var(--details-transition-duration) ease-in-out,
-                        padding var(--details-transition-duration) ease-in-out,
-                        opacity var(--details-transition-duration) ease-in-out;
+            transition: max-height var(--details-transition-duration) ease-in-out, padding var(--details-transition-duration) ease-in-out;
             padding: 0 1rem; /* Padding horizontal aplicado, vertical será animado */
             background-color: var(--details-content-bg-color);
             border-left: 3px solid var(--details-accent-color);
@@ -1497,7 +1493,6 @@
         /* Expande o conteúdo quando o "details" está aberto */
         .calculation-details-item[open] > .calculation-details-content {
             max-height: 500px; /* Um valor alto o suficiente para o conteúdo */
-            opacity: 1;
             padding: 1rem; /* Adiciona o padding vertical ao abrir */
             margin-top: 0.5rem;
         }
@@ -1505,34 +1500,6 @@
     <style>
         .dark .sun-icon { display: none; }
         .dark .moon-icon { display: block !important; }
-
-        /* Modal Transitions */
-        .modal-open {
-            opacity: 1 !important;
-            pointer-events: auto !important;
-            -webkit-backdrop-filter: blur(2px);
-            backdrop-filter: blur(2px);
-        }
-
-        .modal-open .modal-content {
-            transform: scale(1) !important;
-        }
-
-        #calculation-memory-modal, #knowledge-base-modal, #customize-modal, #faq-modal {
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease-in-out, backdrop-filter 0.2s ease-in-out;
-        }
-
-        #calculation-memory-modal-content, #knowledge-base-modal .modal-content, #customize-modal-content, #faq-modal .modal-content {
-            transform: scale(0.95);
-            transition: transform 0.2s ease-in-out;
-        }
-
-        #mobile-menu-btn:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
     </style>
 </head>
 <body class="antialiased">
@@ -1600,15 +1567,6 @@
             <!-- Header com botão hambúrguer mobile -->
             <header class="bg-background border-b block lg:block">
                 <div class="flex items-center px-4 py-3 lg:px-6 lg:py-4">
-                    <!-- Mobile Menu Button (visible only on mobile) -->
-                    <div class="lg:hidden">
-                        <button id="mobile-menu-btn"
-                                class="flex items-center justify-center w-10 h-10 -ml-2 rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                aria-label="Abrir menu"
-                                title="Abrir menu">
-                            <span class="material-icons">menu</span>
-                        </button>
-                    </div>
                     
                     <!-- Center - Logo mobile (visível apenas em mobile) -->
                     <div class="flex-1 lg:hidden flex justify-center">
@@ -1655,6 +1613,23 @@
                         Calcule Seus Direitos
                     </h2>
 
+                    <!-- Mobile Navigation Dropdown (visible only on mobile) -->
+                    <div class="block lg:hidden mb-6">
+                        <div id="mobile-nav-dropdown" class="relative">
+                            <button id="mobile-nav-trigger" type="button" aria-haspopup="true" aria-expanded="false"
+                                    class="flex items-center justify-between w-full px-4 py-3 text-left bg-background border border-border rounded-md shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200">
+                                <span id="mobile-nav-current-selection" class="font-medium">Cálculo de Férias</span>
+                                <svg class="w-5 h-5 text-muted-foreground transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <div id="mobile-nav-panel" class="absolute z-50 hidden mt-1 w-full bg-popover border border-border rounded-md shadow-lg opacity-0 transform scale-95 transition-all duration-200 ease-out">
+                                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="mobile-nav-trigger">
+                                    <!-- Options will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Calculator UI -->
                     <div id="calculator-container" data-value="ferias">
