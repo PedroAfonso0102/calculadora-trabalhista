@@ -7,6 +7,7 @@ import { initializeEventListeners, initializeSidebarState } from './events.js';
 import { render } from './ui.js';
 import { updateState } from './state.js';
 import { getSavedState, getSavePreference, clearFormData, setSavePreference } from './storage.js';
+import { loadKnowledgeBase } from './knowledge.js';
 
 /**
  * Loads external configuration data required by the application.
@@ -111,6 +112,12 @@ async function initializeApp() {
     try {
         loadSavedState();
         await loadConfiguration();
+        
+        // Carregar base de conhecimento em paralelo (não bloqueia a inicialização)
+        loadKnowledgeBase().catch(error => {
+            console.warn('Base de conhecimento não pôde ser carregada:', error);
+        });
+        
         initializeEventListeners();
         initializeSidebarState();
         render();

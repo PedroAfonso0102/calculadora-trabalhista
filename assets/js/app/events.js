@@ -6,7 +6,7 @@
  */
 
 import { state, updateState, initialState } from './state.js';
-import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal, renderSidebar } from './ui.js';
+import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal, renderSidebar, openFaqModal } from './ui.js';
 import { calculatorFunctions, calculateNetSalary } from './calculations.js';
 import { debounce, unmaskCurrency, formatCurrency, initializeCurrencyMask } from './utils.js';
 import { 
@@ -1046,6 +1046,12 @@ function initializeSidebarEvents() {
     const clearDataBtn = document.getElementById('clear-data-btn');
     if (clearDataBtn) {
         clearDataBtn.addEventListener('click', handleClearData);
+    }
+    
+    // Botão FAQ - Base de Conhecimento
+    const faqBtn = document.getElementById('open-faq-btn');
+    if (faqBtn) {
+        faqBtn.addEventListener('click', openFaqModal);
     }
     
     // Fechar sidebar com ESC em mobile

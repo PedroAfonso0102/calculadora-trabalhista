@@ -190,6 +190,20 @@
             opacity: 1;
             transform: scale(1);
         }
+        
+        /* Enhanced tooltip styles */
+        .enhanced-tooltip {
+            max-width: 400px;
+        }
+        
+        .enhanced-tooltip details {
+            margin: 0.25rem 0;
+        }
+        
+        .enhanced-tooltip summary {
+            font-weight: 500;
+            padding: 0.25rem 0;
+        }
 
         /* Typography and Readability Styles */
         @media (max-width: 768px) {
@@ -1267,6 +1281,12 @@
             
             <!-- Footer da Sidebar -->
             <div class="sidebar-footer border-t border-gray-200 p-4">
+                <!-- Botão FAQ - Base de Conhecimento -->
+                <button id="open-faq-btn" class="w-full text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-2 rounded-md transition-colors mb-2 border border-blue-200">
+                    <span class="sidebar-title">📚 Base de Conhecimento</span>
+                    <span class="sidebar-initials hidden">📚</span>
+                </button>
+                
                 <button id="clear-data-btn" class="w-full text-sm text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-2 rounded-md transition-colors">
                     Limpar Dados Salvos
                 </button>

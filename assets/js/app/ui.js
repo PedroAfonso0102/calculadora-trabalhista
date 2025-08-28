@@ -8,6 +8,14 @@
 import { state } from './state.js';
 import * as calculations from './calculations.js';
 import { formatCurrency } from './utils.js';
+import { 
+    loadKnowledgeBase, 
+    getEnhancedTooltip, 
+    searchKnowledgeBase, 
+    getAllFaqCategories,
+    getFaqCategory,
+    getRelatedFaqs 
+} from './knowledge.js';
 
 // --- DOM Element Selectors ---
 const resultContainers = {
@@ -57,21 +65,60 @@ const calculatorPanels = {
 let currentTooltip = null;
 
 export function createTooltip(topicKey) {
-    const topic = state.legalTexts[topicKey];
+    // Primeiro, tenta obter tooltip expandido
+    let topic = getEnhancedTooltip(topicKey);
+    
+    // Fallback para dados básicos se não encontrar expandido
+    if (!topic) {
+        topic = state.legalTexts[topicKey];
+    }
+    
     if (!topic) return null;
 
     const tooltipElement = document.createElement('div');
-    tooltipElement.className = 'tooltip';
+    tooltipElement.className = 'tooltip enhanced-tooltip';
     tooltipElement.setAttribute('role', 'tooltip');
     tooltipElement.id = `tooltip-for-${topicKey}`;
 
     let contentHTML = `<h4 class="font-bold text-lg mb-2">${topic.title}</h4>`;
     contentHTML += `<div class="text-sm space-y-2">${topic.content}</div>`;
+    
+    // Adicionar quick tips se disponível (tooltips expandidos)
+    if (topic.quick_tips && topic.quick_tips.length > 0) {
+        contentHTML += `<div class="mt-3 p-2 bg-blue-50 rounded">`;
+        contentHTML += `<p class="font-semibold text-sm text-blue-900 mb-1">💡 Dicas Rápidas:</p>`;
+        contentHTML += `<ul class="text-xs text-blue-800 space-y-1">`;
+        topic.quick_tips.forEach(tip => {
+            contentHTML += `<li>${tip}</li>`;
+        });
+        contentHTML += `</ul></div>`;
+    }
+    
+    // Adicionar dúvidas comuns se disponível
+    if (topic.common_doubts && topic.common_doubts.length > 0) {
+        contentHTML += `<div class="mt-3">`;
+        contentHTML += `<p class="font-semibold text-sm text-gray-900 mb-2">❓ Dúvidas Comuns:</p>`;
+        topic.common_doubts.forEach((item, index) => {
+            contentHTML += `<details class="text-xs mb-1">`;
+            contentHTML += `<summary class="cursor-pointer text-gray-700 hover:text-gray-900">${item.doubt}</summary>`;
+            contentHTML += `<p class="mt-1 pl-2 text-gray-600">${item.answer}</p>`;
+            contentHTML += `</details>`;
+        });
+        contentHTML += `</div>`;
+    }
+    
     if (topic.legal) {
         contentHTML += `<p class="text-xs text-muted-foreground mt-4 pt-2 border-t">${topic.legal}</p>`;
     }
+    
+    // Adicionar botão para ver FAQ relacionado
+    contentHTML += `<div class="mt-3 pt-2 border-t">`;
+    contentHTML += `<button class="text-xs text-blue-600 hover:text-blue-800 underline" onclick="window.openFaqModal && window.openFaqModal('${topicKey}')">`;
+    contentHTML += `📚 Ver mais no FAQ`;
+    contentHTML += `</button>`;
+    contentHTML += `</div>`;
+    
     tooltipElement.innerHTML = contentHTML;
-
     document.body.appendChild(tooltipElement);
     return tooltipElement;
 }
@@ -2429,3 +2476,401 @@ function generateIrpfReportContent(results, inputState) {
 
     return html;
 }
+
+// --- FAQ SYSTEM FUNCTIONS ---
+
+/**
+ * Abre o modal de FAQ
+ * @param {string} initialTopic - Tópico inicial para mostrar (opcional)
+ */
+export function openFaqModal(initialTopic = null) {
+    createFaqModal();
+    showFaqModal();
+    if (initialTopic) {
+        loadFaqContent(initialTopic);
+    } else {
+        loadFaqCategories();
+    }
+}
+
+/**
+ * Cria o modal de FAQ se não existir
+ */
+function createFaqModal() {
+    if (document.getElementById('faq-modal')) return;
+    
+    const modalHTML = `
+        <div id="faq-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
+                    <div class="flex items-center justify-between p-6 border-b">
+                        <h2 class="text-xl font-bold text-gray-900">📚 Base de Conhecimento</h2>
+                        <button id="close-faq-modal" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="flex h-96">
+                        <!-- Sidebar de navegação -->
+                        <div class="w-1/3 border-r bg-gray-50 p-4 overflow-y-auto">
+                            <div class="mb-4">
+                                <input 
+                                    type="text" 
+                                    id="faq-search" 
+                                    placeholder="🔍 Buscar na base de conhecimento..." 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                >
+                            </div>
+                            <div id="faq-navigation">
+                                <!-- Navegação será carregada aqui -->
+                            </div>
+                        </div>
+                        
+                        <!-- Conteúdo principal -->
+                        <div class="w-2/3 p-6 overflow-y-auto">
+                            <div id="faq-content">
+                                <!-- Conteúdo será carregado aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Adicionar event listeners
+    document.getElementById('close-faq-modal').addEventListener('click', hideFaqModal);
+    document.getElementById('faq-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'faq-modal') hideFaqModal();
+    });
+    
+    // Busca
+    document.getElementById('faq-search').addEventListener('input', handleFaqSearch);
+}
+
+/**
+ * Mostra o modal de FAQ
+ */
+function showFaqModal() {
+    const modal = document.getElementById('faq-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        // Carrega a base de conhecimento se ainda não foi carregada
+        loadKnowledgeBase().then(() => {
+            loadFaqCategories();
+        });
+    }
+}
+
+/**
+ * Esconde o modal de FAQ
+ */
+function hideFaqModal() {
+    const modal = document.getElementById('faq-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+/**
+ * Carrega as categorias do FAQ na navegação
+ */
+async function loadFaqCategories() {
+    await loadKnowledgeBase();
+    const categories = getAllFaqCategories();
+    const navigation = document.getElementById('faq-navigation');
+    
+    if (!navigation) return;
+    
+    let navHTML = '<h3 class="font-semibold text-gray-900 mb-3">📋 Categorias</h3>';
+    navHTML += '<ul class="space-y-2">';
+    
+    categories.forEach(category => {
+        navHTML += `
+            <li>
+                <button 
+                    class="w-full text-left px-3 py-2 rounded-md hover:bg-blue-50 transition-colors faq-category-btn"
+                    data-category="${category.id}"
+                >
+                    <span class="text-lg">${category.icon}</span>
+                    <span class="ml-2 text-sm font-medium">${category.title}</span>
+                    <span class="ml-1 text-xs text-gray-500">(${category.questions?.length || 0})</span>
+                </button>
+            </li>
+        `;
+    });
+    
+    navHTML += '</ul>';
+    
+    // Adicionar botão de voltar (oculto inicialmente)
+    navHTML += `
+        <button 
+            id="faq-back-btn" 
+            class="hidden w-full mt-4 px-3 py-2 text-sm text-blue-600 hover:text-blue-800 border border-blue-200 rounded-md"
+        >
+            ← Voltar às categorias
+        </button>
+    `;
+    
+    navigation.innerHTML = navHTML;
+    
+    // Carregar conteúdo inicial
+    loadWelcomeContent();
+    
+    // Adicionar event listeners para categorias
+    document.querySelectorAll('.faq-category-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const categoryId = e.currentTarget.dataset.category;
+            loadCategoryContent(categoryId);
+        });
+    });
+    
+    // Event listener para botão voltar
+    document.getElementById('faq-back-btn').addEventListener('click', () => {
+        loadFaqCategories();
+    });
+}
+
+/**
+ * Carrega o conteúdo de boas-vindas
+ */
+function loadWelcomeContent() {
+    const content = document.getElementById('faq-content');
+    if (!content) return;
+    
+    content.innerHTML = `
+        <div class="text-center">
+            <div class="text-6xl mb-4">📚</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-3">Base de Conhecimento</h3>
+            <p class="text-gray-600 mb-6">
+                Bem-vindo à nossa base de conhecimento! Aqui você encontra respostas detalhadas 
+                sobre direitos trabalhistas, cálculos previdenciários e muito mais.
+            </p>
+            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <div class="text-2xl mb-2">❓</div>
+                    <h4 class="font-semibold text-blue-900">FAQ Detalhado</h4>
+                    <p class="text-sm text-blue-700">Perguntas e respostas organizadas por categoria</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <div class="text-2xl mb-2">🔍</div>
+                    <h4 class="font-semibold text-green-900">Busca Inteligente</h4>
+                    <p class="text-sm text-green-700">Encontre rapidamente o que procura</p>
+                </div>
+            </div>
+            
+            <p class="text-sm text-gray-500">
+                💡 Dica: Use a barra de busca para encontrar tópicos específicos ou navegue pelas categorias.
+            </p>
+        </div>
+    `;
+}
+
+/**
+ * Carrega o conteúdo de uma categoria específica
+ */
+async function loadCategoryContent(categoryId) {
+    await loadKnowledgeBase();
+    const category = getFaqCategory(categoryId);
+    
+    if (!category) return;
+    
+    const content = document.getElementById('faq-content');
+    const navigation = document.getElementById('faq-navigation');
+    
+    // Mostrar botão voltar
+    const backBtn = document.getElementById('faq-back-btn');
+    if (backBtn) backBtn.classList.remove('hidden');
+    
+    // Atualizar navegação para mostrar perguntas
+    let navHTML = `<h3 class="font-semibold text-gray-900 mb-3">${category.icon} ${category.title}</h3>`;
+    navHTML += '<ul class="space-y-1">';
+    
+    category.questions?.forEach((question, index) => {
+        navHTML += `
+            <li>
+                <button 
+                    class="w-full text-left px-2 py-1 text-sm rounded hover:bg-blue-50 transition-colors faq-question-btn"
+                    data-question="${index}"
+                >
+                    ${question.question}
+                </button>
+            </li>
+        `;
+    });
+    
+    navHTML += '</ul>';
+    navigation.innerHTML = navHTML + document.getElementById('faq-back-btn').outerHTML;
+    
+    // Recarregar event listener do botão voltar
+    document.getElementById('faq-back-btn').addEventListener('click', () => {
+        loadFaqCategories();
+    });
+    
+    // Carregar primeira pergunta
+    if (category.questions?.length > 0) {
+        loadQuestionContent(category, 0);
+    }
+    
+    // Event listeners para perguntas
+    document.querySelectorAll('.faq-question-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const questionIndex = parseInt(e.currentTarget.dataset.question);
+            loadQuestionContent(category, questionIndex);
+        });
+    });
+}
+
+/**
+ * Carrega o conteúdo de uma pergunta específica
+ */
+function loadQuestionContent(category, questionIndex) {
+    const question = category.questions[questionIndex];
+    if (!question) return;
+    
+    const content = document.getElementById('faq-content');
+    
+    let html = `
+        <div class="mb-4">
+            <span class="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full mb-2">
+                ${category.title}
+            </span>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">${question.question}</h3>
+        </div>
+        
+        <div class="prose prose-sm max-w-none">
+            ${question.answer}
+        </div>
+    `;
+    
+    // Adicionar tags se existirem
+    if (question.tags && question.tags.length > 0) {
+        html += `
+            <div class="mt-4 pt-4 border-t">
+                <p class="text-sm font-medium text-gray-700 mb-2">🏷️ Tags relacionadas:</p>
+                <div class="flex flex-wrap gap-2">
+        `;
+        question.tags.forEach(tag => {
+            html += `<span class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">${tag}</span>`;
+        });
+        html += `</div></div>`;
+    }
+    
+    // Adicionar calculadoras relacionadas
+    if (question.related_calculators && question.related_calculators.length > 0) {
+        html += `
+            <div class="mt-4 pt-4 border-t">
+                <p class="text-sm font-medium text-gray-700 mb-2">🧮 Calculadoras relacionadas:</p>
+                <div class="flex flex-wrap gap-2">
+        `;
+        question.related_calculators.forEach(calc => {
+            if (calc !== 'todas') {
+                html += `<button class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors" onclick="hideFaqModal(); window.switchToCalculator && window.switchToCalculator('${calc}')">${calc}</button>`;
+            }
+        });
+        html += `</div></div>`;
+    }
+    
+    content.innerHTML = html;
+}
+
+/**
+ * Manipula a busca no FAQ
+ */
+async function handleFaqSearch(e) {
+    const query = e.target.value.trim();
+    
+    if (query.length < 2) {
+        loadFaqCategories();
+        return;
+    }
+    
+    await loadKnowledgeBase();
+    const results = searchKnowledgeBase(query);
+    
+    const navigation = document.getElementById('faq-navigation');
+    const content = document.getElementById('faq-content');
+    
+    // Atualizar navegação com resultados
+    let navHTML = `<h3 class="font-semibold text-gray-900 mb-3">🔍 Resultados (${results.length})</h3>`;
+    
+    if (results.length === 0) {
+        navHTML += '<p class="text-sm text-gray-500">Nenhum resultado encontrado.</p>';
+    } else {
+        navHTML += '<ul class="space-y-1">';
+        results.forEach((result, index) => {
+            const title = result.type === 'faq' ? result.question : result.title;
+            navHTML += `
+                <li>
+                    <button 
+                        class="w-full text-left px-2 py-1 text-sm rounded hover:bg-blue-50 transition-colors search-result-btn"
+                        data-result="${index}"
+                    >
+                        <span class="text-xs text-gray-500">${result.type === 'faq' ? result.categoryTitle : 'Tooltip'}</span><br>
+                        ${title}
+                    </button>
+                </li>
+            `;
+        });
+        navHTML += '</ul>';
+    }
+    
+    navigation.innerHTML = navHTML;
+    
+    // Mostrar primeiro resultado
+    if (results.length > 0) {
+        showSearchResult(results[0]);
+    }
+    
+    // Event listeners para resultados
+    document.querySelectorAll('.search-result-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const resultIndex = parseInt(e.currentTarget.dataset.result);
+            showSearchResult(results[resultIndex]);
+        });
+    });
+}
+
+/**
+ * Mostra um resultado de busca
+ */
+function showSearchResult(result) {
+    const content = document.getElementById('faq-content');
+    
+    let html = `
+        <div class="mb-4">
+            <span class="inline-block px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full mb-2">
+                ${result.type === 'faq' ? result.categoryTitle : 'Tooltip'}
+            </span>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">
+                ${result.type === 'faq' ? result.question : result.title}
+            </h3>
+        </div>
+        
+        <div class="prose prose-sm max-w-none">
+            ${result.type === 'faq' ? result.answer : result.content}
+        </div>
+    `;
+    
+    if (result.tags && result.tags.length > 0) {
+        html += `
+            <div class="mt-4 pt-4 border-t">
+                <p class="text-sm font-medium text-gray-700 mb-2">🏷️ Tags:</p>
+                <div class="flex flex-wrap gap-2">
+        `;
+        result.tags.forEach(tag => {
+            html += `<span class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">${tag}</span>`;
+        });
+        html += `</div></div>`;
+    }
+    
+    content.innerHTML = html;
+}
+
+// Tornar a função openFaqModal global para uso nos tooltips
+window.openFaqModal = openFaqModal;
