@@ -4,103 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Trabalhista</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          container: {
-            center: true,
-            padding: "2rem",
-            screens: {
-              "2xl": "1400px",
-            },
-          },
-          extend: {
-            colors: {
-              border: "hsl(var(--border))",
-              input: "hsl(var(--input))",
-              ring: "hsl(var(--ring))",
-              background: "hsl(var(--background))",
-              foreground: "hsl(var(--foreground))",
-              primary: {
-                DEFAULT: "hsl(var(--primary))",
-                foreground: "hsl(var(--primary-foreground))",
-              },
-              secondary: {
-                DEFAULT: "hsl(var(--secondary))",
-                foreground: "hsl(var(--secondary-foreground))",
-              },
-              destructive: {
-                DEFAULT: "hsl(var(--destructive))",
-                foreground: "hsl(var(--destructive-foreground))",
-              },
-              muted: {
-                DEFAULT: "hsl(var(--muted))",
-                foreground: "hsl(var(--muted-foreground))",
-              },
-              accent: {
-                DEFAULT: "hsl(var(--accent))",
-                foreground: "hsl(var(--accent-foreground))",
-              },
-              popover: {
-                DEFAULT: "hsl(var(--popover))",
-                foreground: "hsl(var(--popover-foreground))",
-              },
-              card: {
-                DEFAULT: "hsl(var(--card))",
-                foreground: "hsl(var(--card-foreground))",
-              },
-              success: {
-                DEFAULT: "hsl(var(--success))",
-                foreground: "hsl(var(--success-foreground))",
-              },
-              warning: {
-                DEFAULT: "hsl(var(--warning))",
-                foreground: "hsl(var(--warning-foreground))",
-              },
-              info: {
-                DEFAULT: "hsl(var(--info))",
-                foreground: "hsl(var(--info-foreground))",
-              },
-              error: {
-                DEFAULT: "hsl(var(--error))",
-                foreground: "hsl(var(--error-foreground))",
-              },
-            },
-            borderRadius: {
-              'xs': "var(--radius-xs)",
-              'sm': "var(--radius-sm)",
-              'md': "var(--radius-md)",
-              'lg': "var(--radius-lg)",
-              'xl': "var(--radius-xl)",
-              '2xl': "var(--radius-2xl)",
-            },
-            spacing: {
-              'xs': "var(--spacing-xs)",
-              'sm': "var(--spacing-sm)",
-              'md': "var(--spacing-md)",
-              'lg': "var(--spacing-lg)",
-              'xl': "var(--spacing-xl)",
-              '2xl': "var(--spacing-2xl)",
-            },
-            keyframes: {
-              "accordion-down": {
-                from: { height: "0" },
-                to: { height: "var(--radix-accordion-content-height)" },
-              },
-              "accordion-up": {
-                from: { height: "var(--radix-accordion-content-height)" },
-                to: { height: "0" },
-              },
-            },
-            animation: {
-              "accordion-down": "accordion-down 0.2s ease-out",
-              "accordion-up": "accordion-up 0.2s ease-out",
-            },
-          },
-        }
-      }
-    </script>
+    <link href="./assets/css/output.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -918,6 +822,222 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* === MOBILE DROPDOWN STYLES === */
+        
+        /* Mobile Navigation Dropdown */
+        #mobile-nav-dropdown {
+            position: relative;
+        }
+        
+        #mobile-nav-trigger {
+            background-color: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease-in-out;
+        }
+        
+        #mobile-nav-trigger:hover {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+        }
+        
+        #mobile-nav-trigger[aria-expanded="true"] svg {
+            transform: rotate(180deg);
+        }
+        
+        #mobile-nav-panel {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            margin-top: 0.25rem;
+            background-color: var(--popover);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+            pointer-events: none;
+        }
+        
+        #mobile-nav-panel.show {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+        
+        .mobile-nav-option {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            color: var(--popover-foreground);
+            background-color: transparent;
+            border: none;
+            border-radius: 0;
+            transition: background-color 0.15s ease-in-out;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .mobile-nav-option:hover {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+        }
+        
+        .mobile-nav-option:focus {
+            outline: none;
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+        }
+        
+        .mobile-nav-option.active {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            font-weight: 600;
+        }
+        
+        .mobile-nav-option:first-child {
+            border-top-left-radius: var(--radius-md);
+            border-top-right-radius: var(--radius-md);
+        }
+        
+        .mobile-nav-option:last-child {
+            border-bottom-left-radius: var(--radius-md);
+            border-bottom-right-radius: var(--radius-md);
+        }
+
+        /* === KNOWLEDGE BASE MODAL SLIDE ANIMATIONS === */
+        
+        /* Modal container with overflow hidden for slide animation */
+        #knowledge-base-modal .modal-content {
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* View container for slide animations */
+        .kb-views-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        /* Individual knowledge base view styles */
+        .kb-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 300px;
+            transition: transform 0.3s ease-in-out;
+            opacity: 1;
+        }
+        
+        /* View states for slide animation */
+        .kb-view.slide-out-left {
+            transform: translateX(-100%);
+        }
+        
+        .kb-view.slide-in-right {
+            transform: translateX(100%);
+        }
+        
+        .kb-view.active {
+            position: relative;
+            transform: translateX(0);
+        }
+        
+        /* Smooth transitions between views */
+        .kb-view.transitioning {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        
+        /* Back button styling for knowledge base */
+        .kb-back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary);
+            background-color: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .kb-back-button:hover {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+        }
+        
+        .kb-back-button svg {
+            margin-right: 0.5rem;
+            width: 1rem;
+            height: 1rem;
+        }
+
+        /* === MOBILE RESPONSIVE ADJUSTMENTS === */
+        
+        @media (max-width: 1024px) {
+            /* Ensure main layout takes full width on mobile */
+            .grid.main-layout {
+                grid-template-columns: 1fr !important;
+            }
+            
+            /* Hide desktop sidebar completely on mobile */
+            #main-sidebar {
+                display: none !important;
+            }
+            
+            /* Adjust header for mobile */
+            header {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+            
+            /* Improve main content spacing */
+            main {
+                padding: 0.75rem !important;
+            }
+            
+            #app {
+                padding: 1rem !important;
+                border-radius: var(--radius-lg) !important;
+                margin: 0 !important;
+            }
+            
+            /* Ensure dropdown is visible on mobile */
+            #mobile-nav-dropdown {
+                display: block !important;
+            }
+        }
+        
+        /* Force single column layout on mobile for all forms */
+        @media (max-width: 1024px) {
+            .grid.grid-cols-1.md\\:grid-cols-2 {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+            
+            /* Ensure modal content is single column on mobile */
+            #calculation-memory-modal-body .grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            /* Knowledge base modal adjustments for mobile */
+            #knowledge-base-modal .modal-content {
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        }
+
         /* === SIDEBAR STYLES (FASE 3) === */
         
         /* Sidebar Link Styles */
@@ -1157,22 +1277,31 @@
             z-index: 40;
         }
 
-        /* Desktop Toggle Button Positioning */
+        /* Desktop Header Styling */
         @media (min-width: 1024px) {
-            /* Keep toggle button in normal document flow within header */
-            .sidebar-toggle-btn {
-                position: relative;
-                transition: margin-left 0.3s ease-in-out;
+            /* Ensure header is always visible on desktop */
+            header {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                height: auto !important;
             }
             
-            /* When sidebar is collapsed, align button with sidebar center */
-            .grid.main-layout.sidebar-collapsed .sidebar-toggle-btn {
-                margin-left: 0.5rem; /* Align with center of collapsed sidebar area */
+            /* Clean button styling for header buttons */
+            #sidebar-toggle-btn,
+            #educational-panel-menu-btn {
+                display: flex !important;
+                visibility: visible !important;
+                background-color: transparent !important;
+                border: none !important;
+                color: #6b7280 !important; /* text-gray-500 */
+                transition: all 0.2s ease-in-out !important;
             }
             
-            /* When sidebar is expanded, keep button in normal position */
-            .grid.main-layout.sidebar-expanded .sidebar-toggle-btn {
-                margin-left: 0;
+            #sidebar-toggle-btn:hover,
+            #educational-panel-menu-btn:hover {
+                background-color: #f3f4f6 !important; /* bg-gray-100 */
+                color: #374151 !important; /* text-gray-700 */
             }
         }
 
@@ -1252,11 +1381,7 @@
             }
 
             /* Mobile header button improvements */
-            #mobile-menu-btn {
-                padding: 0.75rem !important;
-                min-width: 44px !important;
-                min-height: 44px !important;
-            }
+
 
             #educational-panel-menu-btn {
                 padding: 0.75rem !important;
@@ -1398,7 +1523,7 @@
     <!-- Layout Principal com Sidebar - Grid Layout -->
     <div class="grid main-layout grid-cols-[auto_1fr] min-h-screen bg-background overflow-hidden">
         <!-- Sidebar -->
-        <aside id="main-sidebar" class="z-50 w-64 bg-white border-r border-gray-200 transition-all duration-300 ease-in-out">
+        <aside id="main-sidebar" class="hidden lg:block z-50 w-64 bg-white border-r border-gray-200 transition-all duration-300 ease-in-out">
             <!-- Logo -->
             <div class="sidebar-header flex items-center justify-center h-16 px-6 border-b border-gray-200">
                 <h1 class="sidebar-title text-lg font-semibold text-primary">Calculadora Trabalhista</h1>
@@ -1436,33 +1561,33 @@
         <!-- Main Content Area -->
         <div class="flex-1">
             <!-- Header com botão hambúrguer mobile -->
-            <header class="bg-background border-b">
-                <div class="flex items-center justify-between px-4 py-3 lg:px-6 lg:py-4">
-                    <!-- Left side - Tabs toggle button -->
-                    <div class="flex items-center">
-                        <!-- Botão de abas para sidebar (estilo Brave) - SEMPRE VISÍVEL -->
-                        <button id="mobile-menu-btn" 
-                                class="flex items-center justify-center p-2 rounded-md bg-card hover:bg-muted transition-all duration-300 shadow-sm min-w-[40px] min-h-[40px] sidebar-toggle-btn" 
-                                aria-label="Mostrar/Ocultar calculadoras" 
-                                title="Alternar exibição das abas"
-                                style="z-index: 1000;">
-                            <span class="material-icons text-gray-700">menu</span>
-                        </button>
-                    </div>
+            <header class="bg-background border-b block lg:block">
+                <div class="flex items-center px-4 py-3 lg:px-6 lg:py-4">
                     
                     <!-- Center - Logo mobile (visível apenas em mobile) -->
                     <div class="flex-1 lg:hidden flex justify-center">
                         <h1 class="text-lg font-semibold text-primary">Calculadora Trabalhista</h1>
                     </div>
                     
-                    <!-- Right side - Educational panel button -->
-                    <div class="flex items-center">
+                    <!-- Spacer for desktop -->
+                    <div class="hidden lg:flex flex-1"></div>
+                    
+                    <!-- Right side - Buttons -->
+                    <div class="flex items-center space-x-3">
+                        <!-- Sidebar Toggle Button (desktop only) -->
+                        <button id="sidebar-toggle-btn" 
+                                class="hidden lg:flex items-center justify-center w-10 h-10 rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                aria-label="Expandir/Retrair calculadoras" 
+                                title="Alternar exibição da sidebar">
+                            <span class="material-icons text-gray-600">apps</span>
+                        </button>
+                        
                         <!-- Educational Panel Menu Button -->
                         <button id="educational-panel-menu-btn" 
                                 class="flex items-center justify-center w-10 h-10 rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 aria-label="Abrir painel educacional"
                                 title="Informe-se - Conteúdo Educacional">
-                            <span class="material-icons">menu_book</span>
+                            <span class="material-icons text-gray-600">menu_book</span>
                         </button>
                     </div>
                 </div>
@@ -1474,6 +1599,24 @@
                     <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8 text-foreground">
                         Calcule Seus Direitos
                     </h2>
+
+                    <!-- Mobile Navigation Dropdown (visible only on mobile) -->
+                    <div class="block lg:hidden mb-6">
+                        <div id="mobile-nav-dropdown" class="relative">
+                            <button id="mobile-nav-trigger" type="button" aria-haspopup="true" aria-expanded="false" 
+                                    class="flex items-center justify-between w-full px-4 py-3 text-left bg-background border border-border rounded-md shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200">
+                                <span id="mobile-nav-current-selection" class="font-medium">Cálculo de Férias</span>
+                                <svg class="w-5 h-5 text-muted-foreground transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <div id="mobile-nav-panel" class="absolute z-50 hidden mt-1 w-full bg-popover border border-border rounded-md shadow-lg opacity-0 transform scale-95 transition-all duration-200 ease-out">
+                                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="mobile-nav-trigger">
+                                    <!-- Options will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Calculator UI -->
                     <div id="calculator-container" data-value="ferias">
@@ -2159,6 +2302,36 @@
                 </div>
             </div>
 
+            <!-- Modal for Knowledge Base (FAQ) with Slide Animations -->
+            <div id="knowledge-base-modal" class="fixed inset-0 hidden flex items-center justify-center p-4" style="z-index: 9999;" data-state="closed">
+                <div id="knowledge-base-modal-overlay" class="absolute inset-0" style="background-color: rgba(0, 0, 0, 0.8); z-index: 9998;"></div>
+                <div role="dialog" class="relative w-full max-w-4xl bg-white text-gray-900 shadow-lg rounded-lg border border-gray-300" style="z-index: 10000;">
+                    <!-- Modal Header -->
+                    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                        <h2 class="text-2xl font-semibold leading-none tracking-tight text-gray-900">Base de Conhecimento</h2>
+                        <button id="close-kb-modal-btn" type="button" class="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+                            <span class="material-icons">close</span>
+                            <span class="sr-only">Fechar</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Modal Content with Slide Container -->
+                    <div class="modal-content p-6">
+                        <div class="kb-views-container relative min-h-[400px]">
+                            <!-- Initial view will be rendered by JavaScript -->
+                            <div class="kb-view active">
+                                <div class="flex items-center justify-center min-h-[300px]">
+                                    <div class="text-center">
+                                        <span class="material-icons text-6xl text-gray-300 mb-4">library_books</span>
+                                        <p class="text-gray-500">Carregando base de conhecimento...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -2214,34 +2387,69 @@
                         Selecione um Tópico Educacional
                     </label>
                     <div class="relative">
-                        <select id="topic-selector" 
-                                class="w-full px-4 py-3 pr-10 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary appearance-none cursor-pointer transition-colors">
-                            <option value="">Escolha um tópico...</option>
-                            <optgroup label="Calculadoras Básicas">
-                                <option value="ferias">Férias</option>
-                                <option value="decimo-terceiro">13º Salário</option>
-                                <option value="rescisao">Rescisão</option>
-                            </optgroup>
-                            <optgroup label="Descontos e Adicionais">
-                                <option value="descontos">Descontos</option>
-                                <option value="adicionais">Adicionais</option>
-                                <option value="beneficios">Benefícios</option>
-                            </optgroup>
-                            <optgroup label="Novas Calculadoras">
-                                <option value="fgts">FGTS</option>
-                                <option value="pisPasep">PIS/PASEP</option>
-                                <option value="seguroDesemprego">Seguro-Desemprego</option>
-                                <option value="horasExtras">Horas Extras</option>
-                                <option value="inss">INSS</option>
-                                <option value="valeTransporte">Vale-Transporte</option>
-                                <option value="irrf">IRPF</option>
-                            </optgroup>
-                        </select>
-                        <!-- Custom dropdown arrow -->
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        <button id="topic-selector-trigger" type="button" aria-haspopup="true" aria-expanded="false" 
+                                class="flex items-center justify-between w-full px-4 py-3 text-left bg-background border border-border rounded-md shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200">
+                            <span id="topic-selector-current-selection" class="font-medium">Escolha um tópico...</span>
+                            <svg class="w-5 h-5 text-muted-foreground transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                             </svg>
+                        </button>
+                        <div id="topic-selector-panel" class="absolute z-50 hidden mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg opacity-0 transform scale-95 transition-all duration-200 ease-out">
+                            <div class="py-1 max-h-80 overflow-y-auto" role="menu" aria-orientation="vertical" aria-labelledby="topic-selector-trigger">
+                                <!-- Calculadoras Básicas Group -->
+                                <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-gray-50">
+                                    Calculadoras Básicas
+                                </div>
+                                <button data-value="ferias" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    Férias
+                                </button>
+                                <button data-value="decimo-terceiro" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    13º Salário
+                                </button>
+                                <button data-value="rescisao" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    Rescisão
+                                </button>
+                                
+                                <!-- Descontos e Adicionais Group -->
+                                <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-gray-50 mt-2">
+                                    Descontos e Adicionais
+                                </div>
+                                <button data-value="descontos" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    Descontos
+                                </button>
+                                <button data-value="adicionais" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    Adicionais
+                                </button>
+                                <button data-value="beneficios" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    Benefícios
+                                </button>
+                                
+                                <!-- Novas Calculadoras Group -->
+                                <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-gray-50 mt-2">
+                                    Novas Calculadoras
+                                </div>
+                                <button data-value="fgts" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    FGTS
+                                </button>
+                                <button data-value="pisPasep" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    PIS/PASEP
+                                </button>
+                                <button data-value="seguroDesemprego" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    Seguro-Desemprego
+                                </button>
+                                <button data-value="horasExtras" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    Horas Extras
+                                </button>
+                                <button data-value="inss" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    INSS
+                                </button>
+                                <button data-value="valeTransporte" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    Vale-Transporte
+                                </button>
+                                <button data-value="irrf" class="topic-selector-option block w-full px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:bg-blue-50 focus:text-blue-700 transition-colors cursor-pointer bg-white">
+                                    IRPF
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

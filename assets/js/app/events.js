@@ -6,7 +6,7 @@
  */
 
 import { state, updateState, initialState } from './state.js';
-import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal, renderSidebar, openFaqModal } from './ui.js';
+import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal, renderSidebar, openFaqModal, renderMobileCalculatorSelector, toggleMobileDropdown, hideMobileDropdown } from './ui.js';
 import { calculatorFunctions, calculateNetSalary } from './calculations.js';
 import { debounce, unmaskCurrency, formatCurrency, initializeCurrencyMask, isValidDate, isValidDateRange } from './utils.js';
 import { 
@@ -78,7 +78,7 @@ const SidebarManager = {
     // Element references
     get sidebar() { return document.getElementById('main-sidebar'); },
     get mainLayout() { return document.querySelector('.main-layout'); },
-    get toggleBtn() { return document.getElementById('mobile-menu-btn'); },
+    get toggleBtn() { return document.getElementById('sidebar-toggle-btn'); },
     get overlay() { return document.getElementById('sidebar-overlay'); },
     get indicator() { return document.getElementById('active-calculator-indicator'); },
     
@@ -90,25 +90,37 @@ const SidebarManager = {
     
     /**
      * Initializes sidebar state from localStorage
+     * @returns {Promise} Promise that resolves when layout is fully applied
      */
     initialize() {
-        if (!this.sidebar || !this.overlay) {
-            console.warn('SidebarManager: Required elements not found for initialization');
-            return;
-        }
-        
-        const savedState = getSidebarState();
-        const defaultState = this.isMobile ? 'hidden' : 'collapsed';
-        let currentState = savedState || defaultState;
-        
-        // Validate state for device type
-        if (!this.isMobile && currentState === 'hidden') {
-            currentState = 'expanded';
-        } else if (this.isMobile && currentState === 'collapsed') {
-            currentState = 'hidden';
-        }
-        
-        this._applyState(currentState);
+        return new Promise((resolve) => {
+            if (!this.sidebar || !this.overlay) {
+                console.warn('SidebarManager: Required elements not found for initialization');
+                resolve();
+                return;
+            }
+            
+            const savedState = getSidebarState();
+            const defaultState = this.isMobile ? 'hidden' : 'collapsed';
+            let currentState = savedState || defaultState;
+            
+            // Validate state for device type
+            if (!this.isMobile && currentState === 'hidden') {
+                currentState = 'expanded';
+            } else if (this.isMobile && currentState === 'collapsed') {
+                currentState = 'hidden';
+            }
+            
+            this._applyState(currentState);
+            
+            // Wait for the next animation frame to ensure CSS classes are applied
+            // Then wait one more frame to ensure layout calculations are complete
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    resolve();
+                });
+            });
+        });
     },
     
     /**
@@ -187,6 +199,14 @@ const SidebarManager = {
      * Internal method to apply a specific state
      */
     _applyState(state) {
+        console.log('SidebarManager._applyState:', {
+            state,
+            isMobile: this.isMobile,
+            windowWidth: window.innerWidth,
+            sidebarElement: !!this.sidebar,
+            mainLayoutElement: !!this.mainLayout
+        });
+        
         switch (state) {
             case 'expanded':
                 this.sidebar.classList.add('expanded', 'open');
@@ -231,30 +251,17 @@ const SidebarManager = {
         const iconElement = this.toggleBtn.querySelector('.material-icons');
         if (!iconElement) return;
         
-        if (this.isMobile) {
-            switch (state) {
-                case 'expanded':
-                    iconElement.textContent = 'menu_open';
-                    this.toggleBtn.setAttribute('title', 'Fechar calculadoras');
-                    break;
-                case 'hidden':
-                default:
-                    iconElement.textContent = 'menu';
-                    this.toggleBtn.setAttribute('title', 'Abrir calculadoras');
-                    break;
-            }
-        } else {
-            switch (state) {
-                case 'expanded':
-                    iconElement.textContent = 'menu_open';
-                    this.toggleBtn.setAttribute('title', 'Recolher calculadoras');
-                    break;
-                case 'collapsed':
-                default:
-                    iconElement.textContent = 'apps';
-                    this.toggleBtn.setAttribute('title', 'Expandir calculadoras');
-                    break;
-            }
+        // Desktop only - mobile menu button was removed
+        switch (state) {
+            case 'expanded':
+                iconElement.textContent = 'menu_open';
+                this.toggleBtn.setAttribute('title', 'Recolher calculadoras');
+                break;
+            case 'collapsed':
+            default:
+                iconElement.textContent = 'apps';
+                this.toggleBtn.setAttribute('title', 'Expandir calculadoras');
+                break;
         }
     },
     
@@ -593,9 +600,54 @@ function toggleSidebar() {
 
 /**
  * Initializes sidebar state from localStorage (delegates to SidebarManager)
+ * @returns {Promise} Promise that resolves when sidebar layout is fully initialized
  */
-function initializeSidebarState() {
-    SidebarManager.initialize();
+async function initializeSidebarState() {
+    return await SidebarManager.initialize();
+}
+
+/**
+ * Reavalia e aplica o estado correto da sidebar (mobile/desktop) baseado no tamanho da janela.
+ * Esta função é chamada durante o redimensionamento da janela para garantir layout responsivo.
+ */
+async function handleResize() {
+    console.log('handleResize: Iniciando reavaliação do layout', {
+        windowWidth: window.innerWidth,
+        isMobile: window.innerWidth < 1024
+    });
+    
+    // Usar a mesma lógica direta do forceCorrectLayout
+    const sidebar = document.getElementById('main-sidebar');
+    const mainLayout = document.querySelector('.main-layout');
+    
+    if (!sidebar || !mainLayout) {
+        console.warn('handleResize: Elementos necessários não encontrados');
+        return;
+    }
+    
+    const isDesktop = window.innerWidth >= 1024;
+    
+    // Limpar todas as classes de estado
+    sidebar.classList.remove('hidden', 'collapsed', 'expanded', 'open');
+    mainLayout.classList.remove('sidebar-hidden', 'sidebar-collapsed', 'sidebar-expanded');
+    
+    if (isDesktop) {
+        // Desktop: usar layout collapsed por padrão
+        sidebar.classList.add('open', 'collapsed');
+        mainLayout.classList.add('sidebar-collapsed');
+        sidebar.classList.remove('hidden');
+        sidebar.classList.add('lg:block');
+    } else {
+        // Mobile: esconder sidebar
+        sidebar.classList.add('hidden');
+        mainLayout.classList.add('sidebar-hidden');
+    }
+    
+    // Reativar renderização para mobile dropdown
+    const { render } = await import('./ui.js');
+    await render();
+    
+    console.log('handleResize: Layout reavaliado com sucesso');
 }
 
 /**
@@ -896,15 +948,98 @@ function initializeEducationalPanelEvents() {
         });
     });
 
-    // Topic selector (dropdown) change to load content
-    const topicSelector = document.getElementById('topic-selector');
-    if (topicSelector) {
-        topicSelector.addEventListener('change', (event) => {
-            const topic = event.target.value;
-            if (topic) {
-                loadEducationalContent(topic);
+    // Topic selector (custom dropdown) functionality
+    const topicSelectorTrigger = document.getElementById('topic-selector-trigger');
+    const topicSelectorPanel = document.getElementById('topic-selector-panel');
+    const topicSelectorCurrentSelection = document.getElementById('topic-selector-current-selection');
+    const topicSelectorOptions = document.querySelectorAll('.topic-selector-option');
+
+    if (topicSelectorTrigger && topicSelectorPanel) {
+        // Toggle dropdown
+        topicSelectorTrigger.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const isOpen = topicSelectorTrigger.getAttribute('aria-expanded') === 'true';
+            
+            if (isOpen) {
+                closeTopicSelector();
+            } else {
+                openTopicSelector();
             }
         });
+
+        // Handle option selection
+        topicSelectorOptions.forEach(option => {
+            option.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const value = option.getAttribute('data-value');
+                const text = option.textContent.trim();
+                
+                // Update selection display
+                if (topicSelectorCurrentSelection) {
+                    topicSelectorCurrentSelection.textContent = text;
+                }
+                
+                // Load educational content
+                if (value) {
+                    loadEducationalContent(value);
+                }
+                
+                // Close dropdown
+                closeTopicSelector();
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!topicSelectorTrigger.contains(event.target) && !topicSelectorPanel.contains(event.target)) {
+                closeTopicSelector();
+            }
+        });
+
+        // Keyboard navigation
+        topicSelectorTrigger.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                const isOpen = topicSelectorTrigger.getAttribute('aria-expanded') === 'true';
+                if (isOpen) {
+                    closeTopicSelector();
+                } else {
+                    openTopicSelector();
+                }
+            } else if (event.key === 'Escape') {
+                closeTopicSelector();
+            }
+        });
+    }
+
+    function openTopicSelector() {
+        topicSelectorTrigger.setAttribute('aria-expanded', 'true');
+        topicSelectorPanel.classList.remove('hidden');
+        // Trigger animation
+        requestAnimationFrame(() => {
+            topicSelectorPanel.classList.add('opacity-100', 'scale-100');
+            topicSelectorPanel.classList.remove('opacity-0', 'scale-95');
+        });
+        // Rotate arrow
+        const arrow = topicSelectorTrigger.querySelector('svg');
+        if (arrow) {
+            arrow.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    function closeTopicSelector() {
+        topicSelectorTrigger.setAttribute('aria-expanded', 'false');
+        topicSelectorPanel.classList.add('opacity-0', 'scale-95');
+        topicSelectorPanel.classList.remove('opacity-100', 'scale-100');
+        // Reset arrow
+        const arrow = topicSelectorTrigger.querySelector('svg');
+        if (arrow) {
+            arrow.style.transform = 'rotate(0deg)';
+        }
+        // Hide after animation
+        setTimeout(() => {
+            topicSelectorPanel.classList.add('hidden');
+        }, 200);
     }
 
     // Keyboard navigation for accessibility
@@ -1085,11 +1220,15 @@ function initializeSidebarEvents() {
         });
     }
     
-    // Botão de toggle da sidebar (usa SidebarManager)
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', () => SidebarManager.toggle());
+    // Desktop Sidebar Toggle Button
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+    if (sidebarToggleBtn) {
+        sidebarToggleBtn.addEventListener('click', () => {
+            SidebarManager.toggle();
+        });
     }
+    
+    // Mobile menu button removed
     
     // Overlay da sidebar mobile
     const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -1131,17 +1270,59 @@ function initializeSidebarEvents() {
         }
     });
     
-    // Fechar sidebar automaticamente quando redimensionar para desktop
-    window.addEventListener('resize', () => {
-        const sidebar = document.getElementById('main-sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
+    // === RESIZE EVENT HANDLER ===
+    // Reavalia o layout (mobile/desktop) quando a janela é redimensionada
+    // Usa debounce para otimizar performance durante redimensionamento contínuo
+    window.addEventListener('resize', debounce(handleResize, 200));
+    
+    // === MOBILE DROPDOWN EVENT LISTENERS ===
+    
+    // Mobile navigation dropdown toggle
+    const mobileNavTrigger = document.getElementById('mobile-nav-trigger');
+    if (mobileNavTrigger) {
+        mobileNavTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMobileDropdown();
+        });
+    }
+    
+    // Mobile navigation option selection
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.mobile-nav-option')) {
+            const option = e.target.closest('.mobile-nav-option');
+            const calculatorId = option.getAttribute('data-calculator');
+            
+            if (calculatorId && calculatorId !== state.activeTab) {
+                // Atualizar estado
+                updateState('activeTab', calculatorId);
+                
+                // Renderizar nova calculadora
+                render();
+                
+                // Fechar dropdown
+                hideMobileDropdown();
+            }
+        }
+    });
+    
+    // Fechar dropdown quando clicar fora
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('mobile-nav-dropdown');
+        const panel = document.getElementById('mobile-nav-panel');
         
-        if (window.innerWidth >= 1024) {
-            // Em desktop, restaurar o scroll do body se estava bloqueado
-            document.body.style.overflow = '';
-        } else if (sidebar && sidebar.classList.contains('open')) {
-            // Em mobile, manter o comportamento de bloqueio do scroll se sidebar estiver aberta
-            document.body.style.overflow = 'hidden';
+        if (dropdown && panel && !dropdown.contains(e.target) && !panel.classList.contains('hidden')) {
+            hideMobileDropdown();
+        }
+    });
+    
+    // Fechar dropdown com ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const panel = document.getElementById('mobile-nav-panel');
+            if (panel && !panel.classList.contains('hidden')) {
+                hideMobileDropdown();
+            }
         }
     });
 }

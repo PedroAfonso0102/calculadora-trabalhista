@@ -1,5 +1,13 @@
 {
+  "scripts": {
+    "build-css": "tailwindcss -i ./assets/css/input.css -o ./assets/css/output.css",
+    "watch-css": "tailwindcss -i ./assets/css/input.css -o ./assets/css/output.css --watch",
+    "serve": "serve ."
+  },
   "dependencies": {
     "serve": "^14.2.4"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
   }
 }

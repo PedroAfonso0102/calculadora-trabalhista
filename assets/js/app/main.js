@@ -119,18 +119,70 @@ async function initializeApp() {
         });
         
         initializeEventListeners();
-        initializeSidebarState();
-        render();
         
-        // Abrir automaticamente o modal Base de Conhecimento quando a aplicação carregar
-        setTimeout(() => {
-            openFaqModal();
-        }, 100); // Pequeno delay para garantir que o DOM esteja totalmente pronto
+        // SOLUÇÃO DIRETA: Forçar layout correto ANTES de qualquer coisa
+        forceCorrectLayout();
+        
+        await initializeSidebarState();
+        await render();
+        
+        // Com o CSS pré-compilado e layout forçado, não há mais race condition
+        openFaqModal();
         
     } catch (error) {
         console.error("Failed to initialize the application:", error);
         displayErrorMessage(error);
     }
+}
+
+/**
+ * Força o layout correto baseado no tamanho da tela
+ * Esta função é chamada ANTES de qualquer inicialização para garantir estado correto
+ */
+function forceCorrectLayout() {
+    const sidebar = document.getElementById('main-sidebar');
+    const mainLayout = document.querySelector('.main-layout');
+    
+    if (!sidebar || !mainLayout) {
+        console.warn('forceCorrectLayout: Elementos necessários não encontrados');
+        return;
+    }
+    
+    const isDesktop = window.innerWidth >= 1024;
+    
+    console.log('forceCorrectLayout:', {
+        windowWidth: window.innerWidth,
+        isDesktop,
+        beforeClasses: {
+            sidebar: sidebar.className,
+            mainLayout: mainLayout.className
+        }
+    });
+    
+    // Limpar todas as classes de estado
+    sidebar.classList.remove('hidden', 'collapsed', 'expanded', 'open');
+    mainLayout.classList.remove('sidebar-hidden', 'sidebar-collapsed', 'sidebar-expanded');
+    
+    if (isDesktop) {
+        // Desktop: usar layout collapsed por padrão
+        sidebar.classList.add('open', 'collapsed');
+        mainLayout.classList.add('sidebar-collapsed');
+        
+        // Garantir que sidebar está visível no desktop
+        sidebar.classList.remove('hidden');
+        sidebar.classList.add('lg:block');
+    } else {
+        // Mobile: esconder sidebar
+        sidebar.classList.add('hidden');
+        mainLayout.classList.add('sidebar-hidden');
+    }
+    
+    console.log('forceCorrectLayout: Layout aplicado', {
+        afterClasses: {
+            sidebar: sidebar.className,
+            mainLayout: mainLayout.className
+        }
+    });
 }
 
 // Wait for the DOM to be fully loaded before initializing the app

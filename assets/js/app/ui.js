@@ -2030,40 +2030,58 @@ const calculatorMappings = {
 };
 
 export function render() {
-    const activeCalculator = state.activeTab;
-    
-    // 1. Update form inputs to reflect the current state
-    if (state[activeCalculator]) {
-        renderFormInputs(activeCalculator);
-    }
-
-    // 2. Run calculation and render using mapping
-    const mapping = calculatorMappings[activeCalculator];
-    if (mapping && state[activeCalculator]) {
-        const results = mapping.calculate(state[activeCalculator]);
-        const html = mapping.render(results);
+    return new Promise((resolve) => {
+        const activeCalculator = state.activeTab;
         
-        // 3. Update the result container
-        if (resultContainers[activeCalculator]) {
-            resultContainers[activeCalculator].innerHTML = html;
+        // 1. Update form inputs to reflect the current state
+        if (state[activeCalculator]) {
+            renderFormInputs(activeCalculator);
         }
-    }
 
-    // 4. Update sidebar navigation (FASE 3)
-    renderSidebar();
+        // 2. Run calculation and render using mapping
+        const mapping = calculatorMappings[activeCalculator];
+        if (mapping && state[activeCalculator]) {
+            const results = mapping.calculate(state[activeCalculator]);
+            const html = mapping.render(results);
+            
+            // 3. Update the result container
+            if (resultContainers[activeCalculator]) {
+                resultContainers[activeCalculator].innerHTML = html;
+            }
+        }
 
-    // 5. Update conditional UI elements
-    renderSalarioFamiliaUI();
+        // 4. Update sidebar navigation (FASE 3)
+        renderSidebar();
 
-    // 6. Update field states (e.g., disabled)
-    if (state[activeCalculator]) {
-        renderFieldStates(activeCalculator);
-    }
+        // 5. Update calculator panel visibility
+        renderCalculatorPanels();
 
-    // 7. Display validation errors
-    if (state[activeCalculator]) {
-        renderValidationErrors(activeCalculator);
-    }
+        // 6. Update tab navigation state
+        renderTabs();
+
+        // 7. Update mobile dropdown navigation
+        renderMobileCalculatorSelector();
+
+        // 8. Update conditional UI elements
+        renderSalarioFamiliaUI();
+
+        // 9. Update field states (e.g., disabled)
+        if (state[activeCalculator]) {
+            renderFieldStates(activeCalculator);
+        }
+
+        // 10. Display validation errors
+        if (state[activeCalculator]) {
+            renderValidationErrors(activeCalculator);
+        }
+        
+        // Wait for DOM updates to complete
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                resolve();
+            });
+        });
+    });
 }
 
 function renderFieldStates(calculatorName) {
@@ -2977,3 +2995,233 @@ function showSearchResult(result) {
 
 // Tornar a função openFaqModal global para uso nos tooltips
 window.openFaqModal = openFaqModal;
+
+// === MOBILE NAVIGATION DROPDOWN FUNCTIONS ===
+
+/**
+ * Lista de calculadoras disponíveis com seus nomes de exibição
+ */
+const calculatorList = [
+    { id: 'ferias', name: 'Cálculo de Férias', icon: 'beach_access' },
+    { id: 'rescisao', name: 'Rescisão de Contrato', icon: 'work_off' },
+    { id: 'decimoTerceiro', name: '13º Salário', icon: 'card_giftcard' },
+    { id: 'salarioLiquido', name: 'Salário Líquido', icon: 'account_balance_wallet' },
+    { id: 'fgts', name: 'FGTS', icon: 'savings' },
+    { id: 'pisPasep', name: 'PIS/PASEP', icon: 'account_balance' },
+    { id: 'seguroDesemprego', name: 'Seguro-Desemprego', icon: 'security' },
+    { id: 'horasExtras', name: 'Horas Extras', icon: 'schedule' },
+    { id: 'inss', name: 'INSS', icon: 'local_hospital' },
+    { id: 'valeTransporte', name: 'Vale-Transporte', icon: 'directions_bus' },
+    { id: 'irpf', name: 'Imposto de Renda', icon: 'receipt_long' }
+];
+
+/**
+ * Renderiza o dropdown de navegação mobile com as calculadoras disponíveis
+ */
+export function renderMobileCalculatorSelector() {
+    const panel = document.getElementById('mobile-nav-panel');
+    const currentSelection = document.getElementById('mobile-nav-current-selection');
+    
+    if (!panel || !currentSelection) {
+        console.warn('Mobile nav elements not found');
+        return;
+    }
+    
+    // Atualizar o texto da seleção atual
+    const activeCalculator = calculatorList.find(calc => calc.id === state.activeTab);
+    if (activeCalculator) {
+        currentSelection.textContent = activeCalculator.name;
+    }
+    
+    // Limpar e popular o painel
+    const panelContent = panel.querySelector('[role="menu"]');
+    if (!panelContent) return;
+    
+    panelContent.innerHTML = '';
+    
+    calculatorList.forEach(calculator => {
+        const button = document.createElement('button');
+        button.className = `mobile-nav-option ${calculator.id === state.activeTab ? 'active' : ''}`;
+        button.setAttribute('role', 'menuitem');
+        button.setAttribute('data-calculator', calculator.id);
+        button.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <span class="material-icons text-sm">${calculator.icon}</span>
+                <span>${calculator.name}</span>
+            </div>
+        `;
+        
+        panelContent.appendChild(button);
+    });
+}
+
+/**
+ * Mostra o dropdown de navegação mobile
+ */
+export function showMobileDropdown() {
+    const trigger = document.getElementById('mobile-nav-trigger');
+    const panel = document.getElementById('mobile-nav-panel');
+    
+    if (!trigger || !panel) return;
+    
+    trigger.setAttribute('aria-expanded', 'true');
+    panel.classList.remove('hidden');
+    
+    // Pequeno delay para permitir a transição CSS
+    setTimeout(() => {
+        panel.classList.add('show');
+    }, 10);
+}
+
+/**
+ * Esconde o dropdown de navegação mobile
+ */
+export function hideMobileDropdown() {
+    const trigger = document.getElementById('mobile-nav-trigger');
+    const panel = document.getElementById('mobile-nav-panel');
+    
+    if (!trigger || !panel) return;
+    
+    trigger.setAttribute('aria-expanded', 'false');
+    panel.classList.remove('show');
+    
+    // Aguardar transição antes de esconder
+    setTimeout(() => {
+        panel.classList.add('hidden');
+    }, 200);
+}
+
+/**
+ * Alterna a visibilidade do dropdown mobile
+ */
+export function toggleMobileDropdown() {
+    const panel = document.getElementById('mobile-nav-panel');
+    if (!panel) return;
+    
+    if (panel.classList.contains('hidden')) {
+        showMobileDropdown();
+    } else {
+        hideMobileDropdown();
+    }
+}
+
+// === KNOWLEDGE BASE MODAL SLIDE ANIMATIONS ===
+
+/**
+ * Estado atual do modal da base de conhecimento
+ */
+let knowledgeBaseViewState = {
+    currentView: 'categories', // 'categories', 'questions', 'answer'
+    viewHistory: [], // Stack para navegação
+    currentCategory: null,
+    currentQuestion: null
+};
+
+/**
+ * Aplica animação de slide para transição entre views
+ * @param {string} direction - 'forward' ou 'backward'
+ * @param {function} updateContentCallback - Função para atualizar o conteúdo
+ */
+export function animateKnowledgeBaseTransition(direction, updateContentCallback) {
+    const container = document.querySelector('#knowledge-base-modal .kb-views-container');
+    if (!container) return;
+    
+    const currentView = container.querySelector('.kb-view.active');
+    if (!currentView) return;
+    
+    // Criar nova view
+    const newView = document.createElement('div');
+    newView.className = 'kb-view transitioning';
+    
+    if (direction === 'forward') {
+        newView.classList.add('slide-in-right');
+    } else {
+        newView.classList.add('slide-out-left');
+        currentView.classList.add('slide-in-right');
+    }
+    
+    container.appendChild(newView);
+    
+    // Atualizar conteúdo da nova view
+    updateContentCallback(newView);
+    
+    // Animar transição
+    setTimeout(() => {
+        if (direction === 'forward') {
+            currentView.classList.add('slide-out-left');
+            newView.classList.remove('slide-in-right');
+            newView.classList.add('active');
+        } else {
+            currentView.classList.remove('slide-out-left');
+            currentView.classList.add('slide-in-right');
+            newView.classList.remove('slide-in-right');
+            newView.classList.add('active');
+        }
+        
+        currentView.classList.remove('active');
+        
+        // Limpar view antiga após animação
+        setTimeout(() => {
+            if (currentView.parentNode) {
+                currentView.remove();
+            }
+        }, 300);
+    }, 10);
+}
+
+/**
+ * Renderiza a view de categorias da base de conhecimento
+ */
+export function renderKnowledgeBaseCategories() {
+    const categories = getAllFaqCategories();
+    let html = `
+        <div class="kb-view active">
+            <h3 class="text-lg font-semibold mb-4">📚 Base de Conhecimento</h3>
+            <p class="text-sm text-muted-foreground mb-6">Selecione uma categoria para explorar:</p>
+            <div class="space-y-2">
+    `;
+    
+    categories.forEach(category => {
+        html += `
+            <button class="kb-category-btn w-full text-left p-4 border border-border rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors" 
+                    data-category="${category.id}">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="font-medium">${category.name}</h4>
+                        <p class="text-sm text-muted-foreground">${category.description}</p>
+                    </div>
+                    <span class="material-icons text-muted-foreground">chevron_right</span>
+                </div>
+            </button>
+        `;
+    });
+    
+    html += `</div></div>`;
+    return html;
+}
+
+/**
+ * Atualiza o estado do modal da base de conhecimento
+ * @param {string} view - Nova view ('categories', 'questions', 'answer')
+ * @param {object} data - Dados adicionais (categoria, questão, etc.)
+ */
+export function updateKnowledgeBaseView(view, data = {}) {
+    knowledgeBaseViewState.currentView = view;
+    
+    if (data.category) {
+        knowledgeBaseViewState.currentCategory = data.category;
+    }
+    
+    if (data.question) {
+        knowledgeBaseViewState.currentQuestion = data.question;
+    }
+    
+    // Adicionar à história se for uma navegação para frente
+    if (view !== 'categories' && !data.isBack) {
+        knowledgeBaseViewState.viewHistory.push({
+            view: knowledgeBaseViewState.currentView,
+            category: knowledgeBaseViewState.currentCategory,
+            question: knowledgeBaseViewState.currentQuestion
+        });
+    }
+}
