@@ -1,87 +1,67 @@
 // The single source of truth for the entire application.
 
-function getInitialVisibleCalculators() {
-    try {
-        const stored = localStorage.getItem('visibleCalculators');
-        if (stored) {
-            const parsed = JSON.parse(stored);
-            // Basic validation
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                return parsed;
-            }
-        }
-    } catch (e) {
-        console.error("Failed to parse visibleCalculators from localStorage", e);
-    }
-    // Default if nothing is stored or if parsing fails
-    return [
-        'ferias', 'rescisao', 'decimoTerceiro', 'salarioLiquido', 'fgts',
-        'pisPasep', 'seguroDesemprego', 'horasExtras', 'inss', 'valeTransporte', 'irpf'
-    ];
-}
+import { BASES_DE_CALCULO } from './config.js';
+import { getVisibleCalculators } from './storage.js';
+
+/**
+ * Base objects for common calculator fields following DRY principle
+ */
+
+// Base fields shared by most calculators
+const baseCalculatorState = {
+    salarioBruto: 0,
+    dependentes: 0,
+    periculosidade: false,
+    insalubridadeGrau: '0',
+    insalubridadeBase: BASES_DE_CALCULO.SALARIO_MINIMO,
+    errors: {}
+};
+
+// Extended base for calculators that include overtime and night shift
+const extendedCalculatorState = {
+    ...baseCalculatorState,
+    mediaHorasExtras: 0,
+    mediaAdicionalNoturno: 0
+};
+
+// Base for calculators with common discount fields
+const discountCalculatorState = {
+    descontoVt: 0,
+    descontoVr: 0,
+    descontoSaude: 0,
+    descontoAdiantamentos: 0
+};
 
 const initialState = {
     ferias: {
-        salarioBruto: 0,
+        ...extendedCalculatorState,
         diasFerias: 30,
-        dependentes: 0,
-        mediaHorasExtras: 0,
-        mediaAdicionalNoturno: 0,
-        periculosidade: false,
-        insalubridadeGrau: '0',
-        insalubridadeBase: 'salario_minimo',
         abonoPecuniario: false,
-        adiantarDecimo: false,
-        errors: {}
+        adiantarDecimo: false
     },
     rescisao: {
+        ...extendedCalculatorState,
+        ...discountCalculatorState,
         motivo: 'sem_justa_causa',
         dataAdmissao: '',
         dataDemissao: '',
-        salarioBruto: 0,
         saldoFgts: 0,
         avisoPrevio: 'indenizado',
-        dependentes: 0,
-        mediaHorasExtras: 0,
-        mediaAdicionalNoturno: 0,
-        periculosidade: false,
-        insalubridadeGrau: '0',
-        insalubridadeBase: 'salario_minimo',
-        feriasVencidas: false,
-        descontoVt: 0,
-        descontoVr: 0,
-        descontoSaude: 0,
-        descontoAdiantamentos: 0,
-        errors: {}
+        feriasVencidas: false
     },
     decimoTerceiro: {
-        salarioBruto: 0,
+        ...extendedCalculatorState,
         mesesTrabalhados: 12,
-        dependentes: 0,
-        adiantamentoRecebido: 0,
-        mediaHorasExtras: 0,
-        mediaAdicionalNoturno: 0,
-        periculosidade: false,
-        insalubridadeGrau: '0',
-        insalubridadeBase: 'salario_minimo',
-        errors: {}
+        adiantamentoRecebido: 0
     },
     salarioLiquido: {
-        salarioBruto: 0,
+        ...baseCalculatorState,
+        ...discountCalculatorState,
         horasExtras: 0,
-        dependentes: 0,
-        periculosidade: false,
-        insalubridadeGrau: '0',
-        insalubridadeBase: 'salario_minimo',
         horasNoturnas: 0,
         cargaHorariaMensal: 220,
-        descontoVt: 0,
-        descontoVr: 0,
-        descontoSaude: 0,
-        descontoAdiantamentos: 0,
         recebeSalarioFamilia: false,
-        filhosSalarioFamilia: 0,
-        errors: {}
+        filhosSalarioFamilia: 0
     },
     fgts: {
         salarioBruto: 0,
@@ -132,7 +112,7 @@ const initialState = {
 
 const state = {
     activeTab: 'ferias',
-    visibleCalculators: getInitialVisibleCalculators(),
+    visibleCalculators: getVisibleCalculators(),
     ...JSON.parse(JSON.stringify(initialState)), // Deep copy to prevent mutation
     results: {}
 };

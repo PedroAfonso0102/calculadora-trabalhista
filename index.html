@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -81,59 +81,74 @@
     <link rel="stylesheet" href="assets/css/print.css" media="print">
     <style>
         :root {
-          --background: oklch(1 0 0);
-          --foreground: oklch(0.145 0 0);
-          --card: oklch(1 0 0);
-          --card-foreground: oklch(0.145 0 0);
-          --popover: oklch(1 0 0);
-          --popover-foreground: oklch(0.145 0 0);
-          --primary: oklch(0.205 0 0);
-          --primary-foreground: oklch(0.985 0 0);
-          --secondary: oklch(0.97 0 0);
-          --secondary-foreground: oklch(0.205 0 0);
-          --success: oklch(0.68 0.22 145);
-          --success-foreground: oklch(0.985 0 0);
-          --muted: oklch(0.97 0 0);
-          --muted-foreground: oklch(0.556 0 0);
-          --accent: oklch(0.97 0 0);
-          --accent-foreground: oklch(0.205 0 0);
-          --destructive: oklch(0.577 0.245 27.325);
-          --border: oklch(0.922 0 0);
-          --input: oklch(0.922 0 0);
-          --ring: oklch(0.708 0 0);
-          --radius: 0.5rem;
-          --shadow-interactive-hover: 0 4px 12px 0 hsl(var(--foreground) / 0.08), 0 2px 4px 0 hsl(var(--foreground) / 0.05);
+            --background: oklch(1 0 0);
+            --foreground: oklch(0.145 0 0);
+            --card: oklch(1 0 0);
+            --card-foreground: oklch(0.145 0 0);
+            --popover: oklch(1 0 0);
+            --popover-foreground: oklch(0.145 0 0);
+            --primary: oklch(0.205 0 0);
+            --primary-foreground: oklch(0.985 0 0);
+            --secondary: oklch(0.97 0 0);
+            --secondary-foreground: oklch(0.205 0 0);
+            --success: oklch(0.68 0.22 145);
+            --success-foreground: oklch(0.985 0 0);
+            --muted: oklch(0.97 0 0);
+            --muted-foreground: oklch(0.556 0 0);
+            --accent: oklch(0.97 0 0);
+            --accent-foreground: oklch(0.205 0 0);
+            --destructive: oklch(0.577 0.245 27.325);
+            --border: oklch(0.922 0 0);
+            --input: oklch(0.922 0 0);
+            --ring: oklch(0.708 0 0);
+            --radius: 0.5rem;
+            --shadow-interactive-hover: 0 4px 12px 0 hsl(var(--foreground) / 0.08), 0 2px 4px 0 hsl(var(--foreground) / 0.05);
+
+            /* Variáveis do Componente Details */
+            --details-border-color: #e5e7eb;      /* gray-200 */
+            --details-bg-color: #ffffff;          /* white */
+            --details-bg-hover-color: #f9fafb;    /* gray-50 */
+            --details-text-color: #111827;        /* gray-900 */
+            --details-icon-color: #6b7280;        /* gray-500 */
+            --details-content-bg-color: #f9fafb;  /* gray-50 */
+            --details-content-text-color: #374151;/* gray-700 */
+            --details-accent-color: #3b82f6;      /* blue-500 */
+            --details-focus-ring-color: #2563eb;  /* blue-600 */
+            --details-font-size: 1rem;
+            --details-content-font-size: 0.875rem;
+            --details-border-radius: 0.375rem;
+            --details-transition-duration: 0.3s;
         }
 
         .dark {
-          --background: oklch(0.145 0 0);
-          --foreground: oklch(0.985 0 0);
-          --card: oklch(0.205 0 0);
-          --card-foreground: oklch(0.985 0 0);
-          --popover: oklch(0.205 0 0);
-          --popover-foreground: oklch(0.985 0 0);
-          --primary: oklch(0.922 0 0);
-          --primary-foreground: oklch(0.205 0 0);
-          --secondary: oklch(0.269 0 0);
-          --secondary-foreground: oklch(0.985 0 0);
-          --muted: oklch(0.269 0 0);
-          --muted-foreground: oklch(0.708 0 0);
-          --accent: oklch(0.269 0 0);
-          --accent-foreground: oklch(0.985 0 0);
-          --destructive: oklch(0.704 0.191 22.216);
-          --border: oklch(1 0 0 / 10%);
-          --input: oklch(1 0 0 / 15%);
-          --ring: oklch(0.556 0 0);
+            --background: oklch(0.145 0 0);
+            --foreground: oklch(0.985 0 0);
+            --card: oklch(0.205 0 0);
+            --card-foreground: oklch(0.985 0 0);
+            --popover: oklch(0.205 0 0);
+            --popover-foreground: oklch(0.985 0 0);
+            --primary: oklch(0.922 0 0);
+            --primary-foreground: oklch(0.205 0 0);
+            --secondary: oklch(0.269 0 0);
+            --secondary-foreground: oklch(0.985 0 0);
+            --muted: oklch(0.269 0 0);
+            --muted-foreground: oklch(0.708 0 0);
+            --accent: oklch(0.269 0 0);
+            --accent-foreground: oklch(0.985 0 0);
+            --destructive: oklch(0.704 0.191 22.216);
+            --border: oklch(1 0 0 / 10%);
+            --input: oklch(1 0 0 / 15%);
+            --ring: oklch(0.556 0 0);
         }
 
         @layer base {
-          * {
-            @apply border-border;
-          }
-          body {
-            @apply bg-background text-foreground;
-            font-family: 'Inter', sans-serif;
-          }
+            * {
+                @apply border-border;
+            }
+            body {
+                @apply bg-background text-foreground;
+                font-family: 'Inter', sans-serif;
+            }
         }
         .sans-serif {
             font-family: 'Inter', sans-serif;
@@ -143,7 +158,7 @@
         }
         /* Custom styles for animations */
         details[open] > summary > svg {
-          transform: rotate(90deg);
+            transform: rotate(90deg);
         }
         button[role=checkbox] > svg {
             transition: transform 150ms ease-in-out;
@@ -176,7 +191,7 @@
             transform: scale(1);
         }
 
-        /* Typography and áÁreadability Styles */
+        /* Typography and Readability Styles */
         @media (max-width: 768px) {
             body {
                 font-size: 16px;
@@ -195,7 +210,7 @@
             }
 
             label, .text-sm {
-                font-size: 1rem; /* Ensure labels are áÁreadable */
+                font-size: 1rem; /* Ensure labels are readable */
             }
 
             .space-y-2 > * + * {
@@ -428,7 +443,7 @@
             backdrop-filter: blur(2px);
         }
 
-        /* Garantir fundo branco s�lido na modal */
+        /* Garantir fundo branco sólido na modal */
         #calculation-memory-modal-content {
             background-color: #ffffff !important;
             color: #1f2937 !important;
@@ -506,7 +521,7 @@
         }
         
         .educational-content-item .example:before {
-            content: "?? Exemplo pr�tico: ";
+            content: "💡 Exemplo prático: ";
             font-weight: 600;
             color: #92400e;
         }
@@ -521,41 +536,103 @@
                 font-size: 0.75rem;
                 padding: 0.5rem;
             }
+
+            /* Extra small screen improvements */
+            header h1 {
+                font-size: 1rem !important;
+            }
+
+            #app {
+                padding: 0.75rem !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
+            }
+
+            h2 {
+                font-size: 1.25rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            h3 {
+                font-size: 1.1rem !important;
+            }
+
+            /* Improve form spacing on very small screens */
+            .space-y-8 > * + * {
+                margin-top: 1.5rem !important;
+            }
+
+            .space-y-4 > * + * {
+                margin-top: 1rem !important;
+            }
+
+            .space-y-2 > * + * {
+                margin-top: 0.75rem !important;
+            }
+
+            /* Better button sizing */
+            button {
+                min-height: 44px !important;
+                padding: 0.75rem 1rem !important;
+                font-size: 0.875rem !important;
+            }
+
+            /* Improve fieldset appearance */
+            fieldset {
+                padding: 1rem 0.75rem !important;
+                margin: 0.5rem 0 !important;
+            }
+
+            legend {
+                padding: 0 0.5rem !important;
+                font-size: 0.875rem !important;
+            }
         }
 
         /* Mobile-specific navigation improvements */
         @media (max-width: 768px) {
-            /* Improve tab navigation on mobile */
-            [role="tablist"] {
-                flex-direction: column !important;
-                gap: 0.5rem !important;
-                padding: 1rem !important;
-                background-color: hsl(var(--muted)) !important;
+            /* Hide sidebar on mobile by default */
+            #main-sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                height: 100vh !important;
+                width: 80vw !important;
+                max-width: 280px !important;
+                transform: translateX(-100%) !important;
+                z-index: 60 !important;
+                transition: transform 0.3s ease-in-out !important;
             }
 
-            [role="tablist"] button {
-                width: 100% !important;
-                text-align: center !important;
-                padding: 1rem !important;
-                font-size: 1rem !important;
-                min-height: 48px !important;
+            #main-sidebar.mobile-visible {
+                transform: translateX(0) !important;
+            }
+
+            /* Show overlay when sidebar is open on mobile */
+            #sidebar-overlay.show {
+                display: block !important;
+                opacity: 1 !important;
+            }
+
+            /* Adjust main layout for mobile */
+            .grid.main-layout {
+                grid-template-columns: 1fr !important;
             }
 
             /* Improve header responsiveness */
-            header .container {
+            header .container,
+            header {
                 padding-left: 1rem !important;
                 padding-right: 1rem !important;
             }
 
             header h1 {
-                font-size: 1.75rem !important;
+                font-size: 1.5rem !important;
             }
 
             /* Better mobile container */
-            main .container {
-                padding-left: 1rem !important;
-                padding-right: 1rem !important;
-                max-width: 100% !important;
+            main {
+                padding: 1rem !important;
             }
 
             #app {
@@ -584,12 +661,20 @@
                 cursor: help !important;
                 color: hsl(var(--primary)) !important;
             }
+
+            /* Fix for educational panel on mobile */
+            #educational-panel {
+                width: 100vw !important;
+                max-width: none !important;
+            }
         }
 
         /* Prevent horizontal scroll on mobile */
         @media (max-width: 768px) {
-            body, html {
+            html, body {
                 overflow-x: hidden !important;
+                width: 100% !important;
+                max-width: 100% !important;
             }
 
             * {
@@ -597,15 +682,44 @@
                 box-sizing: border-box !important;
             }
 
+            /* Fix main layout overflow */
+            .grid.main-layout {
+                width: 100% !important;
+                min-height: 100vh !important;
+                overflow: visible !important;
+            }
+
             /* Ensure money input fields don't overflow */
-            .money-mask {
+            .money-mask,
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            select {
                 width: 100% !important;
                 min-width: 0 !important;
+                max-width: 100% !important;
             }
 
             /* Fix potential overflow in details content */
             details > div {
                 overflow-x: hidden !important;
+                width: 100% !important;
+            }
+
+            /* Fix grid columns to prevent overflow */
+            .grid.grid-cols-1.md\\:grid-cols-2 {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+
+            /* Ensure containers don't exceed viewport */
+            .container,
+            .max-w-4xl,
+            .max-w-2xl {
+                max-width: 100% !important;
+                width: 100% !important;
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
             }
 
             /* Improve spacing between form sections */
@@ -615,6 +729,15 @@
 
             .space-y-4 > * + * {
                 margin-top: 1.5rem !important;
+            }
+
+            /* Fix sidebar overlay z-index issues */
+            #sidebar-overlay {
+                z-index: 55 !important;
+            }
+
+            #main-sidebar {
+                z-index: 60 !important;
             }
         }
 
@@ -890,7 +1013,7 @@
             
             /* When sidebar is collapsed, align button with sidebar center */
             .grid.main-layout.sidebar-collapsed .sidebar-toggle-btn {
-                margin-left: 0.5rem; /* Align with center of collapsed sidebar aáÁrea */
+                margin-left: 0.5rem; /* Align with center of collapsed sidebar area */
             }
             
             /* When sidebar is expanded, keep button in normal position */
@@ -967,42 +1090,68 @@
             .lg\\:hidden {
                 display: block !important;
             }
+
+            /* Ensure mobile header is properly spaced */
+            header {
+                padding: 0.75rem 1rem !important;
+                min-height: 64px !important;
+            }
+
+            /* Mobile header button improvements */
+            #mobile-menu-btn {
+                padding: 0.75rem !important;
+                min-width: 44px !important;
+                min-height: 44px !important;
+            }
+
+            #educational-panel-menu-btn {
+                padding: 0.75rem !important;
+                min-width: 44px !important;
+                min-height: 44px !important;
+            }
+
+            /* Center title on mobile */
+            header .flex-1.lg\\:hidden {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+
+            header .flex-1.lg\\:hidden h1 {
+                font-size: 1.125rem !important;
+                font-weight: 600 !important;
+                text-align: center !important;
+                margin: 0 !important;
+            }
+
+            /* Improve main content spacing on mobile */
+            main {
+                padding: 0.5rem !important;
+                margin-top: 0 !important;
+            }
+
+            #app {
+                border-radius: 0.5rem !important;
+                margin: 0 !important;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+            }
         }
 
         /* ============================================= */
-        /* EsúÚtilo para Detalhes de Cálculo       */
+        /* Estilo para Detalhes de Cálculo             */
         /* ============================================= */
 
-        :root {
-            /* Paleta de Cores */
-            --details-border-color: #e5e7eb;      /* gray-200 */
-            --details-bg-color: #ffffff;          /* white */
-            --details-bg-hover-color: #f9fafb;    /* gray-50 */
-            --details-text-color: #111827;        /* gray-900 */
-            --details-icon-color: #6b7280;        /* gray-500 */
-            --details-content-bg-color: #f9fafb;  /* gray-50 */
-            --details-content-text-color: #374151;/* gray-700 */
-            --details-accent-color: #3b82f6;      /* blue-500 */
-            --details-focus-ring-color: #2563eb;  /* blue-600 */
-
-            /* Tipografia e Espaçamento */
-            --details-font-size: 1rem;
-            --details-content-font-size: 0.875rem;
-            --details-border-radius: 0.375rem;
-            --details-transition-duration: 0.3s;
-        }
-
-        /* Cont�iner principal para cada item "details" */
+        /* Contêiner principal para cada item "details" */
         .calculation-details-item {
             border-bottom: 1px solid var(--details-border-color);
             padding: 0.5rem 0;
         }
 
         .calculation-details-item:last-child {
-            border-bottom: none; /* Remove a borda do �último item */
+            border-bottom: none; /* Remove a borda do último item */
         }
 
-        /* EsúÚtiliza��o do <summary> - o cabe�alho clic�vel */
+        /* Estilização do <summary> - o cabeçalho clicável */
         .calculation-details-item > summary {
             display: flex;
             align-items: center;
@@ -1024,7 +1173,7 @@
             display: none;
         }
 
-        /* EsúÚtilo de foco para acessibilidade (navegação por teclado) */
+        /* Estilo de foco para acessibilidade (navegação por teclado) */
         .calculation-details-item > summary:focus-visible {
             box-shadow: 0 0 0 2px var(--details-focus-ring-color);
         }
@@ -1034,7 +1183,7 @@
             background-color: var(--details-bg-hover-color);
         }
 
-        /* íícone de Chevron (SVG) */
+        /* Ícone de Chevron (SVG) */
         .calculation-details-item > summary::after {
             content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             width: 1rem;
@@ -1043,17 +1192,17 @@
             transition: transform var(--details-transition-duration) ease;
         }
 
-        /* Rota��o do íícone quando o "details" est� aberto */
+        /* Rotação do ícone quando o "details" está aberto */
         .calculation-details-item[open] > summary::after {
             transform: rotate(180deg);
         }
 
-        /* conteúdo que � revelado */
+        /* Conteúdo que é revelado */
         .calculation-details-content {
             overflow: hidden;
             max-height: 0;
             transition: max-height var(--details-transition-duration) ease-in-out, padding var(--details-transition-duration) ease-in-out;
-            padding: 0 1rem; /* Padding horizontal aplicado, vertical ser� animado */
+            padding: 0 1rem; /* Padding horizontal aplicado, vertical será animado */
             background-color: var(--details-content-bg-color);
             border-left: 3px solid var(--details-accent-color);
             border-radius: 0 0 var(--details-border-radius) var(--details-border-radius);
@@ -1062,7 +1211,7 @@
             line-height: 1.5;
         }
 
-        /* Expande o conteúdo quando o "details" est� aberto */
+        /* Expande o conteúdo quando o "details" está aberto */
         .calculation-details-item[open] > .calculation-details-content {
             max-height: 500px; /* Um valor alto o suficiente para o conteúdo */
             padding: 1rem; /* Adiciona o padding vertical ao abrir */
@@ -1076,8 +1225,8 @@
     <div class="print-header" style="display: none;">
         <div class="print-company-info">
             <h1>Calculadora Trabalhista</h1>
-            <p>Pedro Afonso MEI - EstÚdio Criativo Labareda</p>
-            <p>RelatÓrio gerado em: <span id="print-date"></span></p>
+            <p>Pedro Afonso MEI - Estúdio Criativo Labareda</p>
+            <p>Relatório gerado em: <span id="print-date"></span></p>
         </div>
         <hr>
     </div>
@@ -1124,24 +1273,24 @@
             </div>
         </aside>
 
-        <!-- Main Content AáÁrea -->
+        <!-- Main Content Area -->
         <div class="flex-1">
-            <!-- Header com bot�o hambúrguer mobile -->
+            <!-- Header com botão hambúrguer mobile -->
             <header class="bg-background border-b">
                 <div class="flex items-center justify-between px-4 py-3 lg:px-6 lg:py-4">
                     <!-- Left side - Tabs toggle button -->
                     <div class="flex items-center">
-                        <!-- Bot�o de abas para sidebar (esúÚtilo Brave) - SEMPRE VISÍVEL -->
+                        <!-- Botão de abas para sidebar (estilo Brave) - SEMPRE VISÍVEL -->
                         <button id="mobile-menu-btn" 
                                 class="flex items-center justify-center p-2 rounded-md bg-white hover:bg-gray-50 border border-gray-300 transition-all duration-300 shadow-sm min-w-[40px] min-h-[40px] sidebar-toggle-btn" 
                                 aria-label="Mostrar/Ocultar calculadoras" 
-                                title="Alternar exibi��o das abas"
+                                title="Alternar exibição das abas"
                                 style="z-index: 1000;">
                             <span class="material-icons text-gray-700">menu</span>
                         </button>
                     </div>
                     
-                    <!-- Center - Logo mobile (VISÍVEL apenas em mobile) -->
+                    <!-- Center - Logo mobile (visível apenas em mobile) -->
                     <div class="flex-1 lg:hidden flex justify-center">
                         <h1 class="text-lg font-semibold text-primary">Calculadora Trabalhista</h1>
                     </div>
@@ -1152,7 +1301,7 @@
                         <button id="educational-panel-menu-btn" 
                                 class="flex items-center justify-center w-10 h-10 rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 aria-label="Abrir painel educacional"
-                                title="Informe-se - conteúdo Educacional">
+                                title="Informe-se - Conteúdo Educacional">
                             <span class="material-icons">menu_book</span>
                         </button>
                     </div>
@@ -1168,661 +1317,661 @@
 
                     <!-- Calculator UI -->
                     <div id="calculator-container" data-value="ferias">
-                        <!-- REMOVIDO: Tab Navigation ser� substitu�da pela sidebar -->
+                        <!-- REMOVIDO: Tab Navigation será substituída pela sidebar -->
                         
                         <!-- Tab Content -->
-                <!-- Férias Calculator -->
-                <div id="calculator-ferias" value="ferias" role="tabpanel" data-state="active" class="mt-4">
-                    <form id="form-ferias">
-                        <div class="space-y-8">
-                            <!-- Grupo: Informações Principais -->
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Informações Principais</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2">
-                                        <label for="salario-bruto-ferias" class="text-sm font-medium">Salário Bruto Mensal</label>
-                                        <input type="text" id="salario-bruto-ferias" name="salario-bruto-ferias" data-state="ferias.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="dias-ferias" class="text-sm font-medium">Dias de Férias a tirar</label>
-                                        <input type="number" id="dias-ferias" name="dias-ferias" value="30" data-state="ferias.diasFerias" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="dependentes-ferias" class="text-sm font-medium">Dependentes (para IRRF)</label>
-                                        <input type="number" id="dependentes-ferias" name="dependentes-ferias"  data-state="ferias.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Acorde�o: Verbas Vari�veis -->
-                            <details class="space-y-2">
-                                <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                    Proventos Adicionais (Horas Extras, Insalubridade...)
-                                </summary>
-                                <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
-                                    <div class="space-y-2">
-                                        <label for="media-horas-extras-ferias" class="text-sm font-medium">M�dia Mensal de Horas Extras</label>
-                                        <input type="text" id="media-horas-extras-ferias" name="media-horas-extras-ferias" data-state="ferias.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="media-adicional-noturno-ferias" class="text-sm font-medium">M�dia Mensal de Adicional Noturno</label>
-                                        <input type="text" id="media-adicional-noturno-ferias" name="media-adicional-noturno-ferias" data-state="ferias.mediaAdicionalNoturno" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 150.00">
-                                    </div>
-                                    <div class="flex items-center space-x-2 md:col-span-2">
-                                        <input type="checkbox" id="periculosidade-ferias" name="periculosidade-ferias" data-state="ferias.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                        <label for="periculosidade-ferias" class="text-sm font-medium">Recebe Adicional de Periculosidade (fixo)?</label>
-                                    </div>
-                                    <fieldset class="space-y-2 md:col-span-2">
-                                        <legend class="text-sm font-medium">Adicional de Insalubridade (fixo)</legend>
-                                        <div id="insalubridade-grau-ferias-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
-                                            <label for="insalubridade-grau-ferias-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">N�o se aplica</label>
-                                            <input type="radio" id="insalubridade-grau-ferias-0" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau"  checked class="sr-only">
+                  <!-- Férias Calculator -->
+                  <div id="calculator-ferias" value="ferias" role="tabpanel" data-state="active" class="mt-4">
+                      <form id="form-ferias">
+                          <div class="space-y-8">
+                              <!-- Grupo: Informações Principais -->
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Informações Principais</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2">
+                                          <label for="salario-bruto-ferias" class="text-sm font-medium">Salário Bruto Mensal</label>
+                                          <input type="text" id="salario-bruto-ferias" name="salario-bruto-ferias" data-state="ferias.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="dias-ferias" class="text-sm font-medium">Dias de férias a tirar</label>
+                                          <input type="number" id="dias-ferias" name="dias-ferias" value="30" data-state="ferias.diasFerias" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="dependentes-ferias" class="text-sm font-medium">Dependentes (para IRRF)</label>
+                                          <input type="number" id="dependentes-ferias" name="dependentes-ferias"  data-state="ferias.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                      </div>
+                                  </div>
+                              </div>
+                              <!-- Acordeão: Verbas Variáveis -->
+                              <details class="space-y-2">
+                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                      Proventos Adicionais (Horas Extras, Insalubridade...)
+                                  </summary>
+                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                                      <div class="space-y-2">
+                                          <label for="media-horas-extras-ferias" class="text-sm font-medium">Média Mensal de Horas Extras</label>
+                                          <input type="text" id="media-horas-extras-ferias" name="media-horas-extras-ferias" data-state="ferias.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="media-adicional-noturno-ferias" class="text-sm font-medium">Média Mensal de Adicional Noturno</label>
+                                          <input type="text" id="media-adicional-noturno-ferias" name="media-adicional-noturno-ferias" data-state="ferias.mediaAdicionalNoturno" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 150.00">
+                                      </div>
+                                      <div class="flex items-center space-x-2 md:col-span-2">
+                                          <input type="checkbox" id="periculosidade-ferias" name="periculosidade-ferias" data-state="ferias.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                          <label for="periculosidade-ferias" class="text-sm font-medium">Recebe Adicional de Periculosidade (fixo)?</label>
+                                      </div>
+                                      <fieldset class="space-y-2 md:col-span-2">
+                                          <legend class="text-sm font-medium">Adicional de Insalubridade (fixo)</legend>
+                                          <div id="insalubridade-grau-ferias-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
+                                              <label for="insalubridade-grau-ferias-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">Não se aplica</label>
+                                              <input type="radio" id="insalubridade-grau-ferias-0" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau"  checked class="sr-only">
 
-                                            <label for="insalubridade-grau-ferias-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�nimo (10%)</label>
-                                            <input type="radio" id="insalubridade-grau-ferias-10" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau" value="10" class="sr-only">
+                                              <label for="insalubridade-grau-ferias-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Mínimo (10%)</label>
+                                              <input type="radio" id="insalubridade-grau-ferias-10" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau" value="10" class="sr-only">
 
-                                            <label for="insalubridade-grau-ferias-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�dio (20%)</label>
-                                            <input type="radio" id="insalubridade-grau-ferias-20" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau" value="20" class="sr-only">
+                                              <label for="insalubridade-grau-ferias-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Médio (20%)</label>
+                                              <input type="radio" id="insalubridade-grau-ferias-20" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau" value="20" class="sr-only">
 
-                                            <label for="insalubridade-grau-ferias-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�ximo (40%)</label>
-                                            <input type="radio" id="insalubridade-grau-ferias-40" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau" value="40" class="sr-only">
-                                        </div>
-                                    </fieldset>
-                                    <fieldset class="space-y-2">
-                                        <legend class="text-sm font-medium">Base de Cálculo da Insalubridade</legend>
-                                        <div class="flex items-center space-x-4">
-                                            <input type="radio" id="base-salario-minimo-ferias" name="insalubridade-base-ferias" data-state="ferias.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                            <label for="base-salario-minimo-ferias" class="text-sm font-medium">Salário M�nimo</label>
-                                            <input type="radio" id="base-salario-bruto-ferias" name="insalubridade-base-ferias" data-state="ferias.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                            <label for="base-salario-bruto-ferias" class="text-sm font-medium">Salário Base</label>
-                                        </div>
-                                    </fieldset>
-                                </div>
-                            </details>
-                            <!-- Op��es de Férias -->
-                            <div class="space-y-4 pt-4 border-t">
-                                <h3 class="text-lg font-semibold text-foreground">Op��es das Férias</h3>
-                                <div class="flex items-center space-x-2">
-                                    <input type="checkbox" id="abono-pecuniario" name="abono-pecuniario" data-state="ferias.abonoPecuniario" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                    <label for="abono-pecuniario" class="text-sm font-medium">Vender 1/3 das Férias (abono pecuni�rio)</label>
-                                    <span class="help-icon" data-topic="abono-pecuniario" data-tooltip="Clique para ver a explica��o legal">(?)</span>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <input type="checkbox" id="adiantar-decimo" name="adiantar-decimo" data-state="ferias.adiantarDecimo" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                    <label for="adiantar-decimo" class="text-sm font-medium">Adiantar 1� parcela do 13� Salário</label>
-                                    <span class="help-icon" data-topic="adiantamento-13" data-tooltip="Clique para ver a explica��o legal">(?)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="ferias-results" class="mt-10"></div>
-                </div>
+                                              <label for="insalubridade-grau-ferias-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Máximo (40%)</label>
+                                              <input type="radio" id="insalubridade-grau-ferias-40" name="insalubridade-grau-ferias" data-state="ferias.insalubridadeGrau" value="40" class="sr-only">
+                                          </div>
+                                      </fieldset>
+                                      <fieldset class="space-y-2">
+                                          <legend class="text-sm font-medium">Base de Cálculo da Insalubridade</legend>
+                                          <div class="flex items-center space-x-4">
+                                              <input type="radio" id="base-salario-minimo-ferias" name="insalubridade-base-ferias" data-state="ferias.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-minimo-ferias" class="text-sm font-medium">Salário Mínimo</label>
+                                              <input type="radio" id="base-salario-bruto-ferias" name="insalubridade-base-ferias" data-state="ferias.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-bruto-ferias" class="text-sm font-medium">Salário Base</label>
+                                          </div>
+                                      </fieldset>
+                                  </div>
+                              </details>
+                              <!-- Opções de Férias -->
+                              <div class="space-y-4 pt-4 border-t">
+                                  <h3 class="text-lg font-semibold text-foreground">Opções das Férias</h3>
+                                  <div class="flex items-center space-x-2">
+                                      <input type="checkbox" id="abono-pecuniario" name="abono-pecuniario" data-state="ferias.abonoPecuniario" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                      <label for="abono-pecuniario" class="text-sm font-medium">Vender 1/3 das férias (abono pecuniário)</label>
+                                      <span class="help-icon" data-topic="abono-pecuniario" data-tooltip="Clique para ver a explicação legal">(?)</span>
+                                  </div>
+                                  <div class="flex items-center space-x-2">
+                                      <input type="checkbox" id="adiantar-decimo" name="adiantar-decimo" data-state="ferias.adiantarDecimo" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                      <label for="adiantar-decimo" class="text-sm font-medium">Adiantar 1ª parcela do 13º salário</label>
+                                      <span class="help-icon" data-topic="adiantamento-13" data-tooltip="Clique para ver a explicação legal">(?)</span>
+                                  </div>
+                              </div>
+                          </div>
+                      </form>
+                      <div id="ferias-results" class="mt-10"></div>
+                  </div>
 
-                <!-- Rescis�o Calculator -->
-                <div id="calculator-rescisao" value="rescisao" role="tabpanel" data-state="inactive" class="hidden mt-4">
-                    <form id="form-rescisao">
-                        <div class="space-y-8">
-                            <!-- Grupo: Informa��es da Rescis�o -->
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Informa��es da Rescis�o</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2 md:col-span-2">
-                                        <label for="motivo-rescisao" class="text-sm font-medium">Motivo da Rescis�o</label>
-                                        <select id="motivo-rescisao" name="motivo-rescisao" data-state="rescisao.motivo" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
-                                            <option value="sem_justa_causa">Demiss�o sem Justa Causa</option>
-                                            <option value="pedido_demissao">Pedido de Demiss�o</option>
-                                            <option value="com_justa_causa">Demiss�o com Justa Causa</option>
-                                            <option value="acordo_mutuo">Acordo M�tuo</option>
-                                            <option value="termino_contrato_experiencia">T�rmino de Contrato de Experi�ncia</option>
-                                        </select>
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="data-admissao" class="text-sm font-medium">Data de Admiss�o</label>
-                                        <input type="date" id="data-admissao" name="data-admissao" data-state="rescisao.dataAdmissao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="data-demissao" class="text-sm font-medium">Data de Demiss�o</label>
-                                        <input type="date" id="data-demissao" name="data-demissao" data-state="rescisao.dataDemissao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="salario-bruto-rescisao" class="text-sm font-medium">�último Salário Bruto</label>
-                                        <input type="text" id="salario-bruto-rescisao" name="salario-bruto-rescisao" data-state="rescisao.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="saldo-fgts" class="text-sm font-medium">Saldo do FGTS</label>
-                                        <input type="text" id="saldo-fgts" name="saldo-fgts" data-state="rescisao.saldoFgts" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 5000.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="aviso-previo" class="text-sm font-medium">Aviso Pr�vio</label>
-                                        <select id="aviso-previo" name="aviso-previo" data-state="rescisao.avisoPrevio" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
-                                            <option value="indenizado">Indenizado</option>
-                                            <option value="trabalhado">Trabalhado</option>
-                                            <option value="dispensado">Dispensado / N�o se aplica</option>
-                                        </select>
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="dependentes-rescisao" class="text-sm font-medium">Dependentes (para IRRF)</label>
-                                        <input type="number" id="dependentes-rescisao" name="dependentes-rescisao"  data-state="rescisao.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    </div>
-                                    <div class="flex items-center space-x-2 md:col-span-2">
-                                        <input type="checkbox" id="ferias-vencidas" name="ferias-vencidas" data-state="rescisao.feriasVencidas" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                        <label for="ferias-vencidas" class="text-sm font-medium">Possui Férias vencidas n�o gozadas?</label>
-                                        <span class="help-icon" data-topic="ferias-vencidas" data-tooltip="Clique para ver a explica��o legal">(?)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Acorde�o: Verbas Vari�veis -->
-                            <details class="space-y-2">
-                                <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                    Proventos Adicionais (Horas Extras, Insalubridade...)
-                                </summary>
-                                <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
-                                    <div class="space-y-2">
-                                        <label for="media-horas-extras-rescisao" class="text-sm font-medium">M�dia Mensal de Horas Extras</label>
-                                        <input type="text" id="media-horas-extras-rescisao" name="media-horas-extras-rescisao" data-state="rescisao.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="media-adicional-noturno-rescisao" class="text-sm font-medium">M�dia Mensal de Adicional Noturno</label>
-                                        <input type="text" id="media-adicional-noturno-rescisao" name="media-adicional-noturno-rescisao" data-state="rescisao.mediaAdicionalNoturno" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 150.00">
-                                    </div>
-                                    <div class="flex items-center space-x-2 md:col-span-2">
-                                        <input type="checkbox" id="periculosidade-rescisao" name="periculosidade-rescisao" data-state="rescisao.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                        <label for="periculosidade-rescisao" class="text-sm font-medium">Recebe Adicional de Periculosidade (fixo)?</label>
-                                    </div>
-                                    <fieldset class="space-y-2 md:col-span-2">
-                                        <legend class="text-sm font-medium">Adicional de Insalubridade (fixo)</legend>
-                                        <div id="insalubridade-grau-rescisao-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
-                                            <label for="insalubridade-grau-rescisao-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">N�o se aplica</label>
-                                            <input type="radio" id="insalubridade-grau-rescisao-0" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau"  checked class="sr-only">
+                  <!-- Rescisão Calculator -->
+                  <div id="calculator-rescisao" value="rescisao" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                      <form id="form-rescisao">
+                          <div class="space-y-8">
+                              <!-- Grupo: Informações da Rescisão -->
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Informações da Rescisão</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2 md:col-span-2">
+                                          <label for="motivo-rescisao" class="text-sm font-medium">Motivo da Rescisão</label>
+                                          <select id="motivo-rescisao" name="motivo-rescisao" data-state="rescisao.motivo" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
+                                              <option value="sem_justa_causa">Demissão sem Justa Causa</option>
+                                              <option value="pedido_demissao">Pedido de Demissão</option>
+                                              <option value="com_justa_causa">Demissão com Justa Causa</option>
+                                              <option value="acordo_mutuo">Acordo Mútuo</option>
+                                              <option value="termino_contrato_experiencia">Término de Contrato de Experiência</option>
+                                          </select>
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="data-admissao" class="text-sm font-medium">Data de Admissão</label>
+                                          <input type="date" id="data-admissao" name="data-admissao" data-state="rescisao.dataAdmissao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="data-demissao" class="text-sm font-medium">Data de Demissão</label>
+                                          <input type="date" id="data-demissao" name="data-demissao" data-state="rescisao.dataDemissao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="salario-bruto-rescisao" class="text-sm font-medium">Último Salário Bruto</label>
+                                          <input type="text" id="salario-bruto-rescisao" name="salario-bruto-rescisao" data-state="rescisao.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="saldo-fgts" class="text-sm font-medium">Saldo do FGTS</label>
+                                          <input type="text" id="saldo-fgts" name="saldo-fgts" data-state="rescisao.saldoFgts" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 5000.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="aviso-previo" class="text-sm font-medium">Aviso Prévio</label>
+                                          <select id="aviso-previo" name="aviso-previo" data-state="rescisao.avisoPrevio" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
+                                              <option value="indenizado">Indenizado</option>
+                                              <option value="trabalhado">Trabalhado</option>
+                                              <option value="dispensado">Dispensado / Não se aplica</option>
+                                          </select>
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="dependentes-rescisao" class="text-sm font-medium">Dependentes (para IRRF)</label>
+                                          <input type="number" id="dependentes-rescisao" name="dependentes-rescisao"  data-state="rescisao.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                      </div>
+                                      <div class="flex items-center space-x-2 md:col-span-2">
+                                          <input type="checkbox" id="ferias-vencidas" name="ferias-vencidas" data-state="rescisao.feriasVencidas" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                          <label for="ferias-vencidas" class="text-sm font-medium">Possui férias vencidas não gozadas?</label>
+                                          <span class="help-icon" data-topic="ferias-vencidas" data-tooltip="Clique para ver a explicação legal">(?)</span>
+                                      </div>
+                                  </div>
+                              </div>
+                              <!-- Acordeão: Verbas Variáveis -->
+                              <details class="space-y-2">
+                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                      Proventos Adicionais (Horas Extras, Insalubridade...)
+                                  </summary>
+                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                                      <div class="space-y-2">
+                                          <label for="media-horas-extras-rescisao" class="text-sm font-medium">Média Mensal de Horas Extras</label>
+                                          <input type="text" id="media-horas-extras-rescisao" name="media-horas-extras-rescisao" data-state="rescisao.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="media-adicional-noturno-rescisao" class="text-sm font-medium">Média Mensal de Adicional Noturno</label>
+                                          <input type="text" id="media-adicional-noturno-rescisao" name="media-adicional-noturno-rescisao" data-state="rescisao.mediaAdicionalNoturno" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 150.00">
+                                      </div>
+                                      <div class="flex items-center space-x-2 md:col-span-2">
+                                          <input type="checkbox" id="periculosidade-rescisao" name="periculosidade-rescisao" data-state="rescisao.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                          <label for="periculosidade-rescisao" class="text-sm font-medium">Recebe Adicional de Periculosidade (fixo)?</label>
+                                      </div>
+                                      <fieldset class="space-y-2 md:col-span-2">
+                                          <legend class="text-sm font-medium">Adicional de Insalubridade (fixo)</legend>
+                                          <div id="insalubridade-grau-rescisao-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
+                                              <label for="insalubridade-grau-rescisao-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">Não se aplica</label>
+                                              <input type="radio" id="insalubridade-grau-rescisao-0" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau"  checked class="sr-only">
 
-                                            <label for="insalubridade-grau-rescisao-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�nimo (10%)</label>
-                                            <input type="radio" id="insalubridade-grau-rescisao-10" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau" value="10" class="sr-only">
+                                              <label for="insalubridade-grau-rescisao-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Mínimo (10%)</label>
+                                              <input type="radio" id="insalubridade-grau-rescisao-10" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau" value="10" class="sr-only">
 
-                                            <label for="insalubridade-grau-rescisao-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�dio (20%)</label>
-                                            <input type="radio" id="insalubridade-grau-rescisao-20" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau" value="20" class="sr-only">
+                                              <label for="insalubridade-grau-rescisao-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Médio (20%)</label>
+                                              <input type="radio" id="insalubridade-grau-rescisao-20" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau" value="20" class="sr-only">
 
-                                            <label for="insalubridade-grau-rescisao-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�ximo (40%)</label>
-                                            <input type="radio" id="insalubridade-grau-rescisao-40" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau" value="40" class="sr-only">
-                                        </div>
-                                    </fieldset>
-                                    <fieldset class="space-y-2">
-                                        <legend class="text-sm font-medium">Base de Cálculo da Insalubridade</legend>
-                                        <div class="flex items-center space-x-4">
-                                            <input type="radio" id="base-salario-minimo-rescisao" name="insalubridade-base-rescisao" data-state="rescisao.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                            <label for="base-salario-minimo-rescisao" class="text-sm font-medium">Salário M�nimo</label>
-                                            <input type="radio" id="base-salario-bruto-rescisao" name="insalubridade-base-rescisao" data-state="rescisao.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                            <label for="base-salario-bruto-rescisao" class="text-sm font-medium">Salário Base</label>
-                                        </div>
-                                    </fieldset>
-                                </div>
-                            </details>
-                            <!-- Acorde�o: Outros Descontos -->
-                            <details class="space-y-2">
-                                <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                    Outros Descontos
-                                </summary>
-                                <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
-                                    <div class="space-y-2">
-                                        <label for="desconto-vt-rescisao" class="text-sm font-medium flex items-center space-x-2">
-                                            <span>Desconto de Vale-Transporte</span>
-                                            <span class="help-icon" data-topic="desconto_vt" data-tooltip="Como funciona o desconto de VT?">(?)</span>
-                                        </label>
-                                        <input type="text" id="desconto-vt-rescisao" name="desconto-vt-rescisao" data-state="rescisao.descontoVt" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 300.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="desconto-vr-rescisao" class="text-sm font-medium">Desconto Vale-Refei��o/Alimenta��o</label>
-                                        <input type="text" id="desconto-vr-rescisao" name="desconto-vr-rescisao" data-state="rescisao.descontoVr" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 50.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="desconto-saude-rescisao" class="text-sm font-medium">Desconto Plano de Sa�de / Odontol�gico</label>
-                                        <input type="text" id="desconto-saude-rescisao" name="desconto-saude-rescisao" data-state="rescisao.descontoSaude" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 100.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="desconto-adiantamentos-rescisao" class="text-sm font-medium">Adiantamentos (Vale)</label>
-                                        <input type="text" id="desconto-adiantamentos-rescisao" name="desconto-adiantamentos-rescisao" data-state="rescisao.descontoAdiantamentos" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 400.00">
-                                    </div>
-                                </div>
-                            </details>
-                        </div>
-                    </form>
-                    <div id="rescisao-results" class="mt-10"></div>
-                </div>
+                                              <label for="insalubridade-grau-rescisao-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Máximo (40%)</label>
+                                              <input type="radio" id="insalubridade-grau-rescisao-40" name="insalubridade-grau-rescisao" data-state="rescisao.insalubridadeGrau" value="40" class="sr-only">
+                                          </div>
+                                      </fieldset>
+                                      <fieldset class="space-y-2">
+                                          <legend class="text-sm font-medium">Base de Cálculo da Insalubridade</legend>
+                                          <div class="flex items-center space-x-4">
+                                              <input type="radio" id="base-salario-minimo-rescisao" name="insalubridade-base-rescisao" data-state="rescisao.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-minimo-rescisao" class="text-sm font-medium">Salário Mínimo</label>
+                                              <input type="radio" id="base-salario-bruto-rescisao" name="insalubridade-base-rescisao" data-state="rescisao.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-bruto-rescisao" class="text-sm font-medium">Salário Base</label>
+                                          </div>
+                                      </fieldset>
+                                  </div>
+                              </details>
+                              <!-- Acordeão: Outros Descontos -->
+                              <details class="space-y-2">
+                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                      Outros Descontos
+                                  </summary>
+                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                                      <div class="space-y-2">
+                                          <label for="desconto-vt-rescisao" class="text-sm font-medium flex items-center space-x-2">
+                                              <span>Desconto de Vale-Transporte</span>
+                                              <span class="help-icon" data-topic="desconto_vt" data-tooltip="Como funciona o desconto de VT?">(?)</span>
+                                          </label>
+                                          <input type="text" id="desconto-vt-rescisao" name="desconto-vt-rescisao" data-state="rescisao.descontoVt" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 300.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="desconto-vr-rescisao" class="text-sm font-medium">Desconto Vale-Refeição/Alimentação</label>
+                                          <input type="text" id="desconto-vr-rescisao" name="desconto-vr-rescisao" data-state="rescisao.descontoVr" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 50.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="desconto-saude-rescisao" class="text-sm font-medium">Desconto Plano de Saúde / Odontológico</label>
+                                          <input type="text" id="desconto-saude-rescisao" name="desconto-saude-rescisao" data-state="rescisao.descontoSaude" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 100.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="desconto-adiantamentos-rescisao" class="text-sm font-medium">Adiantamentos (Vale)</label>
+                                          <input type="text" id="desconto-adiantamentos-rescisao" name="desconto-adiantamentos-rescisao" data-state="rescisao.descontoAdiantamentos" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 400.00">
+                                      </div>
+                                  </div>
+                              </details>
+                          </div>
+                      </form>
+                      <div id="rescisao-results" class="mt-10"></div>
+                  </div>
 
-                <!-- 13� Salário Calculator -->
-                <div id="calculator-decimo-terceiro" value="decimo-terceiro" role="tabpanel" data-state="inactive" class="hidden mt-4">
-                    <form id="form-decimo-terceiro">
-                        <div class="space-y-8">
-                            <!-- Grupo: Informações Principais -->
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Informações Principais</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2">
-                                        <label for="salario-bruto-decimo-terceiro" class="text-sm font-medium">Salário Bruto Mensal</label>
-                                        <input type="text" id="salario-bruto-decimo-terceiro" name="salario-bruto-decimo-terceiro" data-state="decimoTerceiro.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="meses-trabalhados-decimo-terceiro" class="text-sm font-medium">Meses trabalhados no ano</label>
-                                        <input type="number" id="meses-trabalhados-decimo-terceiro" name="meses-trabalhados-decimo-terceiro" min="1" max="12" value="12" data-state="decimoTerceiro.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="dependentes-decimo-terceiro" class="text-sm font-medium">Dependentes (para IRRF)</label>
-                                        <input type="number" id="dependentes-decimo-terceiro" name="dependentes-decimo-terceiro"  min="0" data-state="decimoTerceiro.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="adiantamento-recebido-decimo-terceiro" class="text-sm font-medium">Adiantamento da 1� parcela j� recebido</label>
-                                        <input type="text" id="adiantamento-recebido-decimo-terceiro" name="adiantamento-recebido-decimo-terceiro" min="0" data-state="decimoTerceiro.adiantamentoRecebido" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 1250.00">
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Acorde�o: Verbas Vari�veis -->
-                            <details class="space-y-2">
-                                <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                    Proventos Adicionais (Horas Extras, Insalubridade...)
-                                </summary>
-                                <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
-                                    <div class="space-y-2">
-                                        <label for="media-horas-extras-decimo-terceiro" class="text-sm font-medium">M�dia Mensal de Horas Extras</label>
-                                        <input type="text" id="media-horas-extras-decimo-terceiro" name="media-horas-extras-decimo-terceiro"  data-state="decimoTerceiro.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="media-adicional-noturno-decimo-terceiro" class="text-sm font-medium">M�dia Mensal de Adicional Noturno</label>
-                                        <input type="text" id="media-adicional-noturno-decimo-terceiro" name="media-adicional-noturno-decimo-terceiro"  data-state="decimoTerceiro.mediaAdicionalNoturno" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 150.00">
-                                    </div>
-                                    <div class="flex items-center space-x-2 md:col-span-2">
-                                        <input type="checkbox" id="periculosidade-decimo-terceiro" name="periculosidade-decimo-terceiro" data-state="decimoTerceiro.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                        <label for="periculosidade-decimo-terceiro" class="text-sm font-medium">Recebe Adicional de Periculosidade (fixo)?</label>
-                                    </div>
-                                    <fieldset class="space-y-2 md:col-span-2">
-                                        <legend class="text-sm font-medium">Adicional de Insalubridade (fixo)</legend>
-                                        <div id="insalubridade-grau-decimo-terceiro-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
-                                            <label for="insalubridade-grau-decimo-terceiro-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">N�o se aplica</label>
-                                            <input type="radio" id="insalubridade-grau-decimo-terceiro-0" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau"  checked class="sr-only">
+                  <!-- 13º Salário Calculator -->
+                  <div id="calculator-decimo-terceiro" value="decimo-terceiro" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                      <form id="form-decimo-terceiro">
+                          <div class="space-y-8">
+                              <!-- Grupo: Informações Principais -->
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Informações Principais</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2">
+                                          <label for="salario-bruto-decimo-terceiro" class="text-sm font-medium">Salário Bruto Mensal</label>
+                                          <input type="text" id="salario-bruto-decimo-terceiro" name="salario-bruto-decimo-terceiro" data-state="decimoTerceiro.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="meses-trabalhados-decimo-terceiro" class="text-sm font-medium">Meses trabalhados no ano</label>
+                                          <input type="number" id="meses-trabalhados-decimo-terceiro" name="meses-trabalhados-decimo-terceiro" min="1" max="12" value="12" data-state="decimoTerceiro.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="dependentes-decimo-terceiro" class="text-sm font-medium">Dependentes (para IRRF)</label>
+                                          <input type="number" id="dependentes-decimo-terceiro" name="dependentes-decimo-terceiro"  min="0" data-state="decimoTerceiro.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="adiantamento-recebido-decimo-terceiro" class="text-sm font-medium">Adiantamento da 1ª parcela já recebido</label>
+                                          <input type="text" id="adiantamento-recebido-decimo-terceiro" name="adiantamento-recebido-decimo-terceiro" min="0" data-state="decimoTerceiro.adiantamentoRecebido" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 1250.00">
+                                      </div>
+                                  </div>
+                              </div>
+                              <!-- Acordeão: Verbas Variáveis -->
+                              <details class="space-y-2">
+                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                      Proventos Adicionais (Horas Extras, Insalubridade...)
+                                  </summary>
+                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                                      <div class="space-y-2">
+                                          <label for="media-horas-extras-decimo-terceiro" class="text-sm font-medium">Média Mensal de Horas Extras</label>
+                                          <input type="text" id="media-horas-extras-decimo-terceiro" name="media-horas-extras-decimo-terceiro"  data-state="decimoTerceiro.mediaHorasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="media-adicional-noturno-decimo-terceiro" class="text-sm font-medium">Média Mensal de Adicional Noturno</label>
+                                          <input type="text" id="media-adicional-noturno-decimo-terceiro" name="media-adicional-noturno-decimo-terceiro"  data-state="decimoTerceiro.mediaAdicionalNoturno" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 150.00">
+                                      </div>
+                                      <div class="flex items-center space-x-2 md:col-span-2">
+                                          <input type="checkbox" id="periculosidade-decimo-terceiro" name="periculosidade-decimo-terceiro" data-state="decimoTerceiro.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                          <label for="periculosidade-decimo-terceiro" class="text-sm font-medium">Recebe Adicional de Periculosidade (fixo)?</label>
+                                      </div>
+                                      <fieldset class="space-y-2 md:col-span-2">
+                                          <legend class="text-sm font-medium">Adicional de Insalubridade (fixo)</legend>
+                                          <div id="insalubridade-grau-decimo-terceiro-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
+                                              <label for="insalubridade-grau-decimo-terceiro-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">Não se aplica</label>
+                                              <input type="radio" id="insalubridade-grau-decimo-terceiro-0" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau"  checked class="sr-only">
 
-                                            <label for="insalubridade-grau-decimo-terceiro-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�nimo (10%)</label>
-                                            <input type="radio" id="insalubridade-grau-decimo-terceiro-10" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau" value="10" class="sr-only">
+                                              <label for="insalubridade-grau-decimo-terceiro-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Mínimo (10%)</label>
+                                              <input type="radio" id="insalubridade-grau-decimo-terceiro-10" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau" value="10" class="sr-only">
 
-                                            <label for="insalubridade-grau-decimo-terceiro-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�dio (20%)</label>
-                                            <input type="radio" id="insalubridade-grau-decimo-terceiro-20" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau" value="20" class="sr-only">
+                                              <label for="insalubridade-grau-decimo-terceiro-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Médio (20%)</label>
+                                              <input type="radio" id="insalubridade-grau-decimo-terceiro-20" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau" value="20" class="sr-only">
 
-                                            <label for="insalubridade-grau-decimo-terceiro-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�ximo (40%)</label>
-                                            <input type="radio" id="insalubridade-grau-decimo-terceiro-40" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau" value="40" class="sr-only">
-                                        </div>
-                                    </fieldset>
-                                    <fieldset class="space-y-2">
-                                        <legend class="text-sm font-medium">Base de Cálculo da Insalubridade</legend>
-                                        <div class="flex items-center space-x-4">
-                                            <input type="radio" id="base-salario-minimo-decimo-terceiro" name="insalubridade-base-decimo-terceiro" data-state="decimoTerceiro.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                            <label for="base-salario-minimo-decimo-terceiro" class="text-sm font-medium">Salário M�nimo</label>
-                                            <input type="radio" id="base-salario-bruto-decimo-terceiro" name="insalubridade-base-decimo-terceiro" data-state="decimoTerceiro.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                            <label for="base-salario-bruto-decimo-terceiro" class="text-sm font-medium">Salário Base</label>
-                                        </div>
-                                    </fieldset>
-                                </div>
-                            </details>
-                        </div>
-                    </form>
-                    <div id="decimo-terceiro-results" class="mt-10"></div>
-                </div>
+                                              <label for="insalubridade-grau-decimo-terceiro-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Máximo (40%)</label>
+                                              <input type="radio" id="insalubridade-grau-decimo-terceiro-40" name="insalubridade-grau-decimo-terceiro" data-state="decimoTerceiro.insalubridadeGrau" value="40" class="sr-only">
+                                          </div>
+                                      </fieldset>
+                                      <fieldset class="space-y-2">
+                                          <legend class="text-sm font-medium">Base de Cálculo da Insalubridade</legend>
+                                          <div class="flex items-center space-x-4">
+                                              <input type="radio" id="base-salario-minimo-decimo-terceiro" name="insalubridade-base-decimo-terceiro" data-state="decimoTerceiro.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-minimo-decimo-terceiro" class="text-sm font-medium">Salário Mínimo</label>
+                                              <input type="radio" id="base-salario-bruto-decimo-terceiro" name="insalubridade-base-decimo-terceiro" data-state="decimoTerceiro.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-bruto-decimo-terceiro" class="text-sm font-medium">Salário Base</label>
+                                          </div>
+                                      </fieldset>
+                                  </div>
+                              </details>
+                          </div>
+                      </form>
+                      <div id="decimo-terceiro-results" class="mt-10"></div>
+                  </div>
 
-                <!-- Salário L�quido Calculator -->
-                <div id="calculator-salario-liquido" value="salario-liquido" role="tabpanel" data-state="inactive" class="hidden mt-4">
-                    <form id="form-salario-liquido">
-                        <div class="space-y-8">
-                            <!-- Grupo: Informações Principais -->
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Remunera��o Base</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2">
-                                        <label for="salario-bruto-salario-liquido" class="text-sm font-medium">Salário Bruto Mensal</label>
-                                        <input type="text" id="salario-bruto-salario-liquido" name="salario-bruto-salario-liquido" data-state="salarioLiquido.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="horas-extras-salario-liquido" class="text-sm font-medium">Outros Proventos (ex: Horas Extras)</label>
-                                        <input type="text" id="horas-extras-salario-liquido" name="horas-extras-salario-liquido"  data-state="salarioLiquido.horasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="dependentes-salario-liquido" class="text-sm font-medium">Dependentes (para IRRF)</label>
-                                        <input type="number" id="dependentes-salario-liquido" name="dependentes-salario-liquido"  min="0" data-state="salarioLiquido.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    </div>
-                                </div>
-                            </div>
+                  <!-- Salário Líquido Calculator -->
+                  <div id="calculator-salario-liquido" value="salario-liquido" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                      <form id="form-salario-liquido">
+                          <div class="space-y-8">
+                              <!-- Grupo: Remuneração Base -->
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Remuneração Base</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2">
+                                          <label for="salario-bruto-salario-liquido" class="text-sm font-medium">Salário Bruto Mensal</label>
+                                          <input type="text" id="salario-bruto-salario-liquido" name="salario-bruto-salario-liquido" data-state="salarioLiquido.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="horas-extras-salario-liquido" class="text-sm font-medium">Outros Proventos (ex: Horas Extras)</label>
+                                          <input type="text" id="horas-extras-salario-liquido" name="horas-extras-salario-liquido"  data-state="salarioLiquido.horasExtras" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 250.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="dependentes-salario-liquido" class="text-sm font-medium">Dependentes (para IRRF)</label>
+                                          <input type="number" id="dependentes-salario-liquido" name="dependentes-salario-liquido"  min="0" data-state="salarioLiquido.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                      </div>
+                                  </div>
+                              </div>
 
-                            <!-- Acorde�o: Proventos Adicionais -->
-                            <details class="space-y-2">
-                                <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                    Proventos Adicionais (Periculosidade, Insalubridade...)
-                                </summary>
-                                <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
-                                    <div class="flex items-center space-x-2 md:col-span-2">
-                                        <input type="checkbox" id="periculosidade-salario-liquido" name="periculosidade-salario-liquido" data-state="salarioLiquido.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                        <label for="periculosidade-salario-liquido" class="text-sm font-medium">Adicional de Periculosidade (30%)</label>
-                                        <span class="help-icon" data-topic="periculosidade" data-tooltip="O que � Adicional de Periculosidade?">(?)</span>
-                                    </div>
-                                    <fieldset class="space-y-2 md:col-span-2">
-                                        <legend class="text-sm font-medium flex items-center space-x-2">
-                                            <span>Adicional de Insalubridade</span>
-                                            <span class="help-icon" data-topic="insalubridade" data-tooltip="O que � Adicional de Insalubridade?">(?)</span>
-                                        </legend>
-                                        <div id="insalubridade-grau-salario-liquido-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
-                                            <label for="insalubridade-grau-salario-liquido-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">N�o se aplica</label>
-                                            <input type="radio" id="insalubridade-grau-salario-liquido-0" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau"  checked class="sr-only">
+                              <!-- Acordeão: Proventos Adicionais -->
+                              <details class="space-y-2">
+                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                      Proventos Adicionais (Periculosidade, Insalubridade...)
+                                  </summary>
+                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                                      <div class="flex items-center space-x-2 md:col-span-2">
+                                          <input type="checkbox" id="periculosidade-salario-liquido" name="periculosidade-salario-liquido" data-state="salarioLiquido.periculosidade" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                          <label for="periculosidade-salario-liquido" class="text-sm font-medium">Adicional de Periculosidade (30%)</label>
+                                          <span class="help-icon" data-topic="periculosidade" data-tooltip="O que é Adicional de Periculosidade?">(?)</span>
+                                      </div>
+                                      <fieldset class="space-y-2 md:col-span-2">
+                                          <legend class="text-sm font-medium flex items-center space-x-2">
+                                              <span>Adicional de Insalubridade</span>
+                                              <span class="help-icon" data-topic="insalubridade" data-tooltip="O que é Adicional de Insalubridade?">(?)</span>
+                                          </legend>
+                                          <div id="insalubridade-grau-salario-liquido-group" role="radiogroup" class="flex items-center space-x-1 rounded-md bg-muted p-1">
+                                              <label for="insalubridade-grau-salario-liquido-0" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="active">Não se aplica</label>
+                                              <input type="radio" id="insalubridade-grau-salario-liquido-0" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau"  checked class="sr-only">
 
-                                            <label for="insalubridade-grau-salario-liquido-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�nimo (10%)</label>
-                                            <input type="radio" id="insalubridade-grau-salario-liquido-10" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau" value="10" class="sr-only">
+                                              <label for="insalubridade-grau-salario-liquido-10" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Mínimo (10%)</label>
+                                              <input type="radio" id="insalubridade-grau-salario-liquido-10" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau" value="10" class="sr-only">
 
-                                            <label for="insalubridade-grau-salario-liquido-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�dio (20%)</label>
-                                            <input type="radio" id="insalubridade-grau-salario-liquido-20" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau" value="20" class="sr-only">
+                                              <label for="insalubridade-grau-salario-liquido-20" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Médio (20%)</label>
+                                              <input type="radio" id="insalubridade-grau-salario-liquido-20" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau" value="20" class="sr-only">
 
-                                            <label for="insalubridade-grau-salario-liquido-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">M�ximo (40%)</label>
-                                            <input type="radio" id="insalubridade-grau-salario-liquido-40" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau" value="40" class="sr-only">
-                                        </div>
-                                    </fieldset>
-                                    <fieldset class="space-y-2">
-                                        <legend class="text-sm font-medium">Base de Cálculo da Insalubridade</legend>
-                                        <div class="flex items-center space-x-4">
-                                            <input type="radio" id="base-salario-minimo-salario-liquido" name="insalubridade-base-salario-liquido" data-state="salarioLiquido.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                            <label for="base-salario-minimo-salario-liquido" class="text-sm font-medium">Salário M�nimo</label>
-                                            <input type="radio" id="base-salario-bruto-salario-liquido" name="insalubridade-base-salario-liquido" data-state="salarioLiquido.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                            <label for="base-salario-bruto-salario-liquido" class="text-sm font-medium">Salário Base</label>
-                                        </div>
-                                    </fieldset>
-                                    <div class="space-y-2">
-                                        <label for="horas-noturnas-salario-liquido" class="text-sm font-medium flex items-center space-x-2">
-                                            <span>Horas Noturnas no M�s</span>
-                                            <span class="help-icon" data-topic="adicional_noturno" data-tooltip="O que � Adicional Noturno?">(?)</span>
-                                        </label>
-                                        <input type="number" id="horas-noturnas-salario-liquido" name="horas-noturnas-salario-liquido"  data-state="salarioLiquido.horasNoturnas" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 40">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="carga-horaria-mensal-salario-liquido" class="text-sm font-medium">Carga Hor�ria Mensal</label>
-                                        <input type="number" id="carga-horaria-mensal-salario-liquido" name="carga-horaria-mensal-salario-liquido" value="220" data-state="salarioLiquido.cargaHorariaMensal" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 220">
-                                    </div>
-                                </div>
-                            </details>
+                                              <label for="insalubridade-grau-salario-liquido-40" class="flex-1 text-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium cursor-pointer transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-state="inactive">Máximo (40%)</label>
+                                              <input type="radio" id="insalubridade-grau-salario-liquido-40" name="insalubridade-grau-salario-liquido" data-state="salarioLiquido.insalubridadeGrau" value="40" class="sr-only">
+                                          </div>
+                                      </fieldset>
+                                      <fieldset class="space-y-2">
+                                          <legend class="text-sm font-medium">Base de Cálculo da Insalubridade</legend>
+                                          <div class="flex items-center space-x-4">
+                                              <input type="radio" id="base-salario-minimo-salario-liquido" name="insalubridade-base-salario-liquido" data-state="salarioLiquido.insalubridadeBase" value="salario_minimo" checked class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-minimo-salario-liquido" class="text-sm font-medium">Salário Mínimo</label>
+                                              <input type="radio" id="base-salario-bruto-salario-liquido" name="insalubridade-base-salario-liquido" data-state="salarioLiquido.insalubridadeBase" value="salario_bruto" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="base-salario-bruto-salario-liquido" class="text-sm font-medium">Salário Base</label>
+                                          </div>
+                                      </fieldset>
+                                      <div class="space-y-2">
+                                          <label for="horas-noturnas-salario-liquido" class="text-sm font-medium flex items-center space-x-2">
+                                              <span>Horas Noturnas no Mês</span>
+                                              <span class="help-icon" data-topic="adicional_noturno" data-tooltip="O que é Adicional Noturno?">(?)</span>
+                                          </label>
+                                          <input type="number" id="horas-noturnas-salario-liquido" name="horas-noturnas-salario-liquido"  data-state="salarioLiquido.horasNoturnas" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 40">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="carga-horaria-mensal-salario-liquido" class="text-sm font-medium">Carga Horária Mensal</label>
+                                          <input type="number" id="carga-horaria-mensal-salario-liquido" name="carga-horaria-mensal-salario-liquido" value="220" data-state="salarioLiquido.cargaHorariaMensal" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 220">
+                                      </div>
+                                  </div>
+                              </details>
 
-                            <!-- Acorde�o: Outros Descontos -->
-                            <details class="space-y-2">
-                                <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                    Outros Descontos
-                                </summary>
-                                <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
-                                    <div class="space-y-2">
-                                        <label for="desconto-vt-salario-liquido" class="text-sm font-medium flex items-center space-x-2">
-                                            <span>Desconto de Vale-Transporte</span>
-                                            <span class="help-icon" data-topic="desconto_vt" data-tooltip="Como funciona o desconto de VT?">(?)</span>
-                                        </label>
-                                        <input type="text" id="desconto-vt-salario-liquido" name="desconto-vt-salario-liquido"  data-state="salarioLiquido.descontoVt" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 300.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="desconto-vr-salario-liquido" class="text-sm font-medium">Desconto Vale-Refei��o/Alimenta��o</label>
-                                        <input type="text" id="desconto-vr-salario-liquido" name="desconto-vr-salario-liquido"  data-state="salarioLiquido.descontoVr" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 50.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="desconto-saude-salario-liquido" class="text-sm font-medium">Desconto Plano de Sa�de / Odontol�gico</label>
-                                        <input type="text" id="desconto-saude-salario-liquido" name="desconto-saude-salario-liquido"  data-state="salarioLiquido.descontoSaude" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 100.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="desconto-adiantamentos-salario-liquido" class="text-sm font-medium">Adiantamentos (Vale)</label>
-                                        <input type="text" id="desconto-adiantamentos-salario-liquido" name="desconto-adiantamentos-salario-liquido"  data-state="salarioLiquido.descontoAdiantamentos" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 400.00">
-                                    </div>
-                                </div>
-                            </details>
+                              <!-- Acordeão: Outros Descontos -->
+                              <details class="space-y-2">
+                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                      Outros Descontos
+                                  </summary>
+                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                                      <div class="space-y-2">
+                                          <label for="desconto-vt-salario-liquido" class="text-sm font-medium flex items-center space-x-2">
+                                              <span>Desconto de Vale-Transporte</span>
+                                              <span class="help-icon" data-topic="desconto_vt" data-tooltip="Como funciona o desconto de VT?">(?)</span>
+                                          </label>
+                                          <input type="text" id="desconto-vt-salario-liquido" name="desconto-vt-salario-liquido"  data-state="salarioLiquido.descontoVt" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 300.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="desconto-vr-salario-liquido" class="text-sm font-medium">Desconto Vale-Refeição/Alimentação</label>
+                                          <input type="text" id="desconto-vr-salario-liquido" name="desconto-vr-salario-liquido"  data-state="salarioLiquido.descontoVr" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 50.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="desconto-saude-salario-liquido" class="text-sm font-medium">Desconto Plano de Saúde / Odontológico</label>
+                                          <input type="text" id="desconto-saude-salario-liquido" name="desconto-saude-salario-liquido"  data-state="salarioLiquido.descontoSaude" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 100.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="desconto-adiantamentos-salario-liquido" class="text-sm font-medium">Adiantamentos (Vale)</label>
+                                          <input type="text" id="desconto-adiantamentos-salario-liquido" name="desconto-adiantamentos-salario-liquido"  data-state="salarioLiquido.descontoAdiantamentos" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 400.00">
+                                      </div>
+                                  </div>
+                              </details>
 
-                            <!-- Acorde�o: Benef�cios -->
-                            <details class="space-y-2" open>
-                                <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                    Benef�cios (Salário Fam�lia)
-                                </summary>
-                                <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
-                                    <div class="space-y-4 md:col-span-2">
-                                        <div class="flex items-center space-x-2">
-                                            <input type="checkbox" id="recebe-salario-familia-salario-liquido" name="recebe-salario-familia" data-state="salarioLiquido.recebeSalarioFamilia" class="h-4 w-4 border-input text-primary focus:ring-primary">
-                                            <label for="recebe-salario-familia-salario-liquido" class="text-sm font-medium">Recebe Salário Fam�lia?</label>
-                                        </div>
-                                        <div id="filhos-salario-familia-container-salario-liquido" class="space-y-2 hidden pl-6">
-                                            <label for="filhos-salario-familia-salario-liquido" class="text-sm font-medium">N� de filhos eleg�veis (at� 14 anos ou inv�lidos)</label>
-                                            <input type="number" id="filhos-salario-familia-salario-liquido" name="filhos-salario-familia"  min="0" data-state="salarioLiquido.filhosSalarioFamilia" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                        </div>
-                                    </div>
-                                </div>
-                            </details>
-                        </div>
-                    </form>
+                              <!-- Acordeão: Benefícios -->
+                              <details class="space-y-2" open>
+                                  <summary class="flex items-center text-lg font-semibold cursor-pointer text-primary hover:text-primary/80 transition-colors">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform duration-200 ease-in-out"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                      Benefícios (Salário Família)
+                                  </summary>
+                                  <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t">
+                                      <div class="space-y-4 md:col-span-2">
+                                          <div class="flex items-center space-x-2">
+                                              <input type="checkbox" id="recebe-salario-familia-salario-liquido" name="recebe-salario-familia" data-state="salarioLiquido.recebeSalarioFamilia" class="h-4 w-4 border-input text-primary focus:ring-primary">
+                                              <label for="recebe-salario-familia-salario-liquido" class="text-sm font-medium">Recebe Salário Família?</label>
+                                          </div>
+                                          <div id="filhos-salario-familia-container-salario-liquido" class="space-y-2 hidden pl-6">
+                                              <label for="filhos-salario-familia-salario-liquido" class="text-sm font-medium">Nº de filhos elegíveis (até 14 anos ou inválidos)</label>
+                                              <input type="number" id="filhos-salario-familia-salario-liquido" name="filhos-salario-familia"  min="0" data-state="salarioLiquido.filhosSalarioFamilia" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                          </div>
+                                      </div>
+                                  </div>
+                              </details>
+                          </div>
+                      </form>
 
-                    <!-- Salary Simulator -->
-                    <div id="salary-simulator" class="mt-10 pt-6 border-t">
-                        <h3 class="text-lg font-semibold text-foreground mb-4">Simulador de Salário L�quido</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 items-end">
-                            <div class="space-y-2">
-                                <label for="simular-salario-bruto" class="text-sm font-medium">Se o Salário bruto fosse...</label>
-                                <input type="text" id="simular-salario-bruto" name="simular-salario-bruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Digite um valor bruto">
-                            </div>
-                            <div class="space-y-2">
-                                <p class="text-sm font-medium">O Salário l�quido seria:</p>
-                                <p id="simular-salario-liquido-resultado" class="text-2xl font-bold text-primary h-10 flex items-center">R$ 0,00</p>
-                            </div>
-                        </div>
-                    </div>
+                      <!-- Salary Simulator -->
+                      <div id="salary-simulator" class="mt-10 pt-6 border-t">
+                          <h3 class="text-lg font-semibold text-foreground mb-4">Simulador de Salário Líquido</h3>
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 items-end">
+                              <div class="space-y-2">
+                                  <label for="simular-salario-bruto" class="text-sm font-medium">Se o salário bruto fosse...</label>
+                                  <input type="text" id="simular-salario-bruto" name="simular-salario-bruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Digite um valor bruto">
+                              </div>
+                              <div class="space-y-2">
+                                  <p class="text-sm font-medium">O salário líquido seria:</p>
+                                  <p id="simular-salario-liquido-resultado" class="text-2xl font-bold text-primary h-10 flex items-center">R$ 0,00</p>
+                              </div>
+                          </div>
+                      </div>
 
-                    <div id="salario-liquido-results" class="mt-10"></div>
-                </div>
+                      <div id="salario-liquido-results" class="mt-10"></div>
+                  </div>
 
-                <!-- FGTS Calculator -->
-                <div id="calculator-fgts" value="fgts" role="tabpanel" data-state="inactive" class="hidden mt-4">
-                    <form id="form-fgts">
-                        <div class="space-y-8">
-                            <!-- Grupo: Simulador de Dep�sito Mensal -->
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Simulador de Dep�sito Mensal</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2">
-                                        <label for="salario-bruto-fgts" class="text-sm font-medium">Salário Bruto Mensal</label>
-                                        <input type="text" id="salario-bruto-fgts" name="salario-bruto-fgts" data-state="fgts.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
-                                    </div>
-                                </div>
-                            </div>
+                  <!-- FGTS Calculator -->
+                  <div id="calculator-fgts" value="fgts" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                      <form id="form-fgts">
+                          <div class="space-y-8">
+                              <!-- Grupo: Simulador de Depósito Mensal -->
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Simulador de Depósito Mensal</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2">
+                                          <label for="salario-bruto-fgts" class="text-sm font-medium">Salário Bruto Mensal</label>
+                                          <input type="text" id="salario-bruto-fgts" name="salario-bruto-fgts" data-state="fgts.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
+                                      </div>
+                                  </div>
+                              </div>
 
-                            <!-- Grupo: Simulador de Saque do FGTS -->
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Simulador de Saque do FGTS</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2">
-                                        <label for="saldo-total-fgts" class="text-sm font-medium">Saldo Total do FGTS</label>
-                                        <input type="text" id="saldo-total-fgts" name="saldo-total-fgts" data-state="fgts.saldoTotal" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 8000.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="opcao-saque-fgts" class="text-sm font-medium">Op��o de Saque</label>
-                                        <select id="opcao-saque-fgts" name="opcao-saque-fgts" data-state="fgts.opcaoSaque" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
-                                            <option value="rescisao">Saque-Rescis�o (Demiss�o sem Justa Causa)</option>
-                                            <option value="aniversario">Saque-Anivers�rio</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="fgts-results" class="mt-10"></div>
-                </div>
+                              <!-- Grupo: Simulador de Saque do FGTS -->
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Simulador de Saque do FGTS</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2">
+                                          <label for="saldo-total-fgts" class="text-sm font-medium">Saldo Total do FGTS</label>
+                                          <input type="text" id="saldo-total-fgts" name="saldo-total-fgts" data-state="fgts.saldoTotal" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 8000.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="opcao-saque-fgts" class="text-sm font-medium">Opção de Saque</label>
+                                          <select id="opcao-saque-fgts" name="opcao-saque-fgts" data-state="fgts.opcaoSaque" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
+                                              <option value="rescisao">Saque-Rescisão (Demissão sem Justa Causa)</option>
+                                              <option value="aniversario">Saque-Aniversário</option>
+                                          </select>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </form>
+                      <div id="fgts-results" class="mt-10"></div>
+                  </div>
 
-                <!-- PIS/PASEP Calculator -->
-                <div id="calculator-pis-pasep" value="pis-pasep" role="tabpanel" data-state="inactive" class="hidden mt-4">
-                    <form id="form-pis-pasep">
-                        <div class="space-y-8">
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Abono Salarial (PIS/PASEP)</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2">
-                                        <label for="salario-medio-pis" class="text-sm font-medium">Salário M�dio Mensal no Ano-Base</label>
-                                        <input type="text" id="salario-medio-pis" name="salario-medio-pis" data-state="pisPasep.salarioMedio" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 1800.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="meses-trabalhados-pis" class="text-sm font-medium">Meses Trabalhados no Ano-Base</label>
-                                        <input type="number" id="meses-trabalhados-pis" name="meses-trabalhados-pis" data-state="pisPasep.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 12" min="0" max="12">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="data-inscricao-pis" class="text-sm font-medium">Data de Inscri��o no PIS/PASEP</label>
-                                        <input type="date" id="data-inscricao-pis" name="data-inscricao-pis" data-state="pisPasep.dataInscricao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="pis-pasep-results" class="mt-10"></div>
-                </div>
+                  <!-- PIS/PASEP Calculator -->
+                  <div id="calculator-pis-pasep" value="pis-pasep" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                      <form id="form-pis-pasep">
+                          <div class="space-y-8">
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Abono Salarial (PIS/PASEP)</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2">
+                                          <label for="salario-medio-pis" class="text-sm font-medium">Salário Médio Mensal no Ano-Base</label>
+                                          <input type="text" id="salario-medio-pis" name="salario-medio-pis" data-state="pisPasep.salarioMedio" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 1800.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="meses-trabalhados-pis" class="text-sm font-medium">Meses Trabalhados no Ano-Base</label>
+                                          <input type="number" id="meses-trabalhados-pis" name="meses-trabalhados-pis" data-state="pisPasep.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 12" min="0" max="12">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="data-inscricao-pis" class="text-sm font-medium">Data de Inscrição no PIS/PASEP</label>
+                                          <input type="date" id="data-inscricao-pis" name="data-inscricao-pis" data-state="pisPasep.dataInscricao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </form>
+                      <div id="pis-pasep-results" class="mt-10"></div>
+                  </div>
 
-                <!-- Seguro-Desemprego Calculator -->
-                <div id="calculator-seguro-desemprego" value="seguro-desemprego" role="tabpanel" data-state="inactive" class="hidden mt-4">
-                    <form id="form-seguro-desemprego">
-                        <div class="space-y-8">
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Seguro-Desemprego</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2">
-                                        <label for="sd-salario-1" class="text-sm font-medium">�último Salário</label>
-                                        <input type="text" id="sd-salario-1" name="sd-salario-1" data-state="seguroDesemprego.salario1" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2600.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="sd-salario-2" class="text-sm font-medium">Pen�último Salário</label>
-                                        <input type="text" id="sd-salario-2" name="sd-salario-2" data-state="seguroDesemprego.salario2" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="sd-salario-3" class="text-sm font-medium">Antepen�último Salário</label>
-                                        <input type="text" id="sd-salario-3" name="sd-salario-3" data-state="seguroDesemprego.salario3" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2400.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="sd-meses-trabalhados" class="text-sm font-medium">Meses Trabalhados (�últimos 36 meses)</label>
-                                        <input type="number" id="sd-meses-trabalhados" name="sd-meses-trabalhados" data-state="seguroDesemprego.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 24">
-                                    </div>
-                                    <div class="space-y-2 md:col-span-2">
-                                        <label for="sd-solicitacoes-anteriores" class="text-sm font-medium">� a primeira vez que solicita o Seguro-Desemprego?</label>
-                                        <select id="sd-solicitacoes-anteriores" name="sd-solicitacoes-anteriores" data-state="seguroDesemprego.numSolicitacoes" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
-                                            <option >Sim, � a primeira vez</option>
-                                            <option value="1">N�o, � a segunda vez</option>
-                                            <option value="2">N�o, � a terceira vez ou mais</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="seguro-desemprego-results" class="mt-10"></div>
-                </div>
+                  <!-- Seguro-Desemprego Calculator -->
+                  <div id="calculator-seguro-desemprego" value="seguro-desemprego" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                      <form id="form-seguro-desemprego">
+                          <div class="space-y-8">
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Seguro-Desemprego</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2">
+                                          <label for="sd-salario-1" class="text-sm font-medium">Último Salário</label>
+                                          <input type="text" id="sd-salario-1" name="sd-salario-1" data-state="seguroDesemprego.salario1" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2600.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="sd-salario-2" class="text-sm font-medium">Penúltimo Salário</label>
+                                          <input type="text" id="sd-salario-2" name="sd-salario-2" data-state="seguroDesemprego.salario2" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2500.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="sd-salario-3" class="text-sm font-medium">Antepenúltimo Salário</label>
+                                          <input type="text" id="sd-salario-3" name="sd-salario-3" data-state="seguroDesemprego.salario3" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2400.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="sd-meses-trabalhados" class="text-sm font-medium">Meses Trabalhados (últimos 36 meses)</label>
+                                          <input type="number" id="sd-meses-trabalhados" name="sd-meses-trabalhados" data-state="seguroDesemprego.mesesTrabalhados" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 24">
+                                      </div>
+                                      <div class="space-y-2 md:col-span-2">
+                                          <label for="sd-solicitacoes-anteriores" class="text-sm font-medium">É a primeira vez que solicita o Seguro-Desemprego?</label>
+                                          <select id="sd-solicitacoes-anteriores" name="sd-solicitacoes-anteriores" data-state="seguroDesemprego.numSolicitacoes" class="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm appearance-none">
+                                              <option value="0">Sim, é a primeira vez</option>
+                                              <option value="1">Não, é a segunda vez</option>
+                                              <option value="2">Não, é a terceira vez ou mais</option>
+                                          </select>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </form>
+                      <div id="seguro-desemprego-results" class="mt-10"></div>
+                  </div>
 
-                <!-- Horas Extras Calculator -->
-                <div id="calculator-horas-extras" value="horas-extras" role="tabpanel" data-state="inactive" class="hidden mt-4">
-                    <form id="form-horas-extras">
-                        <div class="space-y-8">
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Horas Extras e Adicionais</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2">
-                                        <label for="salario-base-he" class="text-sm font-medium">Salário Base</label>
-                                        <input type="text" id="salario-base-he" name="salario-base-he" data-state="horasExtras.salarioBase" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="horas-contratuais-he" class="text-sm font-medium">Horas Contratuais Mensais</label>
-                                        <input type="number" id="horas-contratuais-he" name="horas-contratuais-he" data-state="horasExtras.horasContratuais" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value="220" placeholder="Ex: 220">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="horas-extras-50" class="text-sm font-medium">N� de Horas Extras 50%</label>
-                                        <input type="number" id="horas-extras-50" name="horas-extras-50" data-state="horasExtras.horasExtras50" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 10">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="horas-extras-100" class="text-sm font-medium">N� de Horas Extras 100%</label>
-                                        <input type="number" id="horas-extras-100" name="horas-extras-100" data-state="horasExtras.horasExtras100" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 4">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="horas-noturnas" class="text-sm font-medium">N� de Horas Noturnas</label>
-                                        <input type="number" id="horas-noturnas" name="horas-noturnas" data-state="horasExtras.horasNoturnas" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 20">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="horas-extras-results" class="mt-10"></div>
-                </div>
+                  <!-- Horas Extras Calculator -->
+                  <div id="calculator-horas-extras" value="horas-extras" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                      <form id="form-horas-extras">
+                          <div class="space-y-8">
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Horas Extras e Adicionais</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2">
+                                          <label for="salario-base-he" class="text-sm font-medium">Salário Base</label>
+                                          <input type="text" id="salario-base-he" name="salario-base-he" data-state="horasExtras.salarioBase" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="horas-contratuais-he" class="text-sm font-medium">Horas Contratuais Mensais</label>
+                                          <input type="number" id="horas-contratuais-he" name="horas-contratuais-he" data-state="horasExtras.horasContratuais" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value="220" placeholder="Ex: 220">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="horas-extras-50" class="text-sm font-medium">Nº de Horas Extras 50%</label>
+                                          <input type="number" id="horas-extras-50" name="horas-extras-50" data-state="horasExtras.horasExtras50" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 10">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="horas-extras-100" class="text-sm font-medium">Nº de Horas Extras 100%</label>
+                                          <input type="number" id="horas-extras-100" name="horas-extras-100" data-state="horasExtras.horasExtras100" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 4">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="horas-noturnas" class="text-sm font-medium">Nº de Horas Noturnas</label>
+                                          <input type="number" id="horas-noturnas" name="horas-noturnas" data-state="horasExtras.horasNoturnas" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 20">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </form>
+                      <div id="horas-extras-results" class="mt-10"></div>
+                  </div>
 
-                <!-- INSS Calculator -->
-                <div id="calculator-inss" value="inss" role="tabpanel" data-state="inactive" class="hidden mt-4">
-                    <form id="form-inss">
-                        <div class="space-y-8">
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Contribui��o Previdenci�ria (INSS)</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2">
-                                        <label for="salario-bruto-inss" class="text-sm font-medium">Salário Bruto</label>
-                                        <input type="text" id="salario-bruto-inss" name="salario-bruto-inss" data-state="inss.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 3000.00">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="inss-results" class="mt-10"></div>
-                </div>
+                  <!-- INSS Calculator -->
+                  <div id="calculator-inss" value="inss" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                      <form id="form-inss">
+                          <div class="space-y-8">
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Contribuição Previdenciária (INSS)</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2">
+                                          <label for="salario-bruto-inss" class="text-sm font-medium">Salário Bruto</label>
+                                          <input type="text" id="salario-bruto-inss" name="salario-bruto-inss" data-state="inss.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 3000.00">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </form>
+                      <div id="inss-results" class="mt-10"></div>
+                  </div>
 
-                <!-- Vale-Transporte Calculator -->
-                <div id="calculator-vale-transporte" value="vale-transporte" role="tabpanel" data-state="inactive" class="hidden mt-4">
-                    <form id="form-vale-transporte">
-                        <div class="space-y-8">
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Vale-Transporte</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2">
-                                        <label for="salario-bruto-vt" class="text-sm font-medium">Salário Bruto</label>
-                                        <input type="text" id="salario-bruto-vt" name="salario-bruto-vt" data-state="valeTransporte.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="custo-diario-vt" class="text-sm font-medium">Custo Di�rio com Transporte (ida e volta)</label>
-                                        <input type="text" id="custo-diario-vt" name="custo-diario-vt" data-state="valeTransporte.custoDiario" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 9.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="dias-trabalho-vt" class="text-sm font-medium">Dias de Trabalho no M�s</label>
-                                        <input type="number" id="dias-trabalho-vt" name="dias-trabalho-vt" data-state="valeTransporte.diasTrabalho" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 22">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="vale-transporte-results" class="mt-10"></div>
-                </div>
+                  <!-- Vale-Transporte Calculator -->
+                  <div id="calculator-vale-transporte" value="vale-transporte" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                      <form id="form-vale-transporte">
+                          <div class="space-y-8">
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Calculadora de Vale-Transporte</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2">
+                                          <label for="salario-bruto-vt" class="text-sm font-medium">Salário Bruto</label>
+                                          <input type="text" id="salario-bruto-vt" name="salario-bruto-vt" data-state="valeTransporte.salarioBruto" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2200.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="custo-diario-vt" class="text-sm font-medium">Custo Diário com Transporte (ida e volta)</label>
+                                          <input type="text" id="custo-diario-vt" name="custo-diario-vt" data-state="valeTransporte.custoDiario" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 9.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="dias-trabalho-vt" class="text-sm font-medium">Dias de Trabalho no Mês</label>
+                                          <input type="number" id="dias-trabalho-vt" name="dias-trabalho-vt" data-state="valeTransporte.diasTrabalho" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 22">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </form>
+                      <div id="vale-transporte-results" class="mt-10"></div>
+                  </div>
 
-                <!-- IRPF Calculator -->
-                <div id="calculator-irpf" value="irpf" role="tabpanel" data-state="inactive" class="hidden mt-4">
-                    <form id="form-irpf">
-                        <div class="space-y-8">
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Simulador de Ajuste Anual de IRPF</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
-                                    <div class="space-y-2">
-                                        <label for="renda-anual-irpf" class="text-sm font-medium">Renda Tribut�vel Anual</label>
-                                        <input type="text" id="renda-anual-irpf" name="renda-anual-irpf" data-state="irpf.rendaAnual" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 45000.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="dependentes-irpf" class="text-sm font-medium">N�mero de Dependentes</label>
-                                        <input type="number" id="dependentes-irpf" name="dependentes-irpf" data-state="irpf.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2" >
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="deducoes-irpf" class="text-sm font-medium">Outras Dedu��es (Educa��o, Sa�de, etc)</label>
-                                        <input type="text" id="deducoes-irpf" name="deducoes-irpf" data-state="irpf.outrasDeducoes" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 5000.00">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label for="imposto-retido-irpf" class="text-sm font-medium">Imposto Retido na Fonte (anual)</label>
-                                        <input type="text" id="imposto-retido-irpf" name="imposto-retido-irpf" data-state="irpf.impostoRetido" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2000.00">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="irpf-results" class="mt-10"></div>
-                </div>
-            </div>
-            <!-- End of Calculator UI -->
+                  <!-- IRPF Calculator -->
+                  <div id="calculator-irpf" value="irpf" role="tabpanel" data-state="inactive" class="hidden mt-4">
+                      <form id="form-irpf">
+                          <div class="space-y-8">
+                              <div class="space-y-4">
+                                  <h3 class="text-lg font-semibold border-b pb-2 text-foreground">Simulador de Ajuste Anual de IRPF</h3>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+                                      <div class="space-y-2">
+                                          <label for="renda-anual-irpf" class="text-sm font-medium">Renda Tributável Anual</label>
+                                          <input type="text" id="renda-anual-irpf" name="renda-anual-irpf" data-state="irpf.rendaAnual" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 45000.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="dependentes-irpf" class="text-sm font-medium">Número de Dependentes</label>
+                                          <input type="number" id="dependentes-irpf" name="dependentes-irpf" data-state="irpf.dependentes" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2" >
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="deducoes-irpf" class="text-sm font-medium">Outras Deduções (Educação, Saúde, etc)</label>
+                                          <input type="text" id="deducoes-irpf" name="deducoes-irpf" data-state="irpf.outrasDeducoes" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 5000.00">
+                                      </div>
+                                      <div class="space-y-2">
+                                          <label for="imposto-retido-irpf" class="text-sm font-medium">Imposto Retido na Fonte (anual)</label>
+                                          <input type="text" id="imposto-retido-irpf" name="imposto-retido-irpf" data-state="irpf.impostoRetido" class="money-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: 2000.00">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </form>
+                      <div id="irpf-results" class="mt-10"></div>
+                  </div>
+              </div>
+              <!-- End of Calculator UI -->
 
                 </div>
             </main>
@@ -1834,7 +1983,7 @@
                 <div id="calculation-memory-modal-overlay" class="absolute inset-0" style="background-color: rgba(0, 0, 0, 0.8); z-index: 9998;"></div>
                 <div role="dialog" id="calculation-memory-modal-content" class="relative w-full max-w-2xl bg-white text-gray-900 p-6 shadow-lg rounded-lg border border-gray-300" style="z-index: 10000;">
                     <div class="flex flex-col space-y-1.5 text-center sm:text-left">
-                        <h2 id="calculation-memory-modal-title" class="text-2xl font-semibold leading-none tracking-tight text-gray-900">Mem�ria de Cálculo</h2>
+                        <h2 id="calculation-memory-modal-title" class="text-2xl font-semibold leading-none tracking-tight text-gray-900">Memória de Cálculo</h2>
                         <div id="calculation-memory-modal-body" class="text-sm text-gray-700 space-y-4 max-h-[60vh] overflow-y-auto p-1">
                             <!-- Content will be injected by JS -->
                         </div>
@@ -1861,13 +2010,13 @@
                 <label for="save-data-checkbox" class="cursor-pointer">Lembrar meus dados</label>
             </div>
             <span class="text-xs text-gray-500">
-                ?? Seus dados s�o salvos localmente para sua conveni�ncia
+                💡 Seus dados são salvos localmente para sua conveniência
             </span>
             <button id="customize-calculators-btn" class="text-primary hover:underline">Personalizar Calculadoras</button>
         </div>
         <p>&copy; 2025 Calculadora Trabalhista. Uma ferramenta para o trabalhador.</p>
         <p class="mt-4 max-w-2xl mx-auto text-xs text-gray-500">
-            Aviso Legal: Esta calculadora � uma ferramenta de simula��o e seus resultados s�o apenas estimativas. Os Cálculos n�o substituem o aconselhamento jur�dico ou cont�bil profissional e n�o possuem validade legal. Sempre consulte um especialista para obter informa��es precisas e adequadas � sua situa��o.
+            Aviso Legal: Esta calculadora é uma ferramenta de simulação e seus resultados são apenas estimativas. Os cálculos não substituem o aconselhamento jurídico ou contábil profissional e não possuem validade legal. Sempre consulte um especialista para obter informações precisas e adequadas à sua situação.
         </p>
     </footer>
 
@@ -1902,21 +2051,21 @@
             <nav class="p-6 border-b bg-gray-50">
                 <div class="relative">
                     <label for="topic-selector" class="block text-sm font-medium text-gray-700 mb-2">
-                        Selecione um T�pico Educacional
+                        Selecione um Tópico Educacional
                     </label>
                     <div class="relative">
                         <select id="topic-selector" 
                                 class="w-full px-4 py-3 pr-10 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary appearance-none cursor-pointer transition-colors">
-                            <option value="">Escolha um t�pico...</option>
-                            <optgroup label="Calculadoras B�sicas">
+                            <option value="">Escolha um tópico...</option>
+                            <optgroup label="Calculadoras Básicas">
                                 <option value="ferias">Férias</option>
-                                <option value="decimo-terceiro">13� Salário</option>
-                                <option value="rescisao">Rescis�o</option>
+                                <option value="decimo-terceiro">13º Salário</option>
+                                <option value="rescisao">Rescisão</option>
                             </optgroup>
                             <optgroup label="Descontos e Adicionais">
                                 <option value="descontos">Descontos</option>
                                 <option value="adicionais">Adicionais</option>
-                                <option value="beneficios">Benef�cios</option>
+                                <option value="beneficios">Benefícios</option>
                             </optgroup>
                             <optgroup label="Novas Calculadoras">
                                 <option value="fgts">FGTS</option>
@@ -1938,23 +2087,23 @@
                 </div>
             </nav>
 
-            <!-- Content AáÁrea -->
+            <!-- Content Area -->
             <div class="flex-1 overflow-y-auto">
                 <div id="educational-content" class="p-6 lg:p-8">
                     <!-- Welcome message -->
                     <div id="educational-welcome" class="text-center py-8">
                         <div class="mb-4 flex justify-center items-center space-x-4">
-                            <!-- íícone de livro (educacional) -->
+                            <!-- Ícone de livro (educacional) -->
                             <div class="p-3 bg-blue-50 rounded-full">
                                 <span class="material-icons text-3xl text-blue-600">menu_book</span>
                             </div>
-                            <!-- íícone jur�dico -->
+                            <!-- Ícone jurídico -->
                             <div class="p-3 bg-gray-50 rounded-full">
                                 <span class="material-icons text-3xl text-gray-600">gavel</span>
                             </div>
                         </div>
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">Bem-vindo ao Painel Educacional</h3>
-                        <p class="text-gray-600 text-sm">Selecione um t�pico acima para aprender mais sobre seus direitos trabalhistas.</p>
+                        <p class="text-gray-600 text-sm">Selecione um tópico acima para aprender mais sobre seus direitos trabalhistas.</p>
                     </div>
                 </div>
             </div>
@@ -1967,7 +2116,7 @@
     <div id="customize-modal" class="fixed inset-0 hidden flex items-center justify-center p-4" style="z-index: 9999;">
         <div id="customize-modal-overlay" class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
         <div role="dialog" id="customize-modal-content" class="relative w-full max-w-md bg-white text-gray-900 p-6 shadow-lg rounded-lg">
-            <h2 class="text-xl font-semibold mb-4">Personalizar Calculadoras Vis�veis</h2>
+            <h2 class="text-xl font-semibold mb-4">Personalizar Calculadoras Visíveis</h2>
             <div id="customize-checklist" class="space-y-3 max-h-60 overflow-y-auto pr-2">
                 <!-- Checkboxes will be populated by JS -->
             </div>

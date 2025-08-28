@@ -17,16 +17,24 @@ export function formatCurrency(value) {
 }
 
 /**
- * Parses a currency string (e.g., "R$ 1.234,56") and returns a number.
+ * Parses a currency string (e.g., "R$ 1.234,56" or "1,234.56") and returns a number.
+ * Uses a defensive approach that works with different currency formats by considering
+ * only digits and treating the last two digits as cents. This is more resilient to 
+ * different input formats and prevents errors from corrupted or unexpected data.
  * Returns 0 for empty or invalid strings (for calculations).
  * @param {string} value - The currency string to unmask.
  * @returns {number} - The parsed number (e.g., 1234.56) or 0 for empty fields.
  */
 export function unmaskCurrency(value) {
     if (typeof value !== 'string' || !value || value.trim() === '') return 0;
-    // Remove 'R$', thousands separators '.', and replace decimal ',' with '.'
-    const numericString = value.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-    const number = parseFloat(numericString);
+
+    // 1. Keep only digits - this is resilient to any format (BR, US, etc.)
+    const digitsOnly = value.replace(/\D/g, '');
+    if (digitsOnly === '') return 0;
+
+    // 2. Convert to number, considering the last two digits as cents
+    const number = parseFloat(digitsOnly) / 100;
+
     return isNaN(number) ? 0 : number;
 }
 
@@ -51,12 +59,13 @@ export function debounce(func, wait) {
 }
 
 /**
- * A pure function that takes a string and formats it as BRL currency.
- * This function is easily testable and leaves empty fields blank.
+ * A pure function that takes a string and formats it as BRL currency for input masking.
+ * This function is specifically designed for real-time input masking and leaves empty fields blank.
+ * It's easily testable and provides a smooth user experience for currency input fields.
  * @param {string} value - The raw string value from an input.
  * @returns {string} - The formatted currency string or empty string.
  */
-export function formatAsCurrency(value) {
+export function formatCurrencyFromInput(value) {
     if (typeof value !== 'string' || !value || value.trim() === '') return '';
     
     // Keep only digits
@@ -85,14 +94,16 @@ export function formatAsCurrency(value) {
 
 
 /**
- * Applies a real-time currency mask to an input field by attaching event listeners.
+ * Initializes a real-time currency mask for an input field by attaching event listeners.
+ * This function sets up the necessary event handlers for currency input formatting,
+ * including input, focus, and paste events to provide a smooth user experience.
  * Also improves UX by selecting all text on focus for easy replacement.
  * @param {HTMLInputElement} inputElement - The input element to apply the mask to.
  */
-export function applyCurrencyMask(inputElement) {
+export function initializeCurrencyMask(inputElement) {
     // Apply mask on input
     inputElement.addEventListener('input', (e) => {
-        e.target.value = formatAsCurrency(e.target.value);
+        e.target.value = formatCurrencyFromInput(e.target.value);
     });
     
     // Select all text on focus for easy replacement
@@ -106,7 +117,7 @@ export function applyCurrencyMask(inputElement) {
     // Handle paste events
     inputElement.addEventListener('paste', (e) => {
         setTimeout(() => {
-            e.target.value = formatAsCurrency(e.target.value);
+            e.target.value = formatCurrencyFromInput(e.target.value);
         }, 0);
     });
 }

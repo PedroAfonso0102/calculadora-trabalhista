@@ -1,6 +1,6 @@
 import { describe, it, expect } from './test-runner.js';
 import * as calculations from '../app/calculations.js';
-import { SALARIO_MINIMO_2025 } from '../app/config.js';
+import { SALARIO_MINIMO_2025, BASES_DE_CALCULO } from '../app/config.js';
 
 // This function will be imported and called by the main test runner.
 export async function runUnitTests() {
@@ -55,7 +55,7 @@ export async function runUnitTests() {
                 mediaAdicionalNoturno: 0,
                 periculosidade: false,
                 insalubridadeGrau: '0',
-                insalubridadeBase: 'salario_minimo',
+                insalubridadeBase: BASES_DE_CALCULO.SALARIO_MINIMO,
                 abonoPecuniario: false,
                 adiantarDecimo: false,
             };
@@ -84,26 +84,26 @@ export async function runUnitTests() {
         });
     });
 
-    await describe('Unit Test: formatAsCurrency', () => {
+    await describe('Unit Test: formatCurrencyFromInput', () => {
         it('should format a simple string of digits into currency', () => {
-            const formatted = calculations.formatAsCurrency('123456');
+            const formatted = calculations.formatCurrencyFromInput('123456');
             // Note: toLocaleString can produce slightly different whitespace.
             // Using a regex to make the test more robust.
             expect(/R\$\s*1\.234,56/.test(formatted)).toBe(true);
         });
 
         it('should handle strings with non-digit characters', () => {
-            const formatted = calculations.formatAsCurrency('R$ 500a,25b');
+            const formatted = calculations.formatCurrencyFromInput('R$ 500a,25b');
             expect(/R\$\s*500,25/.test(formatted)).toBe(true);
         });
 
         it('should handle small numbers correctly', () => {
-            const formatted = calculations.formatAsCurrency('12');
+            const formatted = calculations.formatCurrencyFromInput('12');
             expect(/R\$\s*0,12/.test(formatted)).toBe(true);
         });
 
         it('should return an empty string for an empty input', () => {
-            const formatted = calculations.formatAsCurrency('');
+            const formatted = calculations.formatCurrencyFromInput('');
             expect(formatted).toBe('');
         });
     });
@@ -158,14 +158,14 @@ export async function runUnitTests() {
 
     await describe('Unit Test: calcularAdicionaisRisco', () => {
         it('should calculate only periculosidade when it is active', () => {
-            const result = calculations.calcularAdicionaisRisco(2000, true, '0', 'salario_bruto');
+            const result = calculations.calcularAdicionaisRisco(2000, true, '0', BASES_DE_CALCULO.SALARIO_BRUTO);
             expect(result.periculosidade).toBe(600); // 30% of 2000
             expect(result.insalubridade).toBe(0);
             expect(result.total).toBe(600);
         });
 
         it('should calculate only insalubridade when it is active (on minimum wage)', () => {
-            const result = calculations.calcularAdicionaisRisco(2000, false, '40', 'salario_minimo');
+            const result = calculations.calcularAdicionaisRisco(2000, false, '40', BASES_DE_CALCULO.SALARIO_MINIMO);
             const expectedInsalubridade = SALARIO_MINIMO_2025 * 0.40;
             expect(result.periculosidade).toBe(0);
             expect(result.insalubridade).toBe(expectedInsalubridade);
@@ -173,21 +173,21 @@ export async function runUnitTests() {
         });
 
         it('should return the higher value when both are applicable (periculosidade is higher)', () => {
-            const result = calculations.calcularAdicionaisRisco(5000, true, '20', 'salario_minimo');
+            const result = calculations.calcularAdicionaisRisco(5000, true, '20', BASES_DE_CALCULO.SALARIO_MINIMO);
             const expectedPericulosidade = 5000 * 0.30; // 1500
             const expectedInsalubridade = SALARIO_MINIMO_2025 * 0.20; // ~303.6
             expect(result.total).toBe(expectedPericulosidade);
         });
 
         it('should return the higher value when both are applicable (insalubridade is higher)', () => {
-            const result = calculations.calcularAdicionaisRisco(1500, true, '40', 'salario_bruto');
+            const result = calculations.calcularAdicionaisRisco(1500, true, '40', BASES_DE_CALCULO.SALARIO_BRUTO);
             const expectedPericulosidade = 1500 * 0.30; // 450
             const expectedInsalubridade = 1500 * 0.40; // 600
             expect(result.total).toBe(expectedInsalubridade);
         });
 
         it('should return 0 for all values when none are applicable', () => {
-            const result = calculations.calcularAdicionaisRisco(2000, false, '0', 'salario_bruto');
+            const result = calculations.calcularAdicionaisRisco(2000, false, '0', BASES_DE_CALCULO.SALARIO_BRUTO);
             expect(result.periculosidade).toBe(0);
             expect(result.insalubridade).toBe(0);
             expect(result.total).toBe(0);
@@ -200,7 +200,7 @@ export async function runUnitTests() {
             dependentes: 0,
             periculosidade: false,
             insalubridadeGrau: '0',
-            insalubridadeBase: 'salario_minimo',
+            insalubridadeBase: BASES_DE_CALCULO.SALARIO_MINIMO,
             horasNoturnas: 0,
             cargaHorariaMensal: 220,
             filhosSalarioFamilia: 0,

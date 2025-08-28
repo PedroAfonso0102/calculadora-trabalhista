@@ -13,12 +13,14 @@ import {
     INSS_CEILING,
     SALARIO_FAMILIA_LIMIT,
     SALARIO_FAMILIA_VALUE,
-    SALARIO_MINIMO_2025
+    SALARIO_MINIMO_2025,
+    BASES_DE_CALCULO,
+    PARAMETROS_2025
 } from './config.js';
-import { formatCurrency, formatAsCurrency } from './utils.js';
+import { formatCurrency, formatCurrencyFromInput } from './utils.js';
 
-// Re-export formatAsCurrency to make it available from calculations module
-export { formatAsCurrency };
+// Re-export formatCurrencyFromInput to make it available from calculations module
+export { formatCurrencyFromInput };
 
 /**
  * Calculates net salary based on gross salary, dependents, and other discounts.
@@ -80,6 +82,33 @@ function roundToPrecision(value, decimals = 2) {
  */
 function roundMonetary(value) {
     return Math.round(value * 10000) / 10000;
+}
+
+/**
+ * Calculates the base remuneration for calculations (DRY principle).
+ * This centralizes the logic for calculating the total remuneration base
+ * used in multiple calculators (vacation, 13th salary, severance, etc.).
+ * @param {object} state - Calculator state containing salary and additional values
+ * @returns {number} - The calculated base remuneration
+ */
+export function calcularRemuneracaoBase(state) {
+    const { 
+        salarioBruto, 
+        mediaHorasExtras = 0, 
+        mediaAdicionalNoturno = 0, 
+        periculosidade, 
+        insalubridadeGrau, 
+        insalubridadeBase 
+    } = state;
+
+    const adicionalRisco = calcularAdicionaisRisco(
+        salarioBruto, 
+        periculosidade, 
+        insalubridadeGrau, 
+        insalubridadeBase
+    ).total;
+    
+    return salarioBruto + mediaHorasExtras + mediaAdicionalNoturno + adicionalRisco;
 }
 
 /**
@@ -181,11 +210,11 @@ export function calcularProporcional(valorBase, meses) {
  * @returns {{periculosidade: number, insalubridade: number, total: number}}
  */
 export function calcularAdicionaisRisco(salarioBruto, periculosidade, insalubridadeGrau, insalubridadeBase) {
-    const valorPericulosidade = periculosidade ? salarioBruto * 0.30 : 0;
+    const valorPericulosidade = periculosidade ? salarioBruto * PARAMETROS_2025.ADICIONAL_PERICULOSIDADE : 0;
 
     let valorInsalubridade = 0;
     if (insalubridadeGrau > 0) {
-        const baseCalculo = insalubridadeBase === 'salario_minimo' ? SALARIO_MINIMO_2025 : salarioBruto;
+        const baseCalculo = insalubridadeBase === BASES_DE_CALCULO.SALARIO_MINIMO ? SALARIO_MINIMO_2025 : salarioBruto;
         valorInsalubridade = baseCalculo * (parseFloat(insalubridadeGrau) / 100);
     }
 
@@ -236,17 +265,11 @@ export function calculateFerias(feriasState) {
         salarioBruto,
         diasFerias,
         dependentes,
-        mediaHorasExtras,
-        mediaAdicionalNoturno,
-        periculosidade,
-        insalubridadeGrau,
-        insalubridadeBase,
         abonoPecuniario,
         adiantarDecimo
     } = feriasState;
 
-    const adicionalRisco = calcularAdicionaisRisco(salarioBruto, periculosidade, insalubridadeGrau, insalubridadeBase).total;
-    const baseDeCalculo = salarioBruto + mediaHorasExtras + mediaAdicionalNoturno + adicionalRisco;
+    const baseDeCalculo = calcularRemuneracaoBase(feriasState);
     const valorFerias = (baseDeCalculo / 30) * diasFerias;
     const tercoConstitucional = valorFerias / 3;
 
@@ -301,16 +324,10 @@ export function calculateDecimoTerceiro(decimoState) {
         salarioBruto,
         mesesTrabalhados,
         dependentes,
-        adiantamentoRecebido,
-        mediaHorasExtras,
-        mediaAdicionalNoturno,
-        periculosidade,
-        insalubridadeGrau,
-        insalubridadeBase
+        adiantamentoRecebido
     } = decimoState;
 
-    const adicionalRisco = calcularAdicionaisRisco(salarioBruto, periculosidade, insalubridadeGrau, insalubridadeBase).total;
-    const baseDeCalculo = salarioBruto + mediaHorasExtras + mediaAdicionalNoturno + adicionalRisco;
+    const baseDeCalculo = calcularRemuneracaoBase(decimoState);
     const valorBrutoDecimo = calcularProporcional(baseDeCalculo, mesesTrabalhados);
 
     const inssResult = calculateINSS(valorBrutoDecimo);
@@ -839,12 +856,7 @@ export function calculateRescisao(rescisaoState) {
         saldoFgts,
         avisoPrevio,
         feriasVencidas: hasFeriasVencidas,
-        dependentes,
-        mediaHorasExtras,
-        mediaAdicionalNoturno,
-        periculosidade,
-        insalubridadeGrau,
-        insalubridadeBase
+        dependentes
     } = rescisaoState;
 
     if (!dataAdmissao || !dataDemissao || new Date(dataAdmissao) >= new Date(dataDemissao)) {
@@ -853,9 +865,8 @@ export function calculateRescisao(rescisaoState) {
 
     const memoriaDeCalculo = {};
 
-    // 1. Correct Base Calculation (Remuneração)
-    const adicionalRisco = calcularAdicionaisRisco(salarioBruto, periculosidade, insalubridadeGrau, insalubridadeBase).total;
-    const remuneracao = salarioBruto + (mediaHorasExtras || 0) + (mediaAdicionalNoturno || 0) + adicionalRisco;
+    // 1. Calculate Base Remuneration using the new helper function
+    const remuneracao = calcularRemuneracaoBase(rescisaoState);
     memoriaDeCalculo.remuneracao = `Salário Bruto (${formatCurrency(salarioBruto)}) + Médias/Adicionais (${formatCurrency(remuneracao - salarioBruto)})`;
 
     // 2. Calculate Notice Period
@@ -948,3 +959,28 @@ export function calculateRescisao(rescisaoState) {
 
     return { proventos: proventosDetalhados, descontos, totalProventos, totalDescontos, valorLiquido };
 }
+
+/**
+ * Calculator functions mapping for dynamic lookup.
+ * This object maps calculator names to their respective calculation functions,
+ * allowing for a more scalable and maintainable approach in events.js.
+ * 
+ * Benefits:
+ * - Eliminates the need for a large switch statement in events.js
+ * - Follows the Open/Closed Principle - adding new calculators only requires 
+ *   modifying this object, not the event handling code
+ * - Reduces coupling between modules
+ */
+export const calculatorFunctions = {
+    ferias: calculateFerias,
+    rescisao: calculateRescisao,
+    decimoTerceiro: calculateDecimoTerceiro,
+    salarioLiquido: calculateSalarioLiquido,
+    fgts: calculateFGTS,
+    pisPasep: calculatePISPASEP,
+    seguroDesemprego: calculateSeguroDesemprego,
+    horasExtras: calculateHorasExtras,
+    inss: calculateINSSCalculator,
+    valeTransporte: calculateValeTransporte,
+    irpf: calculateIRPF
+};

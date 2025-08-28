@@ -932,6 +932,49 @@ export function hideCalculationMemoryModal() {
 
 // --- RESULT TEMPLATE FUNCTIONS ---
 
+/**
+ * Função template reutilizável para criar cards de resultado
+ * Elimina duplicação de estrutura HTML entre todas as calculadoras
+ * @param {string} title - Título do card
+ * @param {string} description - Descrição do card 
+ * @param {string} contentHTML - Conteúdo específico do card
+ * @returns {string} HTML completo do card
+ */
+function createResultCard(title, description, contentHTML) {
+    return `
+        <div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
+            <div class="flex flex-col space-y-1.5 p-6">
+                <h3 class="text-2xl font-semibold leading-none tracking-tight">${title}</h3>
+                <p class="text-sm text-muted-foreground">${description}</p>
+            </div>
+            <div class="p-6 pt-0">
+                ${contentHTML}
+            </div>
+            <div class="flex items-center p-6 pt-0 flex-col gap-4">
+                <div class="flex gap-2 w-full mt-6">
+                    <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
+                    <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
+                </div>
+            </div>
+        </div>`;
+}
+
+/**
+ * Função auxiliar para criar linhas de resultado padronizadas
+ * Elimina repetição do padrão flex justify-between
+ * @param {string} label - Label da linha
+ * @param {string} value - Valor a ser exibido
+ * @param {string} valueColorClass - Classe CSS para cor do valor (opcional)
+ * @returns {string} HTML da linha de resultado
+ */
+function createResultRow(label, value, valueColorClass = 'text-gray-800') {
+    return `
+        <div class="flex justify-between result-row py-2">
+            <span>${label}:</span>
+            <span class="font-mono ${valueColorClass}">${value}</span>
+        </div>`;
+}
+
 function createFgtsResultHTML(results) {
     if (Object.keys(state.fgts.errors).some(k => state.fgts.errors[k])) {
         return '<p class="text-center text-red-500 font-semibold">Por favor, corrija os campos destacados acima para ver o seu cálculo.</p>';
@@ -941,186 +984,96 @@ function createFgtsResultHTML(results) {
     const { depositoMensal, valorSaque, opcaoSaque } = results;
     const saqueLabel = opcaoSaque === 'rescisao' ? 'Saque-Rescisão' : 'Saque-Aniversário';
 
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado da Simulação FGTS</h3>
-            <p class="text-sm text-muted-foreground">Resumo das suas simulações de FGTS.</p>
-        </div>
-        <div class="p-6 pt-0">
-            <div class="space-y-4">
-                <div>
-                    <h4 class="text-lg font-semibold text-primary">Depósito Mensal</h4>
-                    <div class="flex justify-between result-row py-2">
-                        <span>Valor Estimado do Depósito:</span>
-                        <span class="font-mono text-green-600">${formatCurrency(depositoMensal)}</span>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold text-primary mt-4">Simulação de Saque</h4>
-                    <div class="flex justify-between result-row py-2">
-                        <span>Valor Estimado do ${saqueLabel}:</span>
-                        <span class="font-mono text-green-600">${formatCurrency(valorSaque)}</span>
-                    </div>
-                </div>
+    const content = `
+        <div class="space-y-4">
+            <div>
+                <h4 class="text-lg font-semibold text-primary">Depósito Mensal</h4>
+                ${createResultRow('Valor Estimado do Depósito', formatCurrency(depositoMensal), 'text-green-600')}
             </div>
-            <div class="flex gap-2 w-full mt-6">
-                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
-                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
+            <div>
+                <h4 class="text-lg font-semibold text-primary mt-4">Simulação de Saque</h4>
+                ${createResultRow(`Valor Estimado do ${saqueLabel}`, formatCurrency(valorSaque), 'text-green-600')}
             </div>
-        </div>
-    </div>`;
+        </div>`;
+
+    return createResultCard('Resultado da Simulação FGTS', 'Resumo das suas simulações de FGTS.', content);
 }
 
 function createPisPasepResultHTML(results) {
     if (!results) return '';
     const { valorAbono, elegivel, mensagem } = results;
-
     let messageColorClass = elegivel ? 'text-gray-600' : 'text-red-500';
 
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Abono Salarial (PIS/PASEP)</h3>
-        </div>
-        <div class="p-6 pt-0">
-            <div class="space-y-2">
-                <div class="flex justify-between result-row py-2">
-                    <span>Valor Estimado do Abono:</span>
-                    <span class="font-mono text-green-600">${formatCurrency(valorAbono)}</span>
-                </div>
-                <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
-            </div>
-            <div class="flex gap-2 w-full mt-6">
-                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
-                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
-            </div>
-        </div>
-    </div>`;
+    const content = `
+        <div class="space-y-2">
+            ${createResultRow('Valor Estimado do Abono', formatCurrency(valorAbono), 'text-green-600')}
+            <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
+        </div>`;
+
+    return createResultCard('Resultado do Abono Salarial (PIS/PASEP)', '', content);
 }
 
 function createSeguroDesempregoResultHTML(results) {
     if (!results) return '';
     const { numeroParcelas, valorPorParcela, elegivel, mensagem } = results;
-
     let messageColorClass = elegivel ? 'text-gray-600' : 'text-red-500';
 
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Seguro-Desemprego</h3>
-        </div>
-        <div class="p-6 pt-0">
-            <div class="space-y-2">
-                <div class="flex justify-between result-row py-2">
-                    <span>Número de Parcelas:</span>
-                    <span class="font-mono text-blue-600">${numeroParcelas}</span>
-                </div>
-                <div class="flex justify-between result-row py-2">
-                    <span>Valor por Parcela:</span>
-                    <span class="font-mono text-green-600">${formatCurrency(valorPorParcela)}</span>
-                </div>
-                <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
-            </div>
-            <div class="flex gap-2 w-full mt-6">
-                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
-                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
-            </div>
-        </div>
-    </div>`;
+    const content = `
+        <div class="space-y-2">
+            ${createResultRow('Número de Parcelas', numeroParcelas, 'text-blue-600')}
+            ${createResultRow('Valor por Parcela', formatCurrency(valorPorParcela), 'text-green-600')}
+            <p class="text-sm ${messageColorClass} pt-2">${mensagem}</p>
+        </div>`;
+
+    return createResultCard('Resultado do Seguro-Desemprego', '', content);
 }
 
 function createINSSResultHTML(results) {
     if (!results) return '';
     const { contribuicaoINSS, mensagem } = results;
 
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado da Contribuição INSS</h3>
-        </div>
-        <div class="p-6 pt-0">
-            <div class="space-y-2">
-                <div class="flex justify-between result-row py-2">
-                    <span>Valor da Contribuição:</span>
-                    <span class="font-mono text-red-600">${formatCurrency(contribuicaoINSS)}</span>
-                </div>
-                <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
-            </div>
-            <div class="flex gap-2 w-full mt-6">
-                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
-                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
-            </div>
-        </div>
-    </div>`;
+    const content = `
+        <div class="space-y-2">
+            ${createResultRow('Valor da Contribuição', formatCurrency(contribuicaoINSS), 'text-red-600')}
+            <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+        </div>`;
+
+    return createResultCard('Resultado da Contribuição INSS', '', content);
 }
 
 function createHorasExtrasResultHTML(results) {
     if (!results) return '';
     const { totalValorHE50, totalValorHE100, totalValorAdicionalNoturno, totalGeralAdicionais, mensagem } = results;
 
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Cálculo de Horas Extras</h3>
-        </div>
-        <div class="p-6 pt-0">
-            <div class="space-y-2">
-                <div class="flex justify-between result-row py-2">
-                    <span>Total de Horas Extras 50%:</span>
-                    <span class="font-mono text-green-600">${formatCurrency(totalValorHE50)}</span>
-                </div>
-                <div class="flex justify-between result-row py-2">
-                    <span>Total de Horas Extras 100%:</span>
-                    <span class="font-mono text-green-600">${formatCurrency(totalValorHE100)}</span>
-                </div>
-                <div class="flex justify-between result-row py-2">
-                    <span>Total de Adicional Noturno:</span>
-                    <span class="font-mono text-green-600">${formatCurrency(totalValorAdicionalNoturno)}</span>
-                </div>
-                <div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2">
-                    <span>Total Geral de Adicionais:</span>
-                    <span class="font-mono text-blue-600">${formatCurrency(totalGeralAdicionais)}</span>
-                </div>
-                <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+    const content = `
+        <div class="space-y-2">
+            ${createResultRow('Total de Horas Extras 50%', formatCurrency(totalValorHE50), 'text-green-600')}
+            ${createResultRow('Total de Horas Extras 100%', formatCurrency(totalValorHE100), 'text-green-600')}
+            ${createResultRow('Total de Adicional Noturno', formatCurrency(totalValorAdicionalNoturno), 'text-green-600')}
+            <div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2">
+                <span>Total Geral de Adicionais:</span>
+                <span class="font-mono text-blue-600">${formatCurrency(totalGeralAdicionais)}</span>
             </div>
-            <div class="flex gap-2 w-full mt-6">
-                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
-                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
-            </div>
-        </div>
-    </div>`;
+            <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+        </div>`;
+
+    return createResultCard('Resultado do Cálculo de Horas Extras', '', content);
 }
 
 function createValeTransporteResultHTML(results) {
     if (!results) return '';
     const { custoMensalTotal, descontoMaximoSalario, descontoRealEmpregado, valorBeneficioEmpregador, mensagem } = results;
 
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado do Cálculo de Vale-Transporte</h3>
-        </div>
-        <div class="p-6 pt-0">
-            <div class="space-y-2">
-                <div class="flex justify-between result-row py-2">
-                    <span>Custo Mensal Total do Transporte:</span>
-                    <span class="font-mono">${formatCurrency(custoMensalTotal)}</span>
-                </div>
-                <div class="flex justify-between result-row py-2">
-                    <span>Desconto Máximo (6% do Salário):</span>
-                    <span class="font-mono">${formatCurrency(descontoMaximoSalario)}</span>
-                </div>
-                <div class="flex justify-between result-row py-2">
-                    <span>Desconto Real do Empregado:</span>
-                    <span class="font-mono text-red-600">${formatCurrency(descontoRealEmpregado)}</span>
-                </div>
-                <div class="flex justify-between result-row py-2">
-                    <span>Valor Fornecido pelo Empregador:</span>
-                    <span class="font-mono text-green-600">${formatCurrency(valorBeneficioEmpregador)}</span>
-                </div>
-                <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
-            </div>
-            <div class="flex gap-2 w-full mt-6">
-                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
-                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
-            </div>
-        </div>
-    </div>`;
+    const content = `
+        <div class="space-y-2">
+            ${createResultRow('Custo Mensal Total do Transporte', formatCurrency(custoMensalTotal))}
+            ${createResultRow('Desconto Máximo (6% do Salário)', formatCurrency(descontoMaximoSalario))}
+            ${createResultRow('Desconto Real do Empregado', formatCurrency(descontoRealEmpregado), 'text-red-600')}
+            ${createResultRow('Valor Fornecido pelo Empregador', formatCurrency(valorBeneficioEmpregador), 'text-green-600')}
+            <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+        </div>`;
+
+    return createResultCard('Resultado do Cálculo de Vale-Transporte', '', content);
 }
 
 function createIRPFResultHTML(results) {
@@ -1130,28 +1083,17 @@ function createIRPFResultHTML(results) {
     const ajusteLabel = tipoAjuste === 'pagar' ? 'Imposto a Pagar' : 'Imposto a Restituir';
     const ajusteColorClass = tipoAjuste === 'pagar' ? 'text-red-600' : 'text-green-600';
 
-    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm mt-6 animate-fade-in">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">Resultado da Simulação de IRPF Anual</h3>
-        </div>
-        <div class="p-6 pt-0">
-            <div class="space-y-2">
-                <div class="flex justify-between result-row py-2">
-                    <span>Total de Imposto Devido no Ano:</span>
-                    <span class="font-mono">${formatCurrency(impostoDevido)}</span>
-                </div>
-                <div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2">
-                    <span>${ajusteLabel}:</span>
-                    <span class="font-mono ${ajusteColorClass}">${formatCurrency(Math.abs(ajusteFinal))}</span>
-                </div>
-                <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+    const content = `
+        <div class="space-y-2">
+            ${createResultRow('Total de Imposto Devido no Ano', formatCurrency(impostoDevido))}
+            <div class="flex justify-between font-semibold border-t pt-2 mt-2 result-row py-2">
+                <span>${ajusteLabel}:</span>
+                <span class="font-mono ${ajusteColorClass}">${formatCurrency(Math.abs(ajusteFinal))}</span>
             </div>
-            <div class="flex gap-2 w-full mt-6">
-                <button class="js-show-memory-modal inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 flex-1">Ver Memória de Cálculo</button>
-                <button class="js-print-result inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300 h-10 px-4 py-2 flex-1">Imprimir</button>
-            </div>
-        </div>
-    </div>`;
+            <p class="text-sm text-gray-600 pt-2">${mensagem}</p>
+        </div>`;
+
+    return createResultCard('Resultado da Simulação de IRPF Anual', '', content);
 }
 
 function createFeriasResultHTML(results) {
@@ -1426,6 +1368,41 @@ function createRescisaoResultHTML(results) {
 // --- CENTRALIZED REPORT GENERATION ---
 
 /**
+ * Mapeamento de tipos de calculadora para suas funções de geração de conteúdo
+ * Centraliza a lógica de relatórios e elimina switch statement
+ */
+const reportContentMappings = {
+    ferias: generateFeriasReportContent,
+    decimoTerceiro: generateDecimoTerceiroReportContent,
+    salarioLiquido: generateSalarioLiquidoReportContent,
+    rescisao: generateRescisaoReportContent,
+    fgts: generateFgtsReportContent,
+    pisPasep: generatePisPasepReportContent,
+    seguroDesemprego: generateSeguroDesempregoReportContent,
+    horasExtras: generateHorasExtrasReportContent,
+    inss: generateInssReportContent,
+    valeTransporte: generateValeTransporteReportContent,
+    irpf: generateIrpfReportContent
+};
+
+/**
+ * Mapeamento de títulos para cada tipo de calculadora
+ */
+const calculatorTitles = {
+    ferias: 'Cálculo de Férias',
+    decimoTerceiro: 'Cálculo do 13º Salário',
+    salarioLiquido: 'Cálculo do Salário Líquido',
+    rescisao: 'Cálculo de Rescisão',
+    fgts: 'Cálculo de FGTS',
+    pisPasep: 'Cálculo de PIS/PASEP',
+    seguroDesemprego: 'Cálculo de Seguro-Desemprego',
+    horasExtras: 'Cálculo de Horas Extras',
+    inss: 'Cálculo de INSS',
+    valeTransporte: 'Cálculo de Vale-Transporte',
+    irpf: 'Cálculo de IRPF'
+};
+
+/**
  * Centralized function to generate report HTML for any calculation type.
  * This function serves as the single source of truth for PDF/print report generation.
  * @param {Object} data - The calculation data object
@@ -1443,67 +1420,22 @@ export function generateReportHTML(data) {
     const { type, results, state: inputState } = data;
     const currentDate = new Date().toLocaleString('pt-BR');
 
-    // Generate the main content based on calculation type
-    let contentHTML = '';
-    let calculatorTitle = '';
+    // Get content generator and title using mappings
+    const contentGenerator = reportContentMappings[type];
+    const calculatorTitle = calculatorTitles[type];
 
-    switch (type) {
-        case 'ferias':
-            calculatorTitle = 'Cálculo de Férias';
-            contentHTML = generateFeriasReportContent(results, inputState);
-            break;
-        case 'decimoTerceiro':
-            calculatorTitle = 'Cálculo do 13º Salário';
-            contentHTML = generateDecimoTerceiroReportContent(results, inputState);
-            break;
-        case 'salarioLiquido':
-            calculatorTitle = 'Cálculo do Salário Líquido';
-            contentHTML = generateSalarioLiquidoReportContent(results, inputState);
-            break;
-        case 'rescisao':
-            calculatorTitle = 'Cálculo de Rescisão';
-            contentHTML = generateRescisaoReportContent(results, inputState);
-            break;
-        case 'fgts':
-            calculatorTitle = 'Cálculo de FGTS';
-            contentHTML = generateFgtsReportContent(results, inputState);
-            break;
-        case 'pisPasep':
-            calculatorTitle = 'Cálculo de PIS/PASEP';
-            contentHTML = generatePisPasepReportContent(results, inputState);
-            break;
-        case 'seguroDesemprego':
-            calculatorTitle = 'Cálculo de Seguro-Desemprego';
-            contentHTML = generateSeguroDesempregoReportContent(results, inputState);
-            break;
-        case 'horasExtras':
-            calculatorTitle = 'Cálculo de Horas Extras';
-            contentHTML = generateHorasExtrasReportContent(results, inputState);
-            break;
-        case 'inss':
-            calculatorTitle = 'Cálculo de INSS';
-            contentHTML = generateInssReportContent(results, inputState);
-            break;
-        case 'valeTransporte':
-            calculatorTitle = 'Cálculo de Vale-Transporte';
-            contentHTML = generateValeTransporteReportContent(results, inputState);
-            break;
-        case 'irpf':
-            calculatorTitle = 'Cálculo de IRPF';
-            contentHTML = generateIrpfReportContent(results, inputState);
-            break;
-        default:
-            return '<p>Erro: Tipo de cálculo não reconhecido.</p>';
+    if (!contentGenerator || !calculatorTitle) {
+        return '<p>Erro: Tipo de cálculo não reconhecido.</p>';
     }
+
+    // Generate the main content
+    const contentHTML = contentGenerator(results, inputState);
 
     // Return the complete HTML structure with print header
     return `
         <div class="print-header">
             <div class="print-company-info">
-                <div class="flex items-center justify-center gap-2 mb-1">
-                    <span class="material-icons text-gray-700" style="font-size: 1.2rem;">gavel</span>
-                    <h1>Calculadora Trabalhista</h1>
-                </div>
+                <h1>Calculadora Trabalhista</h1>
                 <p>Pedro Afonso MEI - Estúdio Criativo Labareda</p>
                 <p>Relatório gerado em: <span id="print-date">${currentDate}</span></p>
             </div>
@@ -1851,7 +1783,7 @@ export function hideCustomizeModal() {
  * Substitui a navegação por abas pela sidebar moderna
  * Suporta dois modos: expandido (com texto) e colapsado (círculos)
  */
-function renderSidebar() {
+export function renderSidebar() {
     const navList = document.getElementById('sidebar-nav-list');
     const dotsList = document.getElementById('sidebar-dots-list');
     const sidebar = document.getElementById('main-sidebar');
@@ -1903,14 +1835,12 @@ function renderSidebar() {
     };
     
     dotsList.innerHTML = visibleCalculators.map(calc => `
-        <div class="sidebar-dot ${activeTab === calc ? 'active' : ''}" 
-             data-calculator="${calc}"
-             title="${calculatorNames[calc]}"
-             role="button"
-             tabindex="0"
-             aria-label="Abrir ${calculatorNames[calc]}">
+        <button class="sidebar-dot ${activeTab === calc ? 'active' : ''}" 
+                data-calculator="${calc}"
+                title="${calculatorNames[calc]}"
+                aria-label="Abrir ${calculatorNames[calc]}">
             <span class="material-icons text-xs">${iconMap[calc] || 'calculate'}</span>
-        </div>
+        </button>
     `).join('');
 
     // Também precisa renderizar os panels
@@ -2022,67 +1952,77 @@ function renderFormInputs(calculatorName) {
     });
 }
 
+// --- RENDER MAPPINGS ---
+
+/**
+ * Mapeamento de calculadoras para suas funções de cálculo e renderização
+ * Substitui o switch statement grande por uma abordagem modular
+ */
+const calculatorMappings = {
+    ferias: {
+        calculate: calculations.calculateFerias,
+        render: createFeriasResultHTML
+    },
+    decimoTerceiro: {
+        calculate: calculations.calculateDecimoTerceiro,
+        render: createDecimoTerceiroResultHTML
+    },
+    salarioLiquido: {
+        calculate: calculations.calculateSalarioLiquido,
+        render: createSalarioLiquidoResultHTML
+    },
+    rescisao: {
+        calculate: calculations.calculateRescisao,
+        render: createRescisaoResultHTML
+    },
+    fgts: {
+        calculate: calculations.calculateFGTS,
+        render: createFgtsResultHTML
+    },
+    pisPasep: {
+        calculate: (pisPasepState) => calculations.calculatePISPASEP(pisPasepState, state.legalTexts),
+        render: createPisPasepResultHTML
+    },
+    seguroDesemprego: {
+        calculate: (seguroDesempregoState) => calculations.calculateSeguroDesemprego(seguroDesempregoState, state.legalTexts),
+        render: createSeguroDesempregoResultHTML
+    },
+    horasExtras: {
+        calculate: (horasExtrasState) => calculations.calculateHorasExtras(horasExtrasState, state.legalTexts),
+        render: createHorasExtrasResultHTML
+    },
+    inss: {
+        calculate: (inssState) => calculations.calculateINSSCalculator(inssState, state.legalTexts),
+        render: createINSSResultHTML
+    },
+    valeTransporte: {
+        calculate: (valeTransporteState) => calculations.calculateValeTransporte(valeTransporteState, state.legalTexts),
+        render: createValeTransporteResultHTML
+    },
+    irpf: {
+        calculate: (irpfState) => calculations.calculateIRPF(irpfState, state.legalTexts),
+        render: createIRPFResultHTML
+    }
+};
+
 export function render() {
     const activeCalculator = state.activeTab;
-    let results;
-    let html;
-
+    
     // 1. Update form inputs to reflect the current state
     if (state[activeCalculator]) {
-      renderFormInputs(activeCalculator);
+        renderFormInputs(activeCalculator);
     }
 
-    // 2. Run calculation based on active tab and generate HTML
-    switch (activeCalculator) {
-        case 'ferias':
-            results = calculations.calculateFerias(state.ferias);
-            html = createFeriasResultHTML(results);
-            break;
-        case 'decimoTerceiro':
-            results = calculations.calculateDecimoTerceiro(state.decimoTerceiro);
-            html = createDecimoTerceiroResultHTML(results);
-            break;
-        case 'salarioLiquido':
-            results = calculations.calculateSalarioLiquido(state.salarioLiquido);
-            html = createSalarioLiquidoResultHTML(results);
-            break;
-        case 'rescisao':
-            results = calculations.calculateRescisao(state.rescisao);
-            html = createRescisaoResultHTML(results);
-            break;
-        case 'fgts':
-            results = calculations.calculateFGTS(state.fgts);
-            html = createFgtsResultHTML(results);
-            break;
-        case 'pisPasep':
-            results = calculations.calculatePISPASEP(state.pisPasep, state.legalTexts);
-            html = createPisPasepResultHTML(results);
-            break;
-        case 'seguroDesemprego':
-            results = calculations.calculateSeguroDesemprego(state.seguroDesemprego, state.legalTexts);
-            html = createSeguroDesempregoResultHTML(results);
-            break;
-        case 'horasExtras':
-            results = calculations.calculateHorasExtras(state.horasExtras, state.legalTexts);
-            html = createHorasExtrasResultHTML(results);
-            break;
-        case 'inss':
-            results = calculations.calculateINSSCalculator(state.inss, state.legalTexts);
-            html = createINSSResultHTML(results);
-            break;
-        case 'valeTransporte':
-            results = calculations.calculateValeTransporte(state.valeTransporte, state.legalTexts);
-            html = createValeTransporteResultHTML(results);
-            break;
-        case 'irpf':
-            results = calculations.calculateIRPF(state.irpf, state.legalTexts);
-            html = createIRPFResultHTML(results);
-            break;
-    }
-
-    // 3. Update the result container
-    if (resultContainers[activeCalculator]) {
-        resultContainers[activeCalculator].innerHTML = html;
+    // 2. Run calculation and render using mapping
+    const mapping = calculatorMappings[activeCalculator];
+    if (mapping && state[activeCalculator]) {
+        const results = mapping.calculate(state[activeCalculator]);
+        const html = mapping.render(results);
+        
+        // 3. Update the result container
+        if (resultContainers[activeCalculator]) {
+            resultContainers[activeCalculator].innerHTML = html;
+        }
     }
 
     // 4. Update sidebar navigation (FASE 3)
@@ -2093,12 +2033,12 @@ export function render() {
 
     // 6. Update field states (e.g., disabled)
     if (state[activeCalculator]) {
-      renderFieldStates(activeCalculator);
+        renderFieldStates(activeCalculator);
     }
 
     // 7. Display validation errors
     if (state[activeCalculator]) {
-      renderValidationErrors(activeCalculator);
+        renderValidationErrors(activeCalculator);
     }
 }
 

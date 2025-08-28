@@ -40,7 +40,7 @@
     "description": "O Abono Salarial é um benefício anual, no valor máximo de um salário mínimo, destinado a trabalhadores que satisfazem critérios específicos definidos em lei. A hermenêutica do direito exige o cumprimento de todos os requisitos de forma cumulativa.",
     "fundamentacao_legal": "<p>Regido pela Lei nº 7.998/90, o direito ao abono salarial exige que o trabalhador atenda a <strong>cinco requisitos</strong>:</p><p>1. Estar cadastrado no PIS/PASEP há pelo menos <strong>cinco anos</strong>.</p><p>2. Ter recebido remuneração média de até <strong>dois salários mínimos</strong> durante o ano-base.</p><p>3. Ter exercido atividade remunerada para Pessoa Jurídica, durante pelo menos <strong>30 dias</strong>, consecutivos ou não, no ano-base considerado para apuração.</p><p>4. Ter seus dados informados corretamente pelo empregador na Relação Anual de Informações Sociais (RAIS) ou no eSocial.</p><p class='mt-2'>O valor do abono é <strong>proporcional</strong> ao número de meses trabalhados no ano-base, onde cada mês equivale a 1/12 do salário mínimo vigente na data do pagamento.</p>",
     "constants": {
-      "SALARIO_MINIMO_VIGENTE": 1412.00,
+      "SALARIO_MINIMO_VIGENTE": 1518.00,
       "MAX_MULTIPLIER_SALARIO": 2,
       "MIN_ANOS_INSCRICAO": 5
     },
@@ -64,7 +64,7 @@
     "description": "Benefício que provê assistência financeira temporária ao trabalhador dispensado involuntariamente (sem justa causa).",
     "fundamentacao_legal": "<p>Regulamentado pela Lei nº 7.998/90 e resoluções do CODEFAT, o Seguro-Desemprego é um pilar da seguridade social. Para ter direito, o trabalhador deve ter sido dispensado sem justa causa, não possuir renda própria para seu sustento e não estar recebendo benefício previdenciário de prestação continuada (exceto pensão por morte ou auxílio-acidente).</p><p class='mt-2'>A quantidade de parcelas e o tempo de trabalho exigido (carência) variam conforme o número de vezes que o benefício foi solicitado:</p><p><strong>1ª Solicitação:</strong> Ter trabalhado por pelo menos 12 meses nos últimos 18 meses.</p><p><strong>2ª Solicitação:</strong> Ter trabalhado por pelo menos 9 meses nos últimos 12 meses.</p><p><strong>3ª Solicitação em diante:</strong> Ter trabalhado nos 6 meses imediatamente anteriores.</p><p class='mt-2'>O valor do benefício é calculado com base na média dos salários dos últimos 3 meses anteriores à dispensa, conforme faixas de valores estipuladas pelo governo.</p>",
     "constants": {
-      "SALARIO_MINIMO_VIGENTE": 1412.00,
+      "SALARIO_MINIMO_VIGENTE": 1518.00,
       "TETO_SEGURO_DESEMPREGO": 2309.13
     },
     "tables": {
@@ -105,10 +105,10 @@
     },
     "tables": {
       "aliquotas_progressivas": [
-        { "faixa": { "min": 0, "max": 1412 }, "aliquota": 0.075, "parcela_deduzir": 0 },
-        { "faixa": { "min": 1412.01, "max": 2666.68 }, "aliquota": 0.09, "parcela_deduzir": 21.18 },
-        { "faixa": { "min": 2666.69, "max": 4000.03 }, "aliquota": 0.12, "parcela_deduzir": 84.66 },
-        { "faixa": { "min": 4000.04, "max": 7786.02 }, "aliquota": 0.14, "parcela_deduzir": 164.6 }
+        { "faixa": { "min": 0, "max": 1518.00 }, "aliquota": 0.075, "parcela_deduzir": 0 },
+        { "faixa": { "min": 1518.01, "max": 2793.88 }, "aliquota": 0.09, "parcela_deduzir": 22.77 },
+        { "faixa": { "min": 2793.89, "max": 4190.83 }, "aliquota": 0.12, "parcela_deduzir": 106.54 },
+        { "faixa": { "min": 4190.84, "max": 8157.41 }, "aliquota": 0.14, "parcela_deduzir": 190.16 }
       ]
     }
   },

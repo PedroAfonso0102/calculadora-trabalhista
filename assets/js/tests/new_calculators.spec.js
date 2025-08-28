@@ -29,7 +29,7 @@ export async function runNewCalculatorTests() {
         it('should calculate the abono correctly for 12 months worked', () => {
             const state = { salarioMedio: 1500, mesesTrabalhados: 12, dataInscricao: '2010-01-01' };
             const result = calculations.calculatePISPASEP(state, legalTexts);
-            expect(result.valorAbono).toBe(1412); // Full salario minimo
+            expect(result.valorAbono).toBe(1518); // Full salario minimo 2025
             expect(result.elegivel).toBe(true);
         });
 

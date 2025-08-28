@@ -6,9 +6,247 @@
  */
 
 import { state, updateState, initialState } from './state.js';
-import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal } from './ui.js';
-import * as calculations from './calculations.js';
-import { debounce, unmaskCurrency, formatCurrency, applyCurrencyMask } from './utils.js';
+import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal, renderSidebar } from './ui.js';
+import { calculatorFunctions, calculateNetSalary } from './calculations.js';
+import { debounce, unmaskCurrency, formatCurrency, initializeCurrencyMask } from './utils.js';
+import { 
+    saveState, 
+    getSavePreference, 
+    setSavePreference, 
+    clearFormData, 
+    setVisibleCalculators, 
+    setSidebarState, 
+    getSidebarState 
+} from './storage.js';
+
+/**
+ * Validation rules schema for scalable field validation.
+ * Each field can have multiple validation rules that return true for valid values
+ * or an error message string for invalid values.
+ */
+const validationRules = {
+    salarioBruto: [(v) => v > 0 || 'Salário deve ser maior que zero.'],
+    diasFerias: [(v) => (v >= 1 && v <= 30) || 'Deve estar entre 1 e 30 dias.'],
+    dataAdmissao: [
+        (v) => v || 'Data é obrigatória.',
+        (v) => !isNaN(new Date(v).getTime()) || 'Data inválida.'
+    ],
+    dataDemissao: [
+        (v) => v || 'Data é obrigatória.',
+        (v) => !isNaN(new Date(v).getTime()) || 'Data inválida.'
+    ],
+    dependentes: [(v) => v >= 0 || 'Número de dependentes não pode ser negativo.'],
+    mesesTrabalhados: [(v) => (v >= 1 && v <= 12) || 'Deve estar entre 1 e 12 meses.'],
+    custodiario: [(v) => v > 0 || 'Custo deve ser maior que zero.'],
+    custoDiario: [(v) => v > 0 || 'Custo deve ser maior que zero.'],
+    diasTrabalho: [(v) => (v >= 1 && v <= 31) || 'Dias de trabalho deve estar entre 1 e 31.'],
+    // Adicionar regras para campos que estavam sem validação
+    mediaHorasExtras: [(v) => v >= 0 || 'Média de horas extras não pode ser negativa.'],
+    mediaAdicionalNoturno: [(v) => v >= 0 || 'Adicional noturno não pode ser negativo.'],
+    insalubridadeBase: [(v) => v >= 0 || 'Base de insalubridade não pode ser negativa.'],
+    valorHoraExtra: [(v) => v > 0 || 'Valor da hora extra deve ser maior que zero.'],
+    horasExtrasRealizadas: [(v) => v >= 0 || 'Horas extras não podem ser negativas.'],
+    filhosSalarioFamilia: [(v) => v >= 0 || 'Número de filhos não pode ser negativo.'],
+    rendimentosTributaveis: [(v) => v >= 0 || 'Rendimentos não podem ser negativos.'],
+    deducoesDependentes: [(v) => v >= 0 || 'Deduções não podem ser negativas.']
+};
+
+/**
+ * Sidebar Manager - Encapsulates all sidebar state and logic.
+ * This mini-module manages sidebar visibility, states, and interactions,
+ * making the main event handlers cleaner and the sidebar logic easier to maintain.
+ */
+const SidebarManager = {
+    // Element references
+    get sidebar() { return document.getElementById('main-sidebar'); },
+    get mainLayout() { return document.querySelector('.main-layout'); },
+    get toggleBtn() { return document.getElementById('mobile-menu-btn'); },
+    get overlay() { return document.getElementById('sidebar-overlay'); },
+    get indicator() { return document.getElementById('active-calculator-indicator'); },
+    
+    // State queries
+    get isMobile() { return window.innerWidth < 1024; },
+    get isCurrentlyHidden() { return this.sidebar?.classList.contains('hidden'); },
+    get isCurrentlyCollapsed() { return this.sidebar?.classList.contains('collapsed'); },
+    get isCurrentlyOpen() { return this.sidebar?.classList.contains('open'); },
+    
+    /**
+     * Initializes sidebar state from localStorage
+     */
+    initialize() {
+        if (!this.sidebar || !this.overlay) {
+            console.warn('SidebarManager: Required elements not found for initialization');
+            return;
+        }
+        
+        const savedState = getSidebarState();
+        const defaultState = this.isMobile ? 'hidden' : 'collapsed';
+        let currentState = savedState || defaultState;
+        
+        // Validate state for device type
+        if (!this.isMobile && currentState === 'hidden') {
+            currentState = 'expanded';
+        } else if (this.isMobile && currentState === 'collapsed') {
+            currentState = 'hidden';
+        }
+        
+        this._applyState(currentState);
+    },
+    
+    /**
+     * Toggles the sidebar between appropriate states based on device type
+     */
+    toggle() {
+        if (!this.sidebar || !this.mainLayout) {
+            console.warn('SidebarManager: Required elements not found');
+            return;
+        }
+        
+        // Check current state BEFORE clearing classes
+        const currentlyHidden = this.isCurrentlyHidden;
+        const currentlyCollapsed = this.isCurrentlyCollapsed;
+        
+        this._clearStateClasses();
+        
+        if (this.isMobile) {
+            // Mobile: toggle between hidden/expanded
+            const newState = currentlyHidden ? 'expanded' : 'hidden';
+            this._applyState(newState);
+        } else {
+            // Desktop: toggle between expanded/collapsed
+            const newState = currentlyCollapsed ? 'expanded' : 'collapsed';
+            this._applyState(newState);
+        }
+        
+        this._reRenderSidebar();
+    },
+    
+    /**
+     * Updates the active calculator indicator when sidebar is hidden
+     */
+    updateIndicator() {
+        if (!this.indicator || !this.sidebar) return;
+        
+        const isHidden = this.sidebar.classList.contains('hidden');
+        
+        if (isHidden) {
+            const iconMap = {
+                ferias: 'beach_access',
+                rescisao: 'work_off',
+                decimoTerceiro: 'card_giftcard',
+                salarioLiquido: 'payments',
+                fgts: 'account_balance',
+                pisPasep: 'verified_user',
+                seguroDesemprego: 'security',
+                horasExtras: 'schedule',
+                inss: 'local_hospital',
+                valeTransporte: 'commute',
+                irpf: 'receipt_long'
+            };
+            
+            const iconElement = document.getElementById('active-calculator-icon');
+            if (iconElement) {
+                const icon = iconMap[state.activeTab] || 'calculate';
+                iconElement.textContent = icon;
+            }
+            this.indicator.classList.remove('hidden');
+        } else {
+            this.indicator.classList.add('hidden');
+        }
+    },
+    
+    /**
+     * Internal method to clear all state classes
+     */
+    _clearStateClasses() {
+        if (!this.sidebar || !this.mainLayout) return;
+        
+        this.sidebar.classList.remove('hidden', 'collapsed', 'expanded', 'open');
+        this.mainLayout.classList.remove('sidebar-hidden', 'sidebar-collapsed', 'sidebar-expanded');
+    },
+    
+    /**
+     * Internal method to apply a specific state
+     */
+    _applyState(state) {
+        switch (state) {
+            case 'expanded':
+                this.sidebar.classList.add('expanded', 'open');
+                this.mainLayout.classList.add('sidebar-expanded');
+                if (this.isMobile) {
+                    this.overlay.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    this.overlay.classList.add('hidden');
+                }
+                this._updateToggleIcon('expanded');
+                break;
+            case 'collapsed':
+                if (!this.isMobile) {
+                    this.sidebar.classList.add('open', 'collapsed');
+                    this.mainLayout.classList.add('sidebar-collapsed');
+                    this.overlay.classList.add('hidden');
+                    this._updateToggleIcon('collapsed');
+                }
+                break;
+            case 'hidden':
+            default:
+                this.sidebar.classList.remove('open', 'collapsed');
+                this.mainLayout.classList.add('sidebar-hidden');
+                this.overlay.classList.add('hidden');
+                document.body.style.overflow = '';
+                this._updateToggleIcon('hidden');
+                if (!this.isMobile) {
+                    this.updateIndicator();
+                }
+                break;
+        }
+        setSidebarState(state);
+    },
+    
+    /**
+     * Internal method to update toggle button icon
+     */
+    _updateToggleIcon(state) {
+        if (!this.toggleBtn) return;
+        
+        const iconElement = this.toggleBtn.querySelector('.material-icons');
+        if (!iconElement) return;
+        
+        if (this.isMobile) {
+            switch (state) {
+                case 'expanded':
+                    iconElement.textContent = 'menu_open';
+                    this.toggleBtn.setAttribute('title', 'Fechar calculadoras');
+                    break;
+                case 'hidden':
+                default:
+                    iconElement.textContent = 'menu';
+                    this.toggleBtn.setAttribute('title', 'Abrir calculadoras');
+                    break;
+            }
+        } else {
+            switch (state) {
+                case 'expanded':
+                    iconElement.textContent = 'menu_open';
+                    this.toggleBtn.setAttribute('title', 'Recolher calculadoras');
+                    break;
+                case 'collapsed':
+                default:
+                    iconElement.textContent = 'apps';
+                    this.toggleBtn.setAttribute('title', 'Expandir calculadoras');
+                    break;
+            }
+        }
+    },
+    
+    /**
+     * Internal method to re-render sidebar content
+     */
+    _reRenderSidebar() {
+        renderSidebar();
+    }
+};
 
 /**
  * Updates the visual state of a segmented control based on the selected radio button.
@@ -56,64 +294,29 @@ function handleClearForm(calculatorName) {
 }
 
 /**
- * Handles input changes on form fields.
- * It updates the state with the new value and triggers a re-render.
- * @param {Event} event - The input event object.
+ * Validates a field using the scalable validation rules schema.
+ * @param {string} path - The field path (e.g., 'ferias.salarioBruto')
+ * @param {any} value - The value to validate
+ * @returns {object} - Validation result with isValid boolean and message string
  */
 function validateField(path, value) {
-    const [calculator, field] = path.split('.');
-    let errorMessage = null;
-
-    // Validações específicas por tipo de campo
-    switch (field) {
-        case 'salarioBruto':
-            if (!value || value <= 0) {
-                errorMessage = 'Salário deve ser maior que zero.';
-            }
-            break;
-        case 'diasFerias':
-            if (!value || value < 1 || value > 30) {
-                errorMessage = 'Deve estar entre 1 e 30 dias.';
-            }
-            break;
-        case 'dataAdmissao':
-        case 'dataDemissao':
-            if (!value) {
-                errorMessage = 'Data é obrigatória.';
-            } else {
-                const date = new Date(value);
-                if (isNaN(date.getTime())) {
-                    errorMessage = 'Data inválida.';
-                }
-            }
-            break;
-        case 'dependentes':
-            if (value < 0) {
-                errorMessage = 'Número de dependentes não pode ser negativo.';
-            }
-            break;
-        case 'mesesTrabalhados':
-            if (value < 1 || value > 12) {
-                errorMessage = 'Deve estar entre 1 e 12 meses.';
-            }
-            break;
-        case 'custodiario':
-        case 'custoDiario':
-            if (value <= 0) {
-                errorMessage = 'Custo deve ser maior que zero.';
-            }
-            break;
-        case 'diasTrabalho':
-            if (value < 1 || value > 31) {
-                errorMessage = 'Dias de trabalho deve estar entre 1 e 31.';
-            }
-            break;
+    const [, field] = path.split('.');
+    const rules = validationRules[field] || [];
+    
+    // Skip validation for empty optional fields (except required fields)
+    const requiredFields = ['salarioBruto', 'dataAdmissao', 'dataDemissao'];
+    if (!requiredFields.includes(field) && (value === '' || value === null || value === undefined)) {
+        return { isValid: true };
     }
-
-    return {
-        isValid: !errorMessage,
-        message: errorMessage
-    };
+    
+    for (const rule of rules) {
+        const result = rule(value);
+        if (typeof result === 'string') { // Validation failed
+            return { isValid: false, message: result };
+        }
+    }
+    
+    return { isValid: true };
 }
 
 /**
@@ -257,7 +460,7 @@ function handleInputChange(event) {
 
     render();
 
-    if (localStorage.getItem('savePreference') === 'true') {
+    if (getSavePreference()) {
         saveStateToLocalStorage();
     }
 }
@@ -285,7 +488,7 @@ function handleSidebarClick(event) {
         if (window.innerWidth < 1024) {
             const sidebar = document.getElementById('main-sidebar');
             if (sidebar && sidebar.classList.contains('open')) {
-                toggleSidebar();
+                SidebarManager.toggle();
             }
         }
     }
@@ -315,220 +518,24 @@ function toggleMobileSidebar(isOpen) {
 }
 
 /**
- * Updates the active calculator indicator when sidebar is hidden
+ * Updates the active calculator indicator when sidebar is hidden (delegates to SidebarManager)
  */
 function updateActiveIndicator() {
-    const indicator = document.getElementById('active-calculator-indicator');
-    const iconElement = document.getElementById('active-calculator-icon');
-    const sidebar = document.getElementById('main-sidebar');
-    
-    if (!indicator || !iconElement || !sidebar) return;
-    
-    const isHidden = sidebar.classList.contains('hidden');
-    
-    if (isHidden) {
-        // Show indicator with appropriate icon
-        const iconMap = {
-            ferias: 'beach_access',
-            rescisao: 'work_off',
-            decimoTerceiro: 'card_giftcard',
-            salarioLiquido: 'payments',
-            fgts: 'account_balance',
-            pisPasep: 'verified_user',
-            seguroDesemprego: 'security',
-            horasExtras: 'schedule',
-            inss: 'local_hospital',
-            valeTransporte: 'commute',
-            irpf: 'receipt_long'
-        };
-        
-        const activeCalculator = state.activeTab;
-        const icon = iconMap[activeCalculator] || 'calculate';
-        iconElement.textContent = icon;
-        indicator.classList.remove('hidden');
-    } else {
-        // Hide indicator
-        indicator.classList.add('hidden');
-    }
+    SidebarManager.updateIndicator();
 }
 
 /**
- * Toggles the sidebar visibility and state (Brave-like functionality)
- * Two states on desktop: expanded, collapsed
- * Two states on mobile: hidden, expanded
+ * Toggles the sidebar visibility and state (delegates to SidebarManager)
  */
 function toggleSidebar() {
-    const sidebar = document.getElementById('main-sidebar');
-    const mainLayout = document.querySelector('.main-layout');
-    const toggleBtn = document.getElementById('mobile-menu-btn');
-    const indicator = document.getElementById('active-calculator-indicator');
-    
-    if (!sidebar || !mainLayout) return;
-    
-    const isCurrentlyHidden = sidebar.classList.contains('hidden');
-    const isCurrentlyCollapsed = sidebar.classList.contains('collapsed');
-    const isMobile = window.innerWidth < 1024;
-    
-    // Remove all state classes first
-    sidebar.classList.remove('hidden', 'collapsed', 'expanded');
-    mainLayout.classList.remove('sidebar-hidden', 'sidebar-collapsed', 'sidebar-expanded');
-    
-    if (isMobile) {
-        // Mobile behavior: toggle between hidden/expanded
-        if (isCurrentlyHidden) {
-            // Show sidebar (expanded)
-            sidebar.classList.add('expanded');
-            mainLayout.classList.add('sidebar-expanded');
-            localStorage.setItem('sidebar-state', 'expanded');
-            updateSidebarToggleIcon(toggleBtn, 'expanded');
-            if (indicator) indicator.classList.add('hidden');
-        } else {
-            // Hide sidebar
-            sidebar.classList.add('hidden');
-            mainLayout.classList.add('sidebar-hidden');
-            localStorage.setItem('sidebar-state', 'hidden');
-            updateSidebarToggleIcon(toggleBtn, 'hidden');
-            updateActiveIndicator();
-        }
-    } else {
-        // Desktop behavior: toggle between expanded and collapsed only
-        if (!isCurrentlyCollapsed) {
-            // Currently expanded, go to collapsed
-            sidebar.classList.add('collapsed');
-            mainLayout.classList.add('sidebar-collapsed');
-            localStorage.setItem('sidebar-state', 'collapsed');
-            updateSidebarToggleIcon(toggleBtn, 'collapsed');
-            if (indicator) indicator.classList.add('hidden');
-        } else {
-            // Currently collapsed, go to expanded
-            sidebar.classList.add('expanded');
-            mainLayout.classList.add('sidebar-expanded');
-            localStorage.setItem('sidebar-state', 'expanded');
-            updateSidebarToggleIcon(toggleBtn, 'expanded');
-            if (indicator) indicator.classList.add('hidden');
-        }
-    }
-    
-    // Re-render sidebar content for the new state
-    import('./ui.js').then(module => {
-        if (module.renderSidebar) {
-            module.renderSidebar();
-        }
-    });
+    SidebarManager.toggle();
 }
 
 /**
- * Updates the sidebar toggle button icon based on current state
- * @param {HTMLElement} button - The toggle button element
- * @param {string} state - Current state: 'hidden', 'expanded', 'collapsed'
- */
-function updateSidebarToggleIcon(button, state) {
-    if (!button) return;
-    
-    const iconElement = button.querySelector('.material-icons');
-    if (!iconElement) return;
-    
-    const isMobile = window.innerWidth < 1024;
-    
-    if (isMobile) {
-        // Mobile: toggle between menu (hidden) and menu_open (expanded)
-        switch (state) {
-            case 'expanded':
-                iconElement.textContent = 'menu_open';
-                button.setAttribute('title', 'Fechar calculadoras');
-                button.setAttribute('aria-label', 'Fechar painel de calculadoras');
-                break;
-            case 'hidden':
-            default:
-                iconElement.textContent = 'menu';
-                button.setAttribute('title', 'Abrir calculadoras');
-                button.setAttribute('aria-label', 'Abrir painel de calculadoras');
-                break;
-        }
-    } else {
-        // Desktop: toggle between menu_open (expanded) and apps (collapsed)
-        switch (state) {
-            case 'expanded':
-                iconElement.textContent = 'menu_open';
-                button.setAttribute('title', 'Recolher calculadoras');
-                button.setAttribute('aria-label', 'Recolher painel de calculadoras');
-                break;
-            case 'collapsed':
-            default:
-                iconElement.textContent = 'apps';
-                button.setAttribute('title', 'Expandir calculadoras');
-                button.setAttribute('aria-label', 'Expandir painel de calculadoras');
-                break;
-        }
-    }
-}
-
-/**
- * Initializes sidebar state from localStorage (Brave-like behavior)
- * Desktop: expanded or collapsed states only
- * Mobile: hidden or expanded states only
+ * Initializes sidebar state from localStorage (delegates to SidebarManager)
  */
 function initializeSidebarState() {
-    const sidebar = document.getElementById('main-sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    const toggleBtn = document.getElementById('mobile-menu-btn');
-    
-    if (!sidebar || !overlay) return;
-    
-    // Get saved state from localStorage
-    const savedState = localStorage.getItem('sidebar-state');
-    const isMobile = window.innerWidth < 1024;
-    
-    // Set default states based on device type
-    const defaultState = isMobile ? 'hidden' : 'expanded';
-    let currentState = savedState || defaultState;
-    
-    // Validate state for device type
-    if (!isMobile && currentState === 'hidden') {
-        // Desktop shouldn't have hidden state, default to expanded
-        currentState = 'expanded';
-    } else if (isMobile && currentState === 'collapsed') {
-        // Mobile shouldn't have collapsed state, default to hidden
-        currentState = 'hidden';
-    }
-    
-    // Apply the appropriate state
-    switch (currentState) {
-        case 'expanded':
-            sidebar.classList.add('open');
-            sidebar.classList.remove('collapsed');
-            if (isMobile) {
-                overlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            } else {
-                overlay.classList.add('hidden');
-            }
-            updateSidebarToggleIcon(toggleBtn, 'expanded');
-            break;
-        case 'collapsed':
-            if (!isMobile) { // Only allow collapsed state on desktop
-                sidebar.classList.add('open', 'collapsed');
-                overlay.classList.add('hidden');
-                updateSidebarToggleIcon(toggleBtn, 'collapsed');
-            } else {
-                // On mobile, default to hidden instead of collapsed
-                sidebar.classList.remove('open', 'collapsed');
-                overlay.classList.add('hidden');
-                updateSidebarToggleIcon(toggleBtn, 'hidden');
-            }
-            break;
-        case 'hidden':
-        default:
-            sidebar.classList.remove('open', 'collapsed');
-            overlay.classList.add('hidden');
-            document.body.style.overflow = '';
-            updateSidebarToggleIcon(toggleBtn, 'hidden');
-            if (!isMobile) {
-                // On desktop, if hidden state was somehow set, show active indicator
-                updateActiveIndicator();
-            }
-            break;
-    }
+    SidebarManager.initialize();
 }
 
 /**
@@ -549,41 +556,40 @@ function handleTabClick(event) {
 }
 
 /**
- * Retrieves calculation results for a given calculator.
- * This centralized function prevents code duplication in event handlers.
+ * Retrieves calculation results for a given calculator using dynamic function mapping.
+ * This approach eliminates the large switch statement and follows the Open/Closed Principle.
  * @param {string} calculatorName - The name of the calculator (e.g., 'ferias').
  * @param {object} calculatorState - The state object for that calculator.
  * @param {object} legalTexts - The legal texts object from the main state.
  * @returns {object|null} The results object from the calculation function, or null if not found.
  */
 function getCalculationResults(calculatorName, calculatorState, legalTexts) {
-    switch (calculatorName) {
-        case 'ferias':
-            return calculations.calculateFerias(calculatorState);
-        case 'decimoTerceiro':
-            return calculations.calculateDecimoTerceiro(calculatorState);
-        case 'salarioLiquido':
-            return calculations.calculateSalarioLiquido(calculatorState);
-        case 'rescisao':
-            return calculations.calculateRescisao(calculatorState);
-        case 'fgts':
-            return calculations.calculateFGTS(calculatorState);
-        case 'pisPasep':
-            return calculations.calculatePISPASEP(calculatorState, legalTexts);
-        case 'seguroDesemprego':
-            return calculations.calculateSeguroDesemprego(calculatorState, legalTexts);
-        case 'horasExtras':
-            return calculations.calculateHorasExtras(calculatorState, legalTexts);
-        case 'inss':
-            return calculations.calculateINSSCalculator(calculatorState, legalTexts);
-        case 'valeTransporte':
-            return calculations.calculateValeTransporte(calculatorState, legalTexts);
-        case 'irpf':
-            return calculations.calculateIRPF(calculatorState, legalTexts);
-        default:
-            console.error('Unknown calculator type:', calculatorName);
-            return null;
+    const calculationFunction = calculatorFunctions[calculatorName];
+    
+    if (calculationFunction) {
+        // Some calculators need legalTexts, others don't
+        const needsLegalTexts = ['pisPasep', 'seguroDesemprego', 'horasExtras', 'inss', 'valeTransporte', 'irpf'];
+        
+        if (needsLegalTexts.includes(calculatorName)) {
+            return calculationFunction(calculatorState, legalTexts);
+        } else {
+            return calculationFunction(calculatorState);
+        }
     }
+    
+    console.error('Unknown calculator type:', calculatorName);
+    return null;
+}
+
+/**
+ * Helper function to get results from the currently active calculator.
+ * This eliminates code duplication across event handlers (DRY principle).
+ * @returns {object|null} The calculation results or null if not available.
+ */
+function getActiveCalculatorResults() {
+    const calculatorName = state.activeTab;
+    const calculatorState = state[calculatorName];
+    return getCalculationResults(calculatorName, calculatorState, state.legalTexts);
 }
 
 
@@ -645,15 +651,12 @@ export function initializeEventListeners() {
 
         // Modal logic
         if (target.classList.contains('js-show-memory-modal')) {
-            const calculatorName = state.activeTab;
-            const calculatorState = state[calculatorName];
-            const results = getCalculationResults(calculatorName, calculatorState, state.legalTexts);
-
+            const results = getActiveCalculatorResults();
             if (results) {
                 const modalData = {
-                    type: calculatorName,
+                    type: state.activeTab,
                     results: results,
-                    state: calculatorState
+                    state: state[state.activeTab]
                 };
                 updateAndShowModal(modalData);
             }
@@ -661,15 +664,12 @@ export function initializeEventListeners() {
 
         // Print logic
         if (target.classList.contains('js-print-result')) {
-            const calculatorName = state.activeTab;
-            const calculatorState = state[calculatorName];
-            const results = getCalculationResults(calculatorName, calculatorState, state.legalTexts);
-
+            const results = getActiveCalculatorResults();
             if (results) {
                 const reportData = {
-                    type: calculatorName,
+                    type: state.activeTab,
                     results: results,
-                    state: calculatorState
+                    state: state[state.activeTab]
                 };
                 const reportHTML = generateReportHTML(reportData);
                 createAndPrintReport(reportHTML);
@@ -711,15 +711,12 @@ export function initializeEventListeners() {
                 hideCalculationMemoryModal();
             }
             if (event.target.id === 'calculation-memory-modal-print-btn') {
-                const calculatorName = state.activeTab;
-                const calculatorState = state[calculatorName];
-                const results = getCalculationResults(calculatorName, calculatorState, state.legalTexts);
-
+                const results = getActiveCalculatorResults();
                 if (results) {
                     const reportData = {
-                        type: calculatorName,
+                        type: state.activeTab,
                         results: results,
-                        state: calculatorState
+                        state: state[state.activeTab]
                     };
                     const reportHTML = generateReportHTML(reportData);
                     createAndPrintReport(reportHTML);
@@ -787,7 +784,7 @@ function initializeCustomizeModalEvents() {
             updateState('visibleCalculators', selectedCalculators);
 
             // Save to localStorage
-            localStorage.setItem('visibleCalculators', JSON.stringify(selectedCalculators));
+            setVisibleCalculators(selectedCalculators);
 
             // If the currently active tab is now hidden, switch to the first visible one
             if (!selectedCalculators.includes(state.activeTab)) {
@@ -909,7 +906,7 @@ function handleSalarySimulation(event) {
                           (state.salarioLiquido.descontoAdiantamentos || 0);
 
     // Use the new calculateNetSalary function
-    const results = calculations.calculateNetSalary(newGrossSalary, dependents, otherDiscounts);
+    const results = calculateNetSalary(newGrossSalary, dependents, otherDiscounts);
 
     // Update the UI using the new updateSalaryResult function
     updateSalaryResult(results);
@@ -934,7 +931,7 @@ function saveStateToLocalStorage() {
         irpf: state.irpf,
         // We don't save activeTab or legalTexts
     };
-    localStorage.setItem('appState', JSON.stringify(stateToSave));
+    saveState(stateToSave);
 }
 
 /**
@@ -943,11 +940,11 @@ function saveStateToLocalStorage() {
  */
 function handleSaveDataToggle(event) {
     const isChecked = event.target.checked;
-    localStorage.setItem('savePreference', isChecked);
+    setSavePreference(isChecked);
     if (isChecked) {
         saveStateToLocalStorage();
     } else {
-        localStorage.removeItem('appState');
+        clearFormData();
     }
 }
 
@@ -1028,10 +1025,10 @@ function initializeSidebarEvents() {
         });
     }
     
-    // Botão de toggle da sidebar (ícone de abas/pastas)
+    // Botão de toggle da sidebar (usa SidebarManager)
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', () => toggleSidebar());
+        mobileMenuBtn.addEventListener('click', () => SidebarManager.toggle());
     }
     
     // Overlay da sidebar mobile
@@ -1039,9 +1036,8 @@ function initializeSidebarEvents() {
     if (sidebarOverlay) {
         sidebarOverlay.addEventListener('click', () => {
             // Close sidebar when clicking overlay
-            const sidebar = document.getElementById('main-sidebar');
-            if (sidebar && sidebar.classList.contains('open')) {
-                toggleSidebar();
+            if (SidebarManager.isCurrentlyOpen) {
+                SidebarManager.toggle();
             }
         });
     }
@@ -1054,11 +1050,8 @@ function initializeSidebarEvents() {
     
     // Fechar sidebar com ESC em mobile
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            const sidebar = document.getElementById('main-sidebar');
-            if (sidebar && sidebar.classList.contains('open')) {
-                toggleSidebar();
-            }
+        if (e.key === 'Escape' && SidebarManager.isCurrentlyOpen) {
+            SidebarManager.toggle();
         }
     });
     
@@ -1083,8 +1076,7 @@ function initializeSidebarEvents() {
 function handleClearData() {
     if (confirm('Tem certeza que deseja limpar todos os dados salvos? Esta ação não pode ser desfeita.')) {
         // Limpar apenas dados de formulários, manter preferências
-        const keysToRemove = ['appState'];
-        keysToRemove.forEach(key => localStorage.removeItem(key));
+        clearFormData();
         
         // Resetar estado para inicial
         Object.keys(state).forEach(key => {
@@ -1134,7 +1126,7 @@ function showNotification(message, type = 'info') {
 function initializeCurrencyMasks() {
     const moneyInputs = document.querySelectorAll('.money-mask');
     moneyInputs.forEach(input => {
-        applyCurrencyMask(input);
+        initializeCurrencyMask(input);
     });
 }
 
