@@ -199,11 +199,11 @@
             --chart-error-dark: #dc2626;
             --chart-error-border: #fecaca;
 
-            /* Cores Print-friendly */
-            --print-text: oklch(0.1 0 0);
-            --print-secondary: oklch(0.45 0 0);
-            --print-success: oklch(0.4 0.3 145);
-            --print-error: oklch(0.4 0.3 27.325);
+            /* Cores Print-friendly - Simple Design Principles */
+            --print-text: #000000;           /* Black for main text */
+            --print-secondary: #333333;      /* Dark gray for secondary text */
+            --print-success: #008000;        /* Green for success/positive values */
+            --print-error: #ff0000;          /* Red for errors/negative values */
 
             /* Variáveis do Componente Details - Usando sistema centralizado */
             --details-border-color: var(--gray-200);
@@ -367,6 +367,40 @@
             button {
                 min-height: 44px;
                 padding: 0.75rem 1.5rem;
+                background-color: var(--gray-50);
+                color: var(--gray-700);
+                border-radius: var(--radius-md);
+                transition: all 0.2s ease-in-out;
+            }
+
+            button:hover {
+                background-color: var(--gray-100);
+                color: var(--gray-800);
+                transform: translateY(-1px);
+            }
+
+            button:active {
+                background-color: var(--gray-200);
+                transform: translateY(0);
+            }
+
+            /* Primary button styling - overrides general button styles */
+            button.bg-primary,
+            button[class*="bg-primary"] {
+                background-color: hsl(var(--primary)) !important;
+                color: hsl(var(--primary-foreground)) !important;
+            }
+
+            button.bg-primary:hover,
+            button[class*="bg-primary"]:hover {
+                background-color: hsl(var(--primary) / 0.9) !important;
+                transform: translateY(-1px);
+            }
+
+            button.bg-primary:active,
+            button[class*="bg-primary"]:active {
+                background-color: hsl(var(--primary) / 0.8) !important;
+                transform: translateY(0);
             }
 
             input[type="checkbox"] {
