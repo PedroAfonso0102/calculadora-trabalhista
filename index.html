@@ -1497,6 +1497,10 @@
             margin-top: 0.5rem;
         }
     </style>
+    <style>
+        .dark .sun-icon { display: none; }
+        .dark .moon-icon { display: block !important; }
+    </style>
 </head>
 <body class="antialiased">
 
@@ -1563,6 +1567,15 @@
             <!-- Header com botão hambúrguer mobile -->
             <header class="bg-background border-b block lg:block">
                 <div class="flex items-center px-4 py-3 lg:px-6 lg:py-4">
+                    <!-- Mobile Menu Button (visible only on mobile) -->
+                    <div class="lg:hidden">
+                        <button id="mobile-menu-btn"
+                                class="flex items-center justify-center w-10 h-10 -ml-2 rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                aria-label="Abrir menu"
+                                title="Abrir menu">
+                            <span class="material-icons">menu</span>
+                        </button>
+                    </div>
                     
                     <!-- Center - Logo mobile (visível apenas em mobile) -->
                     <div class="flex-1 lg:hidden flex justify-center">
@@ -1589,6 +1602,15 @@
                                 title="Informe-se - Conteúdo Educacional">
                             <span class="material-icons text-gray-600">menu_book</span>
                         </button>
+
+                        <!-- Theme Toggle Button -->
+                        <button id="theme-toggle-btn"
+                                class="flex items-center justify-center w-10 h-10 rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                aria-label="Alternar tema claro/escuro"
+                                title="Alternar tema">
+                            <span class="material-icons sun-icon">light_mode</span>
+                            <span class="material-icons moon-icon hidden">dark_mode</span>
+                        </button>
                     </div>
                 </div>
             </header>
@@ -1600,23 +1622,6 @@
                         Calcule Seus Direitos
                     </h2>
 
-                    <!-- Mobile Navigation Dropdown (visible only on mobile) -->
-                    <div class="block lg:hidden mb-6">
-                        <div id="mobile-nav-dropdown" class="relative">
-                            <button id="mobile-nav-trigger" type="button" aria-haspopup="true" aria-expanded="false" 
-                                    class="flex items-center justify-between w-full px-4 py-3 text-left bg-background border border-border rounded-md shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200">
-                                <span id="mobile-nav-current-selection" class="font-medium">Cálculo de Férias</span>
-                                <svg class="w-5 h-5 text-muted-foreground transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <div id="mobile-nav-panel" class="absolute z-50 hidden mt-1 w-full bg-popover border border-border rounded-md shadow-lg opacity-0 transform scale-95 transition-all duration-200 ease-out">
-                                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="mobile-nav-trigger">
-                                    <!-- Options will be populated by JavaScript -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Calculator UI -->
                     <div id="calculator-container" data-value="ferias">

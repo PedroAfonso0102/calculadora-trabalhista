@@ -1268,7 +1268,13 @@ function initializeSidebarEvents() {
         });
     }
     
-    // Mobile menu button removed
+    // Mobile menu button
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => {
+            SidebarManager.toggle();
+        });
+    }
     
     // Overlay da sidebar mobile
     const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -1315,56 +1321,6 @@ function initializeSidebarEvents() {
     // Usa debounce para otimizar performance durante redimensionamento contínuo
     window.addEventListener('resize', debounce(handleResize, 200));
     
-    // === MOBILE DROPDOWN EVENT LISTENERS ===
-    
-    // Mobile navigation dropdown toggle
-    const mobileNavTrigger = document.getElementById('mobile-nav-trigger');
-    if (mobileNavTrigger) {
-        mobileNavTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleMobileDropdown();
-        });
-    }
-    
-    // Mobile navigation option selection
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('.mobile-nav-option')) {
-            const option = e.target.closest('.mobile-nav-option');
-            const calculatorId = option.getAttribute('data-calculator');
-            
-            if (calculatorId && calculatorId !== state.activeTab) {
-                // Atualizar estado
-                updateState('activeTab', calculatorId);
-                
-                // Renderizar nova calculadora
-                render();
-                
-                // Fechar dropdown
-                hideMobileDropdown();
-            }
-        }
-    });
-    
-    // Fechar dropdown quando clicar fora
-    document.addEventListener('click', (e) => {
-        const dropdown = document.getElementById('mobile-nav-dropdown');
-        const panel = document.getElementById('mobile-nav-panel');
-        
-        if (dropdown && panel && !dropdown.contains(e.target) && !panel.classList.contains('hidden')) {
-            hideMobileDropdown();
-        }
-    });
-    
-    // Fechar dropdown com ESC
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            const panel = document.getElementById('mobile-nav-panel');
-            if (panel && !panel.classList.contains('hidden')) {
-                hideMobileDropdown();
-            }
-        }
-    });
 }
 
 /**

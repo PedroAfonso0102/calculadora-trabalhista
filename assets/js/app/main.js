@@ -3,6 +3,7 @@
  * This file is responsible for initializing the application modules.
  */
 
+import themeManager from './themeManager.js';
 import { initializeEventListeners, initializeSidebarState } from './events.js';
 import { render, openFaqModal } from './ui.js';
 import { updateState } from './state.js';
@@ -110,6 +111,7 @@ function displayErrorMessage(error) {
  */
 async function initializeApp() {
     try {
+        themeManager.init();
         loadSavedState();
         await loadConfiguration();
         
