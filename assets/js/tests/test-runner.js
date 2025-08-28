@@ -128,7 +128,7 @@ export function summarize() {
     }
 
     // Send results to our test server
-    fetch('http://localhost:4567/test-results', {
+    fetch('http://localhost:4568/test-results', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
