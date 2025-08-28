@@ -10,7 +10,7 @@
 
     body {
         font-family: 'Inter', sans-serif;
-        color: #1a1a1a;
+        color: var(--print-text);
         background-color: #fff !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
@@ -23,7 +23,7 @@
         display: block !important;
         margin-bottom: 0.5rem; /* Minimal spacing */
         text-align: center;
-        border-bottom: 1px solid #1a1a1a;
+        border-bottom: 1px solid var(--print-text);
         padding-bottom: 0.25rem; /* Minimal padding */
     }
 
@@ -31,12 +31,12 @@
         font-size: 1rem; /* Even smaller title */
         font-weight: 700;
         margin-bottom: 0.125rem;
-        color: #1a1a1a !important;
+        color: var(--print-text) !important;
     }
 
     .print-company-info p {
         font-size: 0.7rem; /* Even smaller subtitle */
-        color: #6b7280 !important;
+        color: var(--print-secondary) !important;
         margin-bottom: 0.05rem;
     }
 
@@ -104,11 +104,11 @@
     #calculation-memory-modal-title {
         font-size: 1.5rem !important;
         margin-bottom: 1rem !important;
-        color: #1a1a1a !important;
+        color: var(--print-text) !important;
     }
 
     #calculation-memory-modal-body {
-        color: #1a1a1a !important;
+        color: var(--print-text) !important;
         max-height: none !important;
         overflow: visible !important;
     }
@@ -194,13 +194,13 @@
         font-size: 1.1rem !important; /* Reduced from 1.5rem */
         font-weight: 600;
         margin-bottom: 0.125rem;
-        color: #1a1a1a !important;
+        color: var(--print-text) !important;
     }
 
     /* Subtitle - smaller */
     p.text-sm {
         font-size: 0.75rem !important; /* Reduced from 0.875rem */
-        color: #6b7280 !important;
+        color: var(--print-secondary) !important;
         margin-bottom: 0.75rem; /* Reduced spacing */
     }
 
@@ -242,38 +242,38 @@
 
     /* Ensure colors are printed */
     .text-green-600 {
-        color: #16a34a !important;
+        color: var(--print-success) !important;
     }
 
     .text-red-600 {
-        color: #dc2626 !important;
+        color: var(--print-error) !important;
     }
 
     .text-gray-900 {
-        color: #1a1a1a !important;
+        color: var(--print-text) !important;
     }
 
     .text-gray-500 {
-        color: #6b7280 !important;
+        color: var(--print-secondary) !important;
     }
 
     /* Ensure link-like text is just black */
     .text-primary {
-        color: #1a1a1a !important;
+        color: var(--print-text) !important;
     }
 
     /* Force all text to be black for better printing */
     * {
-        color: #1a1a1a !important;
+        color: var(--print-text) !important;
     }
 
     /* Override specific colors that should remain */
     .text-green-600 * {
-        color: #16a34a !important;
+        color: var(--print-success) !important;
     }
 
     .text-red-600 * {
-        color: #dc2626 !important;
+        color: var(--print-error) !important;
     }
 
     /* Ensure all content within result containers is fully visible - compact */

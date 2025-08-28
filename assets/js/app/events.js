@@ -299,7 +299,10 @@ function handleInsalubridadePericulosidadeInterlock(calculatorName, changedField
     }
 }
 
-
+/**
+ * Limpa todos os campos do formulário de uma calculadora específica
+ * @param {string} calculatorName - Nome da calculadora a ser limpa
+ */
 function handleClearForm(calculatorName) {
     // Deep copy the initial state for the specific calculator to avoid reference issues
     const initialCalculatorState = JSON.parse(JSON.stringify(initialState[calculatorName]));
@@ -362,6 +365,8 @@ function validateFieldWithFeedback(element, path) {
 
 /**
  * Obtém o valor do campo baseado no seu tipo
+ * @param {HTMLElement} element - Elemento do formulário
+ * @returns {string|number|boolean} Valor do campo conforme seu tipo
  */
 function getFieldValue(element) {
     switch (element.type) {
@@ -383,6 +388,7 @@ function getFieldValue(element) {
 
 /**
  * Remove validação anterior do campo
+ * @param {HTMLElement} element - Elemento do formulário a ser limpo
  */
 function clearFieldValidation(element) {
     element.classList.remove('input-success', 'input-error', 'border-green-500', 'bg-green-50', 'border-red-500', 'bg-red-50');
@@ -396,6 +402,8 @@ function clearFieldValidation(element) {
 
 /**
  * Mostra erro de validação no campo
+ * @param {HTMLElement} element - Elemento do formulário
+ * @param {string} message - Mensagem de erro a ser exibida
  */
 function showFieldError(element, message) {
     element.classList.add('input-error', 'border-red-500', 'bg-red-50');
@@ -431,6 +439,7 @@ function showFieldError(element, message) {
 
 /**
  * Mostra sucesso de validação no campo
+ * @param {HTMLElement} element - Elemento do formulário validado com sucesso
  */
 function showFieldSuccess(element) {
     element.classList.add('input-success', 'border-green-500', 'bg-green-50');

@@ -4,7 +4,7 @@
  */
 
 import { initializeEventListeners, initializeSidebarState } from './events.js';
-import { render } from './ui.js';
+import { render, openFaqModal } from './ui.js';
 import { updateState } from './state.js';
 import { getSavedState, getSavePreference, clearFormData, setSavePreference } from './storage.js';
 import { loadKnowledgeBase } from './knowledge.js';
@@ -122,14 +122,11 @@ async function initializeApp() {
         initializeSidebarState();
         render();
         
-        // Verificar se é a primeira visita e abrir painel educacional
-        const jaVisitou = localStorage.getItem('jaVisitou');
-        if (!jaVisitou) {
-            // Importar a função do events.js
-            const { toggleEducationalPanel } = await import('./events.js');
-            toggleEducationalPanel(true);
-            localStorage.setItem('jaVisitou', 'true');
-        }
+        // Abrir automaticamente o modal Base de Conhecimento quando a aplicação carregar
+        setTimeout(() => {
+            openFaqModal();
+        }, 100); // Pequeno delay para garantir que o DOM esteja totalmente pronto
+        
     } catch (error) {
         console.error("Failed to initialize the application:", error);
         displayErrorMessage(error);

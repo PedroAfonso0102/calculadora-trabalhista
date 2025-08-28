@@ -50,11 +50,38 @@
                 DEFAULT: "hsl(var(--card))",
                 foreground: "hsl(var(--card-foreground))",
               },
+              success: {
+                DEFAULT: "hsl(var(--success))",
+                foreground: "hsl(var(--success-foreground))",
+              },
+              warning: {
+                DEFAULT: "hsl(var(--warning))",
+                foreground: "hsl(var(--warning-foreground))",
+              },
+              info: {
+                DEFAULT: "hsl(var(--info))",
+                foreground: "hsl(var(--info-foreground))",
+              },
+              error: {
+                DEFAULT: "hsl(var(--error))",
+                foreground: "hsl(var(--error-foreground))",
+              },
             },
             borderRadius: {
-              lg: "var(--radius)",
-              md: "calc(var(--radius) - 2px)",
-              sm: "calc(var(--radius) - 4px)",
+              'xs': "var(--radius-xs)",
+              'sm': "var(--radius-sm)",
+              'md': "var(--radius-md)",
+              'lg': "var(--radius-lg)",
+              'xl': "var(--radius-xl)",
+              '2xl': "var(--radius-2xl)",
+            },
+            spacing: {
+              'xs': "var(--spacing-xs)",
+              'sm': "var(--spacing-sm)",
+              'md': "var(--spacing-md)",
+              'lg': "var(--spacing-lg)",
+              'xl': "var(--spacing-xl)",
+              '2xl': "var(--spacing-2xl)",
             },
             keyframes: {
               "accordion-down": {
@@ -99,25 +126,98 @@
             --accent: oklch(0.97 0 0);
             --accent-foreground: oklch(0.205 0 0);
             --destructive: oklch(0.577 0.245 27.325);
+            --destructive-foreground: oklch(0.985 0 0);
             --border: oklch(0.922 0 0);
             --input: oklch(0.922 0 0);
             --ring: oklch(0.708 0 0);
             --radius: 0.5rem;
             --shadow-interactive-hover: 0 4px 12px 0 hsl(var(--foreground) / 0.08), 0 2px 4px 0 hsl(var(--foreground) / 0.05);
 
-            /* Variáveis do Componente Details */
-            --details-border-color: #e5e7eb;      /* gray-200 */
-            --details-bg-color: #ffffff;          /* white */
-            --details-bg-hover-color: #f9fafb;    /* gray-50 */
-            --details-text-color: #111827;        /* gray-900 */
-            --details-icon-color: #6b7280;        /* gray-500 */
-            --details-content-bg-color: #f9fafb;  /* gray-50 */
-            --details-content-text-color: #374151;/* gray-700 */
-            --details-accent-color: #3b82f6;      /* blue-500 */
-            --details-focus-ring-color: #2563eb;  /* blue-600 */
+            /* Variáveis de Estado */
+            --warning: oklch(0.75 0.15 85);
+            --warning-foreground: oklch(0.145 0 0);
+            --info: oklch(0.6 0.2 230);
+            --info-foreground: oklch(0.985 0 0);
+            --error: oklch(0.577 0.245 27.325);
+            --error-foreground: oklch(0.985 0 0);
+            
+            /* Sistema de Border Radius Padronizado */
+            --radius-xs: 0.125rem;
+            --radius-sm: 0.25rem;
+            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;
+            --radius-xl: 0.75rem;
+            --radius-2xl: 1rem;
+            
+            /* Sistema de Espaçamento Consistente */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+
+            /* Escala de Grays Completa */
+            --gray-50: oklch(0.99 0 0);
+            --gray-100: oklch(0.97 0 0);
+            --gray-200: oklch(0.94 0 0);
+            --gray-300: oklch(0.88 0 0);
+            --gray-500: oklch(0.556 0 0);
+            --gray-600: oklch(0.45 0 0);
+            --gray-700: oklch(0.35 0 0);
+            --gray-800: oklch(0.25 0 0);
+            --gray-900: oklch(0.145 0 0);
+
+            /* Cores de Warning/Alert */
+            --warning-light: oklch(0.95 0.1 85);
+            --warning-border: oklch(0.75 0.2 85);
+            --warning-text: oklch(0.35 0.15 85);
+
+            /* Cores de Tooltip */
+            --tooltip-bg: oklch(0.25 0 0);
+            --tooltip-text: oklch(0.98 0 0);
+            --tooltip-border: oklch(0.15 0 0);
+
+            /* Cores de Status para Charts */
+            --chart-success: oklch(0.68 0.22 145);
+            --chart-success-light: oklch(0.95 0.1 145);
+            --chart-success-border: oklch(0.6 0.2 145);
+            --chart-error: oklch(0.577 0.245 27.325);
+            --chart-error-light: oklch(0.95 0.1 27.325);
+            --chart-error-border: oklch(0.5 0.2 27.325);
+
+            /* Info/Blue variants */
+            --info-light: #eff6ff;
+            --info-dark: #1d4ed8;
+            --info-border: #bfdbfe;
+            
+            /* Chart success variants */
+            --chart-success-dark: #166534;
+            --chart-success-border: #bbf7d0;
+            
+            /* Chart error variants */
+            --chart-error-dark: #dc2626;
+            --chart-error-border: #fecaca;
+
+            /* Cores Print-friendly */
+            --print-text: oklch(0.1 0 0);
+            --print-secondary: oklch(0.45 0 0);
+            --print-success: oklch(0.4 0.3 145);
+            --print-error: oklch(0.4 0.3 27.325);
+
+            /* Variáveis do Componente Details - Usando sistema centralizado */
+            --details-border-color: var(--gray-200);
+            --details-bg-color: var(--background);
+            --details-bg-hover-color: var(--gray-50);
+            --details-text-color: var(--gray-900);
+            --details-icon-color: var(--gray-500);
+            --details-content-bg-color: var(--gray-50);
+            --details-content-text-color: var(--gray-700);
+            --details-accent-color: var(--info);
+            --details-focus-ring-color: var(--info);
             --details-font-size: 1rem;
             --details-content-font-size: 0.875rem;
-            --details-border-radius: 0.375rem;
+            --details-border-radius: var(--radius-md);
             --details-transition-duration: 0.3s;
         }
 
@@ -177,10 +277,10 @@
         /* Tooltip styles */
         .tooltip {
             position: absolute;
-            background-color: rgba(255, 255, 255, 0.95);
-            color: #1f2937;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            background-color: var(--tooltip-bg);
+            color: var(--tooltip-text);
+            border: 1px solid var(--tooltip-border);
+            border-radius: var(--radius-lg);
             padding: 12px 16px;
             font-size: 0.875rem; /* text-sm */
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -307,7 +407,7 @@
                 text-align: left !important;
                 background-color: hsl(var(--muted)) !important;
                 border: 1px solid hsl(var(--border)) !important;
-                border-radius: 0.375rem !important;
+                border-radius: var(--radius-md) !important;
                 transition: all 0.2s ease !important;
             }
 
@@ -364,7 +464,7 @@
 
         /* Zebra striping for result rows */
         .result-row:nth-child(even) {
-            background-color: #f9fafb; /* equivalent to tailwind's gray-50 */
+            background-color: var(--gray-50);
         }
 
         /* Emphasize final result */
@@ -396,19 +496,19 @@
         .chart-legend-item {
             transition: background-color 0.2s ease;
             padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
+            border-radius: var(--radius-sm);
         }
         
         .chart-legend-item:hover {
-            background-color: #f3f4f6;
+            background-color: var(--gray-100);
         }
         
         .chart-tooltip {
             position: absolute;
-            background-color: rgba(255, 255, 255, 0.95);
-            color: #1f2937;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            background-color: var(--tooltip-bg);
+            color: var(--tooltip-text);
+            border: 1px solid var(--tooltip-border);
+            border-radius: var(--radius-lg);
             padding: 8px 12px;
             font-size: 0.875rem;
             line-height: 1.25rem;
@@ -465,27 +565,27 @@
 
         /* Garantir fundo branco sólido na modal */
         #calculation-memory-modal-content {
-            background-color: #ffffff !important;
-            color: #1f2937 !important;
+            background-color: var(--white) !important;
+            color: var(--gray-800) !important;
         }
 
         #calculation-memory-modal-content h2,
         #calculation-memory-modal-content h4 {
-            color: #1f2937 !important;
+            color: var(--gray-800) !important;
         }
 
         #calculation-memory-modal-content .text-xs,
         #calculation-memory-modal-content .text-sm {
-            color: #374151 !important;
+            color: var(--gray-700) !important;
         }
 
         /* Ensure PDF button text is always white */
         #calculation-memory-modal-print-btn {
-            color: #ffffff !important;
+            color: var(--white) !important;
         }
 
         #calculation-memory-modal-print-btn:hover {
-            color: #ffffff !important;
+            color: var(--white) !important;
         }
 
         /* Educational Panel Styles */
@@ -508,7 +608,7 @@
         }
         
         .educational-content-item {
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--gray-200);
             padding: 1rem 0;
         }
         
@@ -523,18 +623,18 @@
         }
         
         .educational-content-item .legal-reference {
-            background-color: #f3f4f6;
+            background-color: var(--gray-100);
             padding: 0.5rem;
-            border-radius: 0.375rem;
+            border-radius: var(--radius-md);
             margin-top: 0.5rem;
             font-size: 0.75rem;
-            color: #6b7280;
+            color: var(--gray-500);
             font-style: italic;
         }
         
         .educational-content-item .example {
-            background-color: #fef3c7;
-            border-left: 4px solid #f59e0b;
+            background-color: var(--warning-light);
+            border-left: 4px solid var(--warning-border);
             padding: 0.75rem;
             margin-top: 0.75rem;
             border-radius: 0 0.375rem 0.375rem 0;
@@ -543,7 +643,7 @@
         .educational-content-item .example:before {
             content: "💡 Exemplo prático: ";
             font-weight: 600;
-            color: #92400e;
+            color: var(--warning-text);
         }
 
         /* Responsive adjustments for educational panel */
@@ -773,7 +873,7 @@
             content: "";
             width: 20px;
             height: 20px;
-            border: 2px solid #e5e7eb;
+            border: 2px solid var(--gray-200);
             border-top: 2px solid hsl(var(--primary));
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -795,28 +895,28 @@
             font-weight: 500;
             border-radius: 0.375rem;
             transition: all 0.2s ease-in-out;
-            color: #374151;
+            color: var(--gray-700);
         }
 
         .sidebar-link:hover {
-            background-color: #f9fafb;
-            color: #111827;
+            background-color: var(--gray-50);
+            color: var(--gray-900);
         }
 
         .sidebar-link.active {
-            background-color: #4b5563; /* gray-600 - um pouquinho mais escuro */
+            background-color: var(--gray-600);
             color: white;
             box-shadow: 0 4px 8px 0 rgb(75 85 99 / 0.2);
             font-weight: 600;
         }
 
         .sidebar-link.active:hover {
-            background-color: #374151; /* gray-700 on hover */
+            background-color: var(--gray-700);
             box-shadow: 0 6px 12px 0 rgb(75 85 99 / 0.3);
         }
 
         .sidebar-link:hover:not(.active) {
-            background-color: #f3f4f6;
+            background-color: var(--gray-100);
         }
 
         /* Sidebar Collapsed States (Brave-like functionality) */
@@ -842,11 +942,11 @@
             width: 2.5rem;
             height: 2.5rem;
             border-radius: 50%;
-            background-color: #f3f4f6; /* gray-100 */
+            background-color: var(--gray-100);
             margin: 0.5rem auto;
             transition: all 0.2s ease-in-out;
             cursor: pointer;
-            border: 1px solid #e5e7eb; /* gray-200 */
+            border: 1px solid var(--gray-200);
             position: relative;
             display: flex;
             align-items: center;
@@ -855,28 +955,28 @@
         }
 
         .sidebar-dot:hover {
-            background-color: #f9fafb; /* gray-50 */
-            border-color: #d1d5db; /* gray-300 */
+            background-color: var(--gray-50);
+            border-color: var(--gray-300);
             transform: scale(1.05);
             box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.1);
         }
 
         .sidebar-dot:hover:not(.active) {
-            background-color: #f9fafb; /* gray-50 */
-            border-color: #d1d5db; /* gray-300 */
+            background-color: var(--gray-50);
+            border-color: var(--gray-300);
         }
 
         .sidebar-dot.active {
-            background-color: #4b5563; /* gray-600 - um pouquinho mais escuro */
-            border-color: #4b5563;
+            background-color: var(--gray-600);
+            border-color: var(--gray-600);
             color: white;
             box-shadow: 0 4px 12px 0 rgb(75 85 99 / 0.3);
             transform: scale(1.1);
         }
 
         .sidebar-dot.active:hover {
-            background-color: #374151; /* gray-700 on hover */
-            border-color: #374151;
+            background-color: var(--gray-700);
+            border-color: var(--gray-700);
             box-shadow: 0 6px 16px 0 rgb(75 85 99 / 0.4);
         }
 
@@ -887,7 +987,7 @@
 
         .sidebar-dot .material-icons {
             font-size: 16px;
-            color: #6b7280; /* gray-500 */
+            color: var(--gray-500);
             transition: all 0.2s ease-in-out;
         }
 
@@ -902,7 +1002,7 @@
             left: 3.5rem;
             top: 50%;
             transform: translateY(-50%);
-            background-color: #1f2937;
+            background-color: var(--gray-800);
             color: white;
             padding: 0.375rem 0.75rem;
             border-radius: 0.375rem;
@@ -920,7 +1020,7 @@
             top: 50%;
             transform: translateY(-50%);
             border: 4px solid transparent;
-            border-right-color: #1f2937;
+            border-right-color: var(--gray-800);
             z-index: 1000;
         }
 
@@ -1059,13 +1159,13 @@
 
         /* Success/Error Input States */
         .input-success {
-            border-color: #10b981 !important;
-            background-color: #f0fdf4 !important;
+            border-color: var(--chart-success) !important;
+            background-color: var(--chart-success-light) !important;
         }
 
         .input-error {
-            border-color: #ef4444 !important;
-            background-color: #fef2f2 !important;
+            border-color: var(--chart-error) !important;
+            background-color: var(--chart-error-light) !important;
         }
 
         /* Notification Styles */
@@ -1075,7 +1175,7 @@
             right: 1rem;
             z-index: 100;
             padding: 1rem;
-            border-radius: 0.5rem;
+            border-radius: var(--radius-lg);
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
             transform: translateY(-0.5rem);
@@ -1088,21 +1188,21 @@
         }
 
         .notification.success {
-            background-color: #f0fdf4;
-            color: #166534;
-            border: 1px solid #bbf7d0;
+            background-color: var(--chart-success-light);
+            color: var(--chart-success-dark);
+            border: 1px solid var(--chart-success-border);
         }
 
         .notification.error {
-            background-color: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
+            background-color: var(--chart-error-light);
+            color: var(--chart-error-dark);
+            border: 1px solid var(--chart-error-border);
         }
 
         .notification.info {
-            background-color: #eff6ff;
-            color: #1d4ed8;
-            border: 1px solid #bfdbfe;
+            background-color: var(--info-light);
+            color: var(--info-dark);
+            border: 1px solid var(--info-border);
         }
 
         /* Improve mobile header spacing */
@@ -1151,7 +1251,7 @@
             }
 
             #app {
-                border-radius: 0.5rem !important;
+                border-radius: var(--radius-lg) !important;
                 margin: 0 !important;
                 box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
             }
@@ -1288,12 +1388,12 @@
             <!-- Footer da Sidebar -->
             <div class="sidebar-footer border-t border-gray-200 p-4">
                 <!-- Botão FAQ - Base de Conhecimento -->
-                <button id="open-faq-btn" class="w-full text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-2 rounded-md transition-colors mb-2 border border-blue-200">
+                <button id="open-faq-btn" class="w-full text-sm text-info hover:text-info/80 hover:bg-info/10 px-3 py-2 rounded-md transition-colors mb-2">
                     <span class="sidebar-title">📚 Base de Conhecimento</span>
                     <span class="sidebar-initials hidden">📚</span>
                 </button>
                 
-                <button id="clear-data-btn" class="w-full text-sm text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-2 rounded-md transition-colors">
+                <button id="clear-data-btn" class="w-full text-sm text-error hover:text-error/80 hover:bg-error/10 px-3 py-2 rounded-md transition-colors">
                     Limpar Dados Salvos
                 </button>
             </div>
@@ -1308,7 +1408,7 @@
                     <div class="flex items-center">
                         <!-- Botão de abas para sidebar (estilo Brave) - SEMPRE VISÍVEL -->
                         <button id="mobile-menu-btn" 
-                                class="flex items-center justify-center p-2 rounded-md bg-white hover:bg-gray-50 border border-gray-300 transition-all duration-300 shadow-sm min-w-[40px] min-h-[40px] sidebar-toggle-btn" 
+                                class="flex items-center justify-center p-2 rounded-md bg-card hover:bg-muted transition-all duration-300 shadow-sm min-w-[40px] min-h-[40px] sidebar-toggle-btn" 
                                 aria-label="Mostrar/Ocultar calculadoras" 
                                 title="Alternar exibição das abas"
                                 style="z-index: 1000;">
@@ -1453,11 +1553,11 @@
                                       </div>
                                       <div class="space-y-2">
                                           <label for="data-admissao" class="text-sm font-medium">Data de Admissão</label>
-                                          <input type="text" id="data-admissao" name="data-admissao" data-state="rescisao.dataAdmissao" class="date-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="DD/MM/AAAA">
+                                          <input type="date" id="data-admissao" name="data-admissao" data-state="rescisao.dataAdmissao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="data-demissao" class="text-sm font-medium">Data de Demissão</label>
-                                          <input type="text" id="data-demissao" name="data-demissao" data-state="rescisao.dataDemissao" class="date-mask flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="DD/MM/AAAA">
+                                          <input type="date" id="data-demissao" name="data-demissao" data-state="rescisao.dataDemissao" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                       </div>
                                       <div class="space-y-2">
                                           <label for="salario-bruto-rescisao" class="text-sm font-medium">Último Salário Bruto</label>
@@ -2018,7 +2118,7 @@
                         <button id="calculation-memory-modal-close-btn" type="button" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 bg-white hover:bg-gray-100 text-gray-900 h-10 px-4 py-2">
                             Fechar
                         </button>
-                        <button id="calculation-memory-modal-print-btn" type="button" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2" style="color: #ffffff !important;">
+                        <button id="calculation-memory-modal-print-btn" type="button" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2" style="color: var(--white) !important;">
                             Gerar PDF
                         </button>
                     </div>
@@ -2074,7 +2174,7 @@
         <!-- Panel Content -->
         <div class="flex flex-col h-full">
             <!-- Categories Navigation -->
-            <nav class="p-6 border-b bg-gray-50">
+            <nav class="p-6 border-b bg-muted">
                 <div class="relative">
                     <label for="topic-selector" class="block text-sm font-medium text-gray-700 mb-2">
                         Selecione um Tópico Educacional
@@ -2130,10 +2230,10 @@
                         <div class="mb-4 flex justify-center items-center space-x-4">
                             <!-- Ícone de livro (educacional) -->
                             <div class="p-3 bg-blue-50 rounded-full">
-                                <span class="material-icons text-2xl text-blue-600">menu_book</span>
+                                <span class="material-icons text-2xl text-info">menu_book</span>
                             </div>
                             <!-- Ícone jurídico -->
-                            <div class="p-3 bg-gray-50 rounded-full">
+                            <div class="p-3 bg-muted rounded-full">
                                 <span class="material-icons text-2xl text-gray-600">gavel</span>
                             </div>
                         </div>

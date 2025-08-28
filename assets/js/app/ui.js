@@ -64,6 +64,11 @@ const calculatorPanels = {
 // --- Tooltip UI Functions ---
 let currentTooltip = null;
 
+/**
+ * Cria um elemento tooltip com conteúdo expandido ou básico
+ * @param {string} topicKey - Chave do tópico no knowledge base
+ * @returns {HTMLElement|null} Elemento tooltip criado ou null se tópico não encontrado
+ */
 export function createTooltip(topicKey) {
     // Primeiro, tenta obter tooltip expandido
     let topic = getEnhancedTooltip(topicKey);
@@ -123,6 +128,11 @@ export function createTooltip(topicKey) {
     return tooltipElement;
 }
 
+/**
+ * Posiciona e exibe um tooltip próximo ao ícone de ajuda
+ * @param {HTMLElement} iconElement - Elemento ícone que acionou o tooltip
+ * @param {HTMLElement} tooltipElement - Elemento tooltip a ser exibido
+ */
 export function showTooltip(iconElement, tooltipElement) {
     if (currentTooltip) hideTooltip();
 
@@ -153,6 +163,9 @@ export function showTooltip(iconElement, tooltipElement) {
     }, 10); // Small delay to allow for CSS transition
 }
 
+/**
+ * Remove o tooltip atualmente visível da tela
+ */
 export function hideTooltip() {
     if (currentTooltip) {
         currentTooltip.classList.remove('visible');
@@ -484,43 +497,28 @@ function generateModalContent(data) {
 function generatePisPasepModalContent(results, inputState) {
     const { valorAbono, elegivel, memoriaCalculo } = results;
     let html = generateMemoryStepsHTML(memoriaCalculo);
-    html += `
-        <div class="mt-4 pt-4 border-t border-gray-200">
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Valor do Abono:</span>
-                <span class="font-bold ${elegivel ? 'text-green-600' : 'text-red-600'}">${formatCurrency(valorAbono)}</span>
-            </div>
-        </div>`;
+    html += createSectionContainer(
+        createFlexValueRow('Valor do Abono', formatCurrency(valorAbono), 'text-lg', elegivel ? 'text-green-600' : 'text-red-600')
+    );
     return html;
 }
 
 function generateSeguroDesempregoModalContent(results, inputState) {
     const { numeroParcelas, valorPorParcela, memoriaCalculo } = results;
     let html = generateMemoryStepsHTML(memoriaCalculo);
-    html += `
-        <div class="mt-4 pt-4 border-t border-gray-200 space-y-2">
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Nº de Parcelas:</span>
-                <span class="font-bold text-blue-600">${numeroParcelas}</span>
-            </div>
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Valor por Parcela:</span>
-                <span class="font-bold text-green-600">${formatCurrency(valorPorParcela)}</span>
-            </div>
-        </div>`;
+    html += createSectionContainer(`
+        ${createFlexValueRow('Nº de Parcelas', numeroParcelas, 'text-lg', 'text-blue-600')}
+        ${createFlexValueRow('Valor por Parcela', formatCurrency(valorPorParcela), 'text-lg', 'text-green-600')}
+    `, 'space-y-2');
     return html;
 }
 
 function generateHorasExtrasModalContent(results, inputState) {
     const { totalGeralAdicionais, memoriaCalculo } = results;
     let html = generateMemoryStepsHTML(memoriaCalculo);
-    html += `
-        <div class="mt-4 pt-4 border-t border-gray-200">
-            <div class="flex justify-between items-center text-lg">
-                <span class="font-bold text-gray-900">Total de Adicionais:</span>
-                <span class="font-bold text-green-600">${formatCurrency(totalGeralAdicionais)}</span>
-            </div>
-        </div>`;
+    html += createSectionContainer(
+        createFlexValueRow('Total de Adicionais', formatCurrency(totalGeralAdicionais), 'text-lg', 'text-green-600')
+    );
     return html;
 }
 
@@ -1037,6 +1035,36 @@ function createResultRow(label, value, valueColorClass = 'text-gray-800') {
         <div class="flex justify-between result-row py-2">
             <span>${label}:</span>
             <span class="font-mono ${valueColorClass}">${value}</span>
+        </div>`;
+}
+
+/**
+ * Cria uma linha de exibição de valor com layout flexível e tamanho de texto personalizável
+ * @param {string} label - Rótulo da linha
+ * @param {string} value - Valor a ser exibido
+ * @param {string} [textSize='text-lg'] - Classe de tamanho do texto
+ * @param {string} [valueColorClass='text-gray-800'] - Classe CSS para cor do valor
+ * @param {string} [additionalClasses=''] - Classes CSS adicionais
+ * @returns {string} HTML da linha formatada
+ */
+function createFlexValueRow(label, value, textSize = 'text-lg', valueColorClass = 'text-gray-800', additionalClasses = '') {
+    return `
+        <div class="flex justify-between items-center ${textSize} ${additionalClasses}">
+            <span class="font-bold text-gray-900">${label}:</span>
+            <span class="font-bold ${valueColorClass}">${value}</span>
+        </div>`;
+}
+
+/**
+ * Cria um container com bordas e espaçamento padrão para seções
+ * @param {string} content - Conteúdo HTML interno
+ * @param {string} [additionalClasses=''] - Classes CSS adicionais
+ * @returns {string} HTML do container formatado
+ */
+function createSectionContainer(content, additionalClasses = '') {
+    return `
+        <div class="mt-4 pt-4 border-t border-gray-200 ${additionalClasses}">
+            ${content}
         </div>`;
 }
 
