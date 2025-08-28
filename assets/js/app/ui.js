@@ -1821,6 +1821,77 @@ export function hideCustomizeModal() {
     }
 }
 
+// --- Notification / Toast ---
+
+let toastContainer = null;
+
+/**
+ * Creates or retrieves the toast container element.
+ * @returns {HTMLElement} The toast container element.
+ */
+function getToastContainer() {
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container';
+        document.body.appendChild(toastContainer);
+    }
+    return toastContainer;
+}
+
+/**
+ * Displays a toast notification.
+ * @param {string} message - The message to display.
+ * @param {string} [type='info'] - The type of notification ('info', 'success', 'error', 'warning').
+ * @param {number} [duration=4000] - The duration in milliseconds to show the toast.
+ */
+export function showNotification(message, type = 'info', duration = 4000) {
+    const container = getToastContainer();
+
+    const toastElement = document.createElement('div');
+    // Base classes from the alert component, plus our toast animation class
+    toastElement.className = `alert alert-${type} toast`;
+    toastElement.setAttribute('role', 'alert');
+
+    // Icon mapping from the alert component
+    const iconMap = {
+        info: 'info',
+        success: 'check_circle',
+        warning: 'warning',
+        error: 'error'
+    };
+    const icon = iconMap[type] || 'info';
+
+    // Build the inner HTML using the alert component's structure
+    toastElement.innerHTML = `
+        <span class="material-icons alert-icon">${icon}</span>
+        <div class="alert-content">
+            <p class="alert-description">${message}</p>
+        </div>
+        <button class="toast-close-btn">&times;</button>
+    `;
+
+    // Add close button functionality
+    const closeButton = toastElement.querySelector('.toast-close-btn');
+    closeButton.addEventListener('click', () => {
+        toastElement.classList.add('closing');
+        toastElement.addEventListener('animationend', () => {
+            toastElement.remove();
+        });
+    });
+
+    container.appendChild(toastElement);
+
+    // Auto-remove after duration
+    setTimeout(() => {
+        if (toastElement.parentElement) {
+            toastElement.classList.add('closing');
+            toastElement.addEventListener('animationend', () => {
+                toastElement.remove();
+            });
+        }
+    }, duration);
+}
+
 /**
  * Renders the sidebar navigation (FASE 3)
  * Substitui a navegação por abas pela sidebar moderna

@@ -6,7 +6,7 @@
  */
 
 import { state, updateState, initialState } from './state.js';
-import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal, renderSidebar, openFaqModal, renderMobileCalculatorSelector, toggleMobileDropdown, hideMobileDropdown } from './ui.js';
+import { render, createTooltip, showTooltip, hideTooltip, renderCalculationMemory, showCalculationMemoryModal, hideCalculationMemoryModal, generateReportHTML, updateAndShowModal, updateSalaryResult, toggleEducationalPanel, loadEducationalContent, showEducationalWelcome, showCustomizeModal, hideCustomizeModal, renderSidebar, openFaqModal, renderMobileCalculatorSelector, toggleMobileDropdown, hideMobileDropdown, showNotification } from './ui.js';
 import { calculatorFunctions, calculateNetSalary } from './calculations.js';
 import { debounce, unmaskCurrency, formatCurrency, initializeCurrencyMask, isValidDate, isValidDateRange } from './utils.js';
 import { 
@@ -398,7 +398,8 @@ function getFieldValue(element) {
  * @param {HTMLElement} element - Elemento do formulário a ser limpo
  */
 function clearFieldValidation(element) {
-    element.classList.remove('input-success', 'input-error', 'border-green-500', 'bg-green-50', 'border-red-500', 'bg-red-50');
+    element.classList.remove('input-success', 'input-error');
+    element.style.backgroundColor = ''; // Reset the background color
     
     // Remove mensagens de validação existentes
     const existingValidation = element.parentNode.querySelector('.field-validation');
@@ -413,8 +414,9 @@ function clearFieldValidation(element) {
  * @param {string} message - Mensagem de erro a ser exibida
  */
 function showFieldError(element, message) {
-    element.classList.add('input-error', 'border-red-500', 'bg-red-50');
-    element.classList.remove('input-success', 'border-green-500', 'bg-green-50');
+    element.classList.add('input-error'); // This class applies the correct border color from the theme
+    element.classList.remove('input-success');
+    element.style.backgroundColor = 'var(--chart-error-light)'; // Use theme variable for background
     
     // Format the error message to show dates in Brazilian format if needed
     let formattedMessage = message;
@@ -449,8 +451,9 @@ function showFieldError(element, message) {
  * @param {HTMLElement} element - Elemento do formulário validado com sucesso
  */
 function showFieldSuccess(element) {
-    element.classList.add('input-success', 'border-green-500', 'bg-green-50');
-    element.classList.remove('input-error', 'border-red-500', 'bg-red-50');
+    element.classList.add('input-success'); // This class applies the correct border color from the theme
+    element.classList.remove('input-error');
+    element.style.backgroundColor = 'var(--chart-success-light)'; // Use theme variable for background
     
     const successDiv = document.createElement('div');
     successDiv.className = 'field-validation text-green-600';
@@ -525,7 +528,41 @@ function handleInputChange(event) {
         updateState('salarioLiquido.filhosSalarioFamilia', 0);
     }
 
-    render();
+    render().then(() => {
+        // This block runs after the UI has been updated with the new calculation.
+        // We only show the notification if the input was valid and didn't cause an error state.
+        if (!path) return;
+
+        const [calculatorName] = path.split('.');
+
+        // This check is to prevent showing notifications for fields that don't have validation rules
+        // and for which updates might be too frequent (e.g., slider).
+        // We only want to show notifications for user-completed actions.
+        const isMeaningfulChange = event.type === 'change' || event.type === 'blur';
+
+        if (isMeaningfulChange) {
+            const errorState = state[calculatorName].errors || {};
+            const hasErrors = Object.values(errorState).some(message => message);
+
+            if (!hasErrors) {
+                const calculatorNames = {
+                    ferias: 'Cálculo de Férias',
+                    rescisao: 'Cálculo de Rescisão',
+                    decimoTerceiro: '13º Salário',
+                    salarioLiquido: 'Salário Líquido',
+                    fgts: 'FGTS',
+                    pisPasep: 'PIS/PASEP',
+                    seguroDesemprego: 'Seguro-Desemprego',
+                    horasExtras: 'Horas Extras',
+                    inss: 'INSS',
+                    valeTransporte: 'Vale-Transporte',
+                    irpf: 'IRPF'
+                };
+                const calculatorFriendlyName = calculatorNames[calculatorName] || 'Cálculo';
+                showNotification(`${calculatorFriendlyName} atualizado.`, 'success', 2500);
+            }
+        }
+    });
 
     if (getSavePreference()) {
         saveStateToLocalStorage();
@@ -1367,6 +1404,7 @@ function initializeSidebarEvents() {
     });
 }
 
+
 /**
  * Limpa todos os dados salvos do localStorage (FASE 3)
  */
@@ -1386,34 +1424,9 @@ function handleClearData() {
         });
         
         render();
+        // Use the new notification system from ui.js
         showNotification('Dados limpos com sucesso!', 'success');
     }
-}
-
-/**
- * Mostra notificação temporária (FASE 3)
- * @param {string} message - Mensagem a ser exibida
- * @param {string} type - Tipo da notificação: 'success', 'error', 'info'
- */
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    // Trigger animation
-    setTimeout(() => notification.classList.add('show'), 100);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            if (document.body.contains(notification)) {
-                document.body.removeChild(notification);
-            }
-        }, 300);
-    }, 3000);
 }
 
 /**
